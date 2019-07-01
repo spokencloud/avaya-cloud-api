@@ -7,10 +7,8 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
-using avayacloud_client;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using static avayacloud_client.ImplAgent;
+using static AvayaCloudClient.ImplAgent;
 
 namespace AvayaCloudClient
 {
