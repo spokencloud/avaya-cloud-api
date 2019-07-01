@@ -9,10 +9,10 @@
 
 
 ## Build the solution using below commands from cmd
-cd <path to avayacloud-client.sln>
+cd \<path to avayacloud-client.sln\> <br />
 <Path to msbuild.exe> avayacloud-client.sln /t:Clean,Build /p:Configuration=Release
 
 ## Run the sample client 
-avayacloud-client.exe <https path to spokenabc> <spokenabcusername> <spokenabcuserpassword>
-e.g. avayacloud-client.exe http://localhost:8081 prov1 spoken@1 
+avayacloud-client.exe \<https path to spokenabc\> \<spokenabcusername\> \<spokenabcuserpassword\> <br />
+e.g. avayacloud-client.exe http://localhost:8081 prov1 spoken@1 <br />
      avayacloud-client.exe https://login.bpo.avaya.com StoreAPIProvisioner <password>
