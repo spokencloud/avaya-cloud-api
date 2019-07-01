@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 
 namespace AvayaCloudClient
 {
-    public  class Avayacloud
+    public  class AvayacloudSampleClient
     {
-        private static readonly string agent_username = "TestAgent1";
+        private static readonly string agent_username = "TestAgent2";
         private static readonly string agent_password = "Spoken@1";
         private static readonly string endpoint = "http://192.168.0.101:8086";
         private static readonly string abcusername = "prov1";
