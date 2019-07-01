@@ -1,7 +1,10 @@
 # The C# API for the Avaya Public Cloud
-#Prerequisites 
+# Prerequisites 
 # 1.Net Framework 4.7.2+ (Windows Environment)
 # 2.msbuild.exe (comes through Visual studio or Visual studio build tools)
+# 3.Packages need to be installed (can be installed using nuget package manager)
+# 	1.Microsoft.AspNet.WebApi.Client v5.2.7+
+#	2.Newtonsoft.Json v12.0.2+
 
 
 #Build the solution using below commands from cmd
