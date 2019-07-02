@@ -116,6 +116,16 @@ namespace AvayaCloudClient
                 this.loginId = loginId;
             }
         }
+        private string generateSecurityCode(string agentLoginId)
+        {
+            int length = agentLoginId.Length;
+            return agentLoginId.Substring(length - 4, 4);
+        }
+        private string generateAvayaPassword(string agentLoginId)
+        {
+            int length = agentLoginId.Length;
+            return agentLoginId.Substring(length - 6, 6);
+        }
         public async Task<Agent> createAgent(string agent_username, string agent_password)
         {
             await session.creatLoginRequest();
@@ -170,8 +180,8 @@ namespace AvayaCloudClient
             int agentStationGroupId,
             string agentLoginId, List<int> skillIds)
         {
-            string securityCode = session.generateSecurityCode(agentLoginId);
-            string avayaPassword = session.generateAvayaPassword(agentLoginId);
+            string securityCode = generateSecurityCode(agentLoginId);
+            string avayaPassword = generateAvayaPassword(agentLoginId);
             //DateTime startDate = DateTime.ParseExact("2019/03/21", "yyyy/MM/dd", CultureInfo.InvariantCulture);
             //DateTime endDate = DateTime.ParseExact("2038/01/01", "yyyy/MM/dd", CultureInfo.InvariantCulture);
             Agent agent = new Agent(agent_username, "generated", "agent", agent_password, avayaPassword, agentLoginId, subAccountId,
@@ -205,7 +215,7 @@ namespace AvayaCloudClient
         }
         private async Task sendCreateStationRequest(int agentStationGroupId, int subAccountId, string stationExtension, string agent_username)
         {
-            string extensionSecurityCode = session.generateSecurityCode(stationExtension);
+            string extensionSecurityCode =generateSecurityCode(stationExtension);
             Station station = new Station(agentStationGroupId, subAccountId, stationExtension, "generated_station", extensionSecurityCode, agent_username);
             HttpResponseMessage httpResponseMessage = await Session.client.PostAsJsonAsync("/spokenAbc/jobs/stations", station);
             var responseJson = await httpResponseMessage.Content.ReadAsStringAsync();

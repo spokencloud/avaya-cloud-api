@@ -55,7 +55,7 @@ namespace AvayaCloudClient
             this.admin_username = username;
             this.admin_password = password;
         }
-        public void creatSessionParameters()
+        public void createSessionParameters()
         {
             CookieContainer cookieContainer = new CookieContainer();
             HttpClientHandler handler = new HttpClientHandler();
@@ -122,16 +122,7 @@ namespace AvayaCloudClient
             return sortedSubAccount[0].ID;
         }
         
-        public string generateSecurityCode(string agentLoginId)
-        {
-            int length = agentLoginId.Length;
-            return agentLoginId.Substring(length-4, 4);
-        }
-        public string generateAvayaPassword(string agentLoginId)
-        {
-            int length = agentLoginId.Length;
-            return agentLoginId.Substring(length - 6, 6);
-        }
+       
         public async Task<Agent> createAgent(string agent_username, string agent_password)
         {
             ImplAgent implAgent = new ImplAgent(this);

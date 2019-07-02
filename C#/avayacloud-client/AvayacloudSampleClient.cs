@@ -36,7 +36,7 @@ namespace AvayaCloudClient
             }
             Console.WriteLine("Endpoint used:- " + endpoint);
             AvayaCloudClient.Session session = new AvayaCloudClient.Session(endpoint, abcusername, abcpassword);
-            session.creatSessionParameters();
+            session.createSessionParameters();
             Console.WriteLine("************Creation of Agent*****************");
             await createAgent(session);
             Console.WriteLine("************Retrieving of Agent*****************");
