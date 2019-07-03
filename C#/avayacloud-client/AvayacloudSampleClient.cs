@@ -6,33 +6,27 @@ namespace AvayaCloudClient
 {
     public  class AvayacloudSampleClient
     {
-        private static readonly string agent_username = "TestAgent3";
-        private static readonly string agent_password = "Spoken@1";
-        private static string endpoint = "http://148.147.152.171:8086";
-        private static string abcusername = "prov1";
-        private static string abcpassword = "Avaya123$";
+        private static string agent_username;
+        private static string agent_password;
+        private static string endpoint;
+        private static string abcusername;
+        private static string abcpassword;
         static async Task Main(string[] args)
         {
-            //avayacloud_client.Session session = new avayacloud_client.Session("https://login.bpo.avaya.com", "StoreAPIProvisioner", "WhHh3xG*us");
-            //avayacloud_client.Session session = new avayacloud_client.Session("https://integration.bpo.avaya.com", "PuneDevSystemUser", "Avaya123$");
-            if(args.Length == 0)
+            Console.WriteLine("Enter the Avaya cloud URL");
+            endpoint = Console.ReadLine();
+            Console.WriteLine("Enter the Avaya cloud login username");
+            abcusername = Console.ReadLine();
+            Console.WriteLine("Enter the Avaya cloud login password");
+            abcpassword =  Console.ReadLine();
+            Console.WriteLine("Please enter the action\n1 for Agent operations");
+            string input = Console.ReadLine();
+            if(input == "1")
             {
-                Console.WriteLine("No command line arguments. So contiuning with defined values");
-            }
-            else
-            {
-                if(args[0] != null)
-                {
-                    endpoint = args[0];
-                }
-                if (args[1] != null)
-                {
-                    abcusername = args[1];
-                }
-                if (args[2] != null)
-                {
-                    abcpassword = args[2];
-                }
+                Console.WriteLine("Enter the agent username");
+                agent_username = Console.ReadLine();
+                Console.WriteLine("Enter the agent password");
+                agent_password = Console.ReadLine();
             }
             Console.WriteLine("Endpoint used:- " + endpoint);
             AvayaCloudClient.Session session = new AvayaCloudClient.Session(endpoint, abcusername, abcpassword);
