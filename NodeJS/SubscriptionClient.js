@@ -1,8 +1,3 @@
-const lodash = require('lodash')
-
-// ten seconds
-const INTERVAL_IN_MILLIS = 10 * 1000
-const MAX_RETRY = 5
 const VERSION = '1.0'
 const SUBSCRIPTION_PATH = '/spokenAbc/subscriptions/v' + VERSION + '/subscriptions'
 const SLASH = '/'
