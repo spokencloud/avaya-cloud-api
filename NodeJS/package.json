@@ -1,0 +1,14 @@
+{
+  "name": "avaya-cloud-api",
+  "version": "0.0.1",
+  "description": "client library for interacting with avaya cloud api",
+  "license": "SEE LICENSE IN session.js",
+  "dependencies": {
+    "@3846masa/axios-cookiejar-support": "^0.4.2",
+    "axios": "^0.18.0",
+    "axios-cookiejar-support": "^0.4.2",
+    "lodash": "^4.17.11",
+    "minimist": "^1.2.0",
+    "tough-cookie": "^3.0.1"
+  }
+}

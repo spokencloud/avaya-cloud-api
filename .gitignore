@@ -1,4 +1,3 @@
-*.json
 *.txt
 *.gz
 PARTNERS
@@ -7,3 +6,10 @@ C#/avayacloud-client/bin/
 C#/avayacloud-client/obj/
 C#/avayacloud-client/packages/
 C#/avayacloud-client/packages.config
+
+# IntelliJ
+.idea
+
+# Node.js
+node_modules
+package-lock.json
