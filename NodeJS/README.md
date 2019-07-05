@@ -11,13 +11,13 @@ and desired agent name Avaya_Agent_1
 
 node sampleAgentClient.js
   --endpoint='https://login.bpo.avaya.com'
-  --admin_username='avaya'
-  --admin_password='password'
-  --agent_username='Avaya_Agent_1'
-  --agent_password='EnterYourP@ssword123'
+  --admin_username='{your_admin_username}'
+  --admin_password='{your_admin_password}'
+  --agent_username='{your_agent_username}'
+  --agent_password='{your_agent_password}'
 
 ### Run sample subscription client
 node sampleAgentClient.js
   --endpoint='https://login.bpo.avaya.com'
-  --admin_username='avaya'
-  --admin_password='password'
+  --admin_username='{your_admin_username}'
+  --admin_password='{your_admin_password}'
