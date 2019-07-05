@@ -1,13 +1,12 @@
 # The Node.js API for the Avaya Public Cloud
-you need npm and node.js installed to run this project
-run 'npm i' in the folder to install node modules
-then run 'node sampleAgentClient.js' to see the code in action
+you need npm and node.js installed to run this project.
+Run 'npm i' in the folder to install node modules
 
 ##  Sample calls
 
 ### Run sample agent client
-This creates an agent that can receive or make a phone call, reads it back,
-and deletes it.
+An agent can receive or make a phone call.
+This sample client creates an agent, reads it back, and deletes it.
 
 node sampleAgentClient.js
   --endpoint='https://login.bpo.avaya.com'
