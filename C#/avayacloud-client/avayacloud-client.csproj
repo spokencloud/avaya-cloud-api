@@ -51,6 +51,7 @@
   <ItemGroup>
     <Compile Include="ImplAgent.cs" />
     <Compile Include="AvayacloudSampleClient.cs" />
+    <Compile Include="ImplSubscription.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Session.cs" />
   </ItemGroup>

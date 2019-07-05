@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using static AvayaCloudClient.ImplAgent;
+using static AvayaCloudClient.ImplSubscription;
 
 namespace AvayaCloudClient
 {
@@ -87,7 +88,7 @@ namespace AvayaCloudClient
         {
             HttpResponseMessage httpResponseMessage = await client.GetAsync("/question/answer");
             var responseJson = await httpResponseMessage.Content.ReadAsStringAsync();
-            Console.Write("Agent security questions\n" + "----------------------\n" + responseJson + "\n-------------------\n");
+            //Console.Write("Agent security questions\n" + "----------------------\n" + responseJson + "\n-------------------\n");
             List<string> questions = JObject.Parse(responseJson).SelectToken("questions").ToObject<List<string>>();
             return questions;
         }
@@ -109,7 +110,7 @@ namespace AvayaCloudClient
             qarequest.questionAnswerPairs = qapairs; 
             HttpResponseMessage httpResponseMessage = await client.PostAsJsonAsync("/user/question/answer", qarequest);
             var responseJson = await httpResponseMessage.Content.ReadAsStringAsync();
-            Console.Write("Security questions answered correctly? " +responseJson + "\n");
+            //Console.Write("Security questions answered correctly? " +responseJson + "\n");
         }
         public async Task<int> getSubAccountId()
         {
@@ -121,8 +122,18 @@ namespace AvayaCloudClient
             Console.WriteLine("Selected SubAccount " + sortedSubAccount[0].Name);
             return sortedSubAccount[0].ID;
         }
-        
-       
+        public async Task<string> getSubAccountAppId()
+        {
+            HttpResponseMessage httpResponseMessage = await client.GetAsync("/user");
+            var responseJson = await httpResponseMessage.Content.ReadAsStringAsync();
+            //Console.Write(responseJson);
+            List<SubAccount> subAccounts = JObject.Parse(responseJson).SelectToken("accessibleClients").ToObject<List<SubAccount>>();
+            var sortedSubAccount = subAccounts.OrderBy(s => s.ID).ToList();
+            Console.WriteLine("Selected SubAccount " + sortedSubAccount[0].Name);
+            return sortedSubAccount[0].AppID;
+        }
+
+
         public async Task<Agent> createAgent(string agent_username, string agent_password)
         {
             ImplAgent implAgent = new ImplAgent(this);
@@ -141,9 +152,47 @@ namespace AvayaCloudClient
             ImplAgent implAgent = new ImplAgent(this);
             await implAgent.deleteAgent(agent_username);
         }
-        
-        
+        public async Task<Subscription> createSubscription(string endPoint, string dataDeliveryFormat, 
+            string dataSourceType, string frequencyInMinutes, string startTime,
+            string basicAuthUsername, string basicAuthPassword, int maxPostSize)
+            
+        {
+            ImplSubscription implSubscription = new ImplSubscription(this);
+            Subscription createdSubscription = await implSubscription.createSubscription(endPoint, dataDeliveryFormat, dataSourceType,
+                frequencyInMinutes, startTime, basicAuthUsername, basicAuthPassword, maxPostSize);
+            return createdSubscription;
+        }
+        public async Task<Subscription> getSubscription(string subscriptionId)
 
+        {
+            ImplSubscription implSubscription = new ImplSubscription(this);
+            Subscription subscription = await implSubscription.getSubscription (subscriptionId);
+            return subscription;
+        }
+        public async Task<List<Subscription>> getAllSubscriptions()
+
+        {
+            ImplSubscription implSubscription = new ImplSubscription(this);
+            List<Subscription> subscriptions = await implSubscription.getAllSubscriptions();
+            return subscriptions;
+        }
+        public async Task<bool> deleteSubscription(string subscriptionId)
+
+        {
+            ImplSubscription implSubscription = new ImplSubscription(this);
+            bool deleted = await implSubscription.deleteSubscription(subscriptionId);
+            return deleted;
+        }
+        public async Task<Subscription> updateSubscription(string endPoint, string dataDeliveryFormat,
+            string dataSourceType, string frequencyInMinutes, string startTime,
+            string basicAuthUsername, string basicAuthPassword, int maxPostSize,string subscriptionId)
+
+        {
+            ImplSubscription implSubscription = new ImplSubscription(this);
+            Subscription updatedSubscription = await implSubscription.updateSubscription(endPoint, dataDeliveryFormat, dataSourceType,
+                frequencyInMinutes, startTime, basicAuthUsername, basicAuthPassword, maxPostSize,subscriptionId);
+            return updatedSubscription;
+        }
     }
 }
 
