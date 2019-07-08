@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{80620648-ECCA-4FE8-9F0B-B966C44CD095}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>avayacloud_client</RootNamespace>
-    <AssemblyName>avayacloud-client</AssemblyName>
+    <RootNamespace>AvayaCloudClient</RootNamespace>
+    <AssemblyName>avayacloud-client-agent</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -33,6 +33,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="CommandLine, Version=2.5.0.0, Culture=neutral, PublicKeyToken=5a870481e358d379, processorArchitecture=MSIL">
+      <HintPath>..\avayacloud-client-common\packages\CommandLineParser.2.5.0\lib\net461\CommandLine.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -50,13 +53,19 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ImplAgent.cs" />
-    <Compile Include="AvayacloudSampleClient.cs" />
+    <Compile Include="AgentSampleClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Session.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\avayacloud-client-common\avayacloud-client-common.csproj">
+      <Project>{8b0bdc2a-d3a8-4691-a79e-3d2752c074e8}</Project>
+      <Name>avayacloud-client-common</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

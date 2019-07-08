@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using static AvayaCloudClient.Session;
 
 namespace AvayaCloudClient
 {
@@ -128,10 +129,9 @@ namespace AvayaCloudClient
         }
         public async Task<Agent> createAgent(string agent_username, string agent_password)
         {
-            await session.creatLoginRequest();
-            List<string> questions = await session.createQuestionRequest();
-            await session.createQuestionAnswerRequest(questions);
-            int subAccountId = await session.getSubAccountId();
+            await session.login();
+            SubAccount subAccount = await session.getSubAccount();
+            int subAccountId = subAccount.ID;
             int agentStationGroupId = await this.getAgentStationGroupId(subAccountId);
             string agentLoginId = await this.generateExtension(subAccountId, "AGENT");
             List<int> skillIds = await this.getSkillIds(subAccountId);
@@ -153,9 +153,7 @@ namespace AvayaCloudClient
         {
             HttpResponseMessage httpResponseMessage = await Session.client.GetAsync("/spokenAbc/agentStationGroups/client/" + subAccountId);
             var responseJson = await httpResponseMessage.Content.ReadAsStringAsync();
-            //Console.Write(responseJson);
             List<AgentStationGroup> agentStationGroups = JsonConvert.DeserializeObject<IEnumerable<AgentStationGroup>>(responseJson).ToList();
-            //List<AgentStationGroup> agentStationGroups = JObject.Parse(responseJson).ToObject<List<AgentStationGroup>>();
             var sortedAgentStationGroups = agentStationGroups.OrderBy(a => a.ID).ToList();
             return sortedAgentStationGroups[0].ID;
         }
@@ -182,13 +180,10 @@ namespace AvayaCloudClient
         {
             string securityCode = generateSecurityCode(agentLoginId);
             string avayaPassword = generateAvayaPassword(agentLoginId);
-            //DateTime startDate = DateTime.ParseExact("2019/03/21", "yyyy/MM/dd", CultureInfo.InvariantCulture);
-            //DateTime endDate = DateTime.ParseExact("2038/01/01", "yyyy/MM/dd", CultureInfo.InvariantCulture);
             Agent agent = new Agent(agent_username, "generated", "agent", agent_password, avayaPassword, agentLoginId, subAccountId,
                 agentStationGroupId, securityCode, "2019-06-21", "2038-01-01", skillIds, 0);
             HttpResponseMessage httpResponseMessage = await Session.client.PostAsJsonAsync("/spokenAbc/jobs/agents", agent);
             var responseJson = await httpResponseMessage.Content.ReadAsStringAsync();
-            //Console.Write(responseJson);
         }
         private async Task<bool> waitForAgentCreation(string agent_username)
         {
@@ -219,7 +214,6 @@ namespace AvayaCloudClient
             Station station = new Station(agentStationGroupId, subAccountId, stationExtension, "generated_station", extensionSecurityCode, agent_username);
             HttpResponseMessage httpResponseMessage = await Session.client.PostAsJsonAsync("/spokenAbc/jobs/stations", station);
             var responseJson = await httpResponseMessage.Content.ReadAsStringAsync();
-            //Console.Write(responseJson);
         }
         private async Task<bool> waitForStationCreation(int subAccountId, string agent_username)
         {
@@ -239,7 +233,6 @@ namespace AvayaCloudClient
                 }
                 catch (Exception e)
                 {
-                    //Console.Write(e);
                     await Task.Delay(Session.INTERVAL_IN_MILLIS);
                 }
 
@@ -254,9 +247,7 @@ namespace AvayaCloudClient
         }
         public async Task<Agent> getAgent(string agent_username)
         {
-            await session.creatLoginRequest();
-            List<string> questions = await session.createQuestionRequest();
-            await session.createQuestionAnswerRequest(questions);
+            await session.login();
             Agent createdAgent = null;
             HttpResponseMessage httpResponseMessage = null; ;
             try
@@ -276,7 +267,8 @@ namespace AvayaCloudClient
                     throw e;
                 }
             }
-            int subAccountId = await session.getSubAccountId();
+            SubAccount subAccount = await session.getSubAccount();
+            int subAccountId = subAccount.ID;
             Station createdStation = null;
             try
             {
@@ -302,10 +294,9 @@ namespace AvayaCloudClient
         }
         public async Task deleteAgent(string agent_username)
         {
-            await session.creatLoginRequest();
-            List<string> questions = await session.createQuestionRequest();
-            await session.createQuestionAnswerRequest(questions);
-            int subAccountId = await session.getSubAccountId();
+            await session.login();
+            SubAccount subAccount = await session.getSubAccount();
+            int subAccountId = subAccount.ID;
             HttpResponseMessage httpResponseMessage = await getStationOnly(subAccountId);
             var responseJson = await httpResponseMessage.Content.ReadAsStringAsync();
             List<Station> agentStations = JsonConvert.DeserializeObject<IEnumerable<Station>>(responseJson).ToList();
@@ -333,7 +324,6 @@ namespace AvayaCloudClient
             }
             catch (Exception e)
             {
-                //Console.Write(e);
                 Console.WriteLine("Agent with username " + agent_username + " has been deleted already");
             }
         }
