@@ -8,8 +8,6 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
-using static AvayaCloudClient.ImplAgent;
-using static AvayaCloudClient.ImplSubscription;
 
 namespace AvayaCloudClient
 {

@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("avayacloud-client")]
+[assembly: AssemblyTitle("avayacloudclientsubscription")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("avayacloud-client")]
+[assembly: AssemblyProduct("avayacloudclientsubscription")]
 [assembly: AssemblyCopyright("Copyright ©  2019")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("80620648-ecca-4fe8-9f0b-b966c44cd095")]
+[assembly: Guid("af599b81-959b-4cdc-a7b4-6e79b4ef26f9")]
 
 // Version information for an assembly consists of the following four values:
 //

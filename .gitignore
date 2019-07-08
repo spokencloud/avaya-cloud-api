@@ -13,3 +13,17 @@ C#/avayacloud-client/packages.config
 # Node.js
 node_modules
 package-lock.json
+C#/avayacloud-client-agent/packages.config
+C#/avayacloud-client-agent/.vs/
+C#/avayacloud-client-agent/bin/
+C#/avayacloud-client-agent/obj/
+C#/avayacloud-client-agent/packages/
+C#/avayacloud-client-common/.vs/
+C#/avayacloud-client-common/bin/
+C#/avayacloud-client-common/obj/
+C#/avayacloud-client-common/packages/
+C#/avayacloud-client-subscription/packages.config
+C#/avayacloud-client-subscription/bin/
+C#/avayacloud-client-subscription/obj/
+C#/avayacloud-client-agent/avayacloud-client-agent.csproj.user
+C#/avayacloud-client-subscription/avayacloud-client-subscription.csproj.user
