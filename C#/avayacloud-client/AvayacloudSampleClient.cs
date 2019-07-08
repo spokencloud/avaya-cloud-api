@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using static AvayaCloudClient.ImplAgent;
 using static AvayaCloudClient.ImplSubscription;
 
 namespace AvayaCloudClient
@@ -57,37 +58,42 @@ namespace AvayaCloudClient
             Console.ReadLine();
             return;
         }
-        private async static Task<bool> createAgent(Session session)
+        private async static Task<Agent> createAgent(Session session)
         {
+            ImplAgent implAgent = new ImplAgent(session);
+            Agent agent = null; ;
             try
             {
-                var Agent = await session.createAgent(agent_username, agent_password);
-                Console.Write("Created Agent : " + Agent.Username + "\n");
+                agent = await implAgent.createAgent(agent_username, agent_password);
+                Console.Write("Created Agent : " + agent.Username + "\n");
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
             }
-            return true;
+            return agent;
         }
-        private async static Task<bool>  getAgent(Session session)
+        private async static Task<Agent>  getAgent(Session session)
         {
+            ImplAgent implAgent = new ImplAgent(session);
+            Agent agent = null; ;
             try
             {
-                var Agent = await session.getAgent(agent_username);
-                Console.Write("Returned Agent : " + Agent.Username + "\n");
+                agent = await implAgent.getAgent(agent_username);
+                Console.Write("Returned Agent : " + agent.Username + "\n");
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
             }
-            return true;
+            return agent;
         }
         private async static Task<bool> deleteAgent(Session session)
         {
+            ImplAgent implAgent = new ImplAgent(session);
             try
             {
-                await session.deleteAgent(agent_username);
+                await implAgent.deleteAgent(agent_username);
             }
             catch (Exception e)
             {
@@ -95,39 +101,46 @@ namespace AvayaCloudClient
             }
             return true;
         }
-        private async static Task<bool> createSubscription(Session session)
+        private async static Task<Subscription> createSubscription(Session session)
         {
+            ImplSubscription implSubscription = new ImplSubscription(session);
+            Subscription createdSubscription = null;
             try
             {
-                Subscription subscription =  await session.createSubscription(subscriptionEndPoint, dataDeliveryFormat, dataSourceType, frequencyInMinutes, startTime,
-                    basicAuthUsername, basicAuthPassword, maxPostSize);
-                subscriptionId = subscription.ID;
-                Console.WriteLine("Subscription created with Id " + subscriptionId + " and datasource type " + subscription.dataSourceType);
+                createdSubscription = await implSubscription.createSubscription(endpoint, dataDeliveryFormat, dataSourceType,
+                    frequencyInMinutes, startTime, basicAuthUsername, basicAuthPassword, maxPostSize);
+                subscriptionId = createdSubscription.ID;
+                Console.WriteLine("Created subscription with data source type " + createdSubscription.dataSourceType);
+                
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
             }
-            return true;
+            return createdSubscription;
         }
-        private async static Task<bool> getSubscription(Session session)
+        private async static Task<Subscription> getSubscription(Session session)
         {
+            ImplSubscription implSubscription = new ImplSubscription(session);
+            Subscription subscription = null;
             try
             {
-                Subscription subscription = await session.getSubscription(subscriptionId);
+                subscription = await implSubscription.getSubscription(subscriptionId);
                 Console.WriteLine("Fetched subscription datasource " + subscription.dataSourceType);
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
             }
-            return true;
+            return subscription;
         }
-        private async static Task<bool> getAllSubscriptions(Session session)
+        private async static Task<List<Subscription>> getAllSubscriptions(Session session)
         {
+            ImplSubscription implSubscription = new ImplSubscription(session);
+            List<Subscription> subscriptions = null; 
             try
             {
-                List<Subscription> subscriptions = await session.getAllSubscriptions();
+                subscriptions = await implSubscription.getAllSubscriptions();
                 Console.WriteLine("Fetched subscription datasources " );
                 foreach(ImplSubscription.Subscription s in subscriptions)
                 {
@@ -138,35 +151,39 @@ namespace AvayaCloudClient
             {
                 Console.WriteLine(e);
             }
-            return true;
+            return subscriptions;
         }
         private async static Task<bool> deleteSubscription(Session session)
         {
+            ImplSubscription implSubscription = new ImplSubscription(session);
+            bool deleted = false;
             try
             {
-                bool deleted = await session.deleteSubscription(subscriptionId);
+                deleted = await implSubscription.deleteSubscription(subscriptionId);
                 Console.WriteLine(deleted ? "Subscription with Id "+subscriptionId+" Deletion successful" : "Subscription with Id "+subscriptionId+" Deletion Failed");
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
             }
-            return true;
+            return deleted;
         }
-        private async static Task<bool> updateSubscription(Session session)
+        private async static Task<Subscription> updateSubscription(Session session)
         {
+            ImplSubscription implSubscription = new ImplSubscription(session);
+            Subscription updatedSubscription = null;
             try
             {
-                Subscription updatedSubscription = await session.updateSubscription(subscriptionEndPoint,
-                    dataDeliveryFormat, dataSourceType, frequencyInMinutes, startTime,
-                    basicAuthUsername, basicAuthPassword, maxPostSize,subscriptionId);
+                updatedSubscription = await implSubscription.updateSubscription(endpoint, dataDeliveryFormat, dataSourceType,
+                    frequencyInMinutes, startTime, basicAuthUsername, basicAuthPassword, maxPostSize, subscriptionId);
+                
                 Console.WriteLine("Subscription updated with Id " + subscriptionId + " and datasource type " + updatedSubscription.dataSourceType);
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
             }
-            return true;
+            return updatedSubscription;
         }
         private static void getInputForAgentOperations()
         {

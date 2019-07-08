@@ -8,13 +8,18 @@ using System.Threading.Tasks;
 using AvayaCloudClient;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using static AvayaCloudClient.Session;
 
 namespace AvayaCloudClient
 {
     public class ImplSubscription
     {
         private Session session;
-        private static string Version = "1.0";
+        private readonly static string VERSION = "1.0";
+        private readonly static string SUBSCRIPTIONPATH = "/spokenAbc/subscriptions/v" + VERSION + "/subscriptions";
+        private readonly static string SLASH = "/";
+        private readonly static string SUBACCOUNTKEY = "subAccountAppId=";
+        private readonly static string QUESTIONMARK = "?";
 
         public ImplSubscription(Session session)
         {
@@ -136,11 +141,10 @@ namespace AvayaCloudClient
         public async Task<Subscription> createSubscription(string endPoint, string dataDeliveryFormat, string dataSourceType, string frequencyInMinutes, string startTime, 
             string basicAuthUsername, string basicAuthPassword, int maxPostSize)
         {
-            await session.creatLoginRequest();
-            List<string> questions = await session.createQuestionRequest();
-            await session.createQuestionAnswerRequest(questions);
-            string subAccountId = await session.getSubAccountAppId();
-            Subscription createdSubscription =   await sendCreateSubscriptionRequest(subAccountId, endPoint, dataSourceType, dataDeliveryFormat, frequencyInMinutes,
+            await session.login();
+            SubAccount subAccount = await session.getSubAccount();
+            string subAccountAppId = subAccount.AppID;
+            Subscription createdSubscription =   await sendCreateSubscriptionRequest(subAccountAppId, endPoint, dataSourceType, dataDeliveryFormat, frequencyInMinutes,
                 basicAuthUsername, basicAuthPassword, maxPostSize, startTime);
             return createdSubscription;
         }
@@ -150,18 +154,17 @@ namespace AvayaCloudClient
         {
             Subscription subscription = new Subscription(dataSourceType, startTime, frequencyInMinutes, maxPostSize, dataDeliveryFormat,
                 endpoint, basicAuthUsername, basicAuthPassword, "DEFAULT", subAccountAppId);
-            HttpResponseMessage httpResponseMessage = await Session.client.PostAsJsonAsync("/spokenAbc/subscriptions/v"+Version+"/subscriptions?subAccountAppId=" + subscription.subAccountAppId, subscription);
+            HttpResponseMessage httpResponseMessage = await Session.client.PostAsJsonAsync(SUBSCRIPTIONPATH+ QUESTIONMARK + SUBACCOUNTKEY + subscription.subAccountAppId, subscription);
             var responseJson = await httpResponseMessage.Content.ReadAsStringAsync();
             Subscription createdSubscription = JObject.Parse(responseJson).ToObject<Subscription>();
             return createdSubscription;
         }
         public async Task<Subscription> getSubscription(string subscriptionId)
         {
-            await session.creatLoginRequest();
-            List<string> questions = await session.createQuestionRequest();
-            await session.createQuestionAnswerRequest(questions);
-            string subAccountAppId = await session.getSubAccountAppId();
-            HttpResponseMessage httpResponseMessage = await Session.client.GetAsync("/spokenAbc/subscriptions/v"+Version+"/subscriptions/"+ subscriptionId+"?subAccountAppId=" + subAccountAppId);
+            await session.login();
+            SubAccount subAccount = await session.getSubAccount();
+            string subAccountAppId = subAccount.AppID;
+            HttpResponseMessage httpResponseMessage = await Session.client.GetAsync(SUBSCRIPTIONPATH + SLASH + subscriptionId+ QUESTIONMARK + SUBACCOUNTKEY + subAccountAppId);
             var responseJson = await httpResponseMessage.Content.ReadAsStringAsync();
             Subscription createdSubscription = JObject.Parse(responseJson).ToObject<Subscription>();
             return createdSubscription;
@@ -169,11 +172,10 @@ namespace AvayaCloudClient
 
         public async Task<List<Subscription>> getAllSubscriptions()
         {
-            await session.creatLoginRequest();
-            List<string> questions = await session.createQuestionRequest();
-            await session.createQuestionAnswerRequest(questions);
-            string subAccountAppId = await session.getSubAccountAppId();
-            HttpResponseMessage httpResponseMessage = await Session.client.GetAsync("/spokenAbc/subscriptions/v" + Version + "/subscriptions/?subAccountAppId=" + subAccountAppId);
+            await session.login();
+            SubAccount subAccount = await session.getSubAccount();
+            string subAccountAppId = subAccount.AppID;
+            HttpResponseMessage httpResponseMessage = await Session.client.GetAsync(SUBSCRIPTIONPATH + QUESTIONMARK + SUBACCOUNTKEY + subAccountAppId);
             var responseJson = await httpResponseMessage.Content.ReadAsStringAsync();
             List<Subscription> subscriptions = JsonConvert.DeserializeObject<IEnumerable<Subscription>>(responseJson).ToList();
             return subscriptions;
@@ -181,10 +183,9 @@ namespace AvayaCloudClient
         public async Task<Subscription> updateSubscription(string endPoint, string dataDeliveryFormat, string dataSourceType, string frequencyInMinutes, string startTime,
             string basicAuthUsername, string basicAuthPassword, int maxPostSize, string subscriptionId)
         {
-            await session.creatLoginRequest();
-            List<string> questions = await session.createQuestionRequest();
-            await session.createQuestionAnswerRequest(questions);
-            string subAccountAppId = await session.getSubAccountAppId();
+            await session.login();
+            SubAccount subAccount = await session.getSubAccount();
+            string subAccountAppId = subAccount.AppID;
             Subscription updateSubscription = await sendUpdateSubscriptionRequest(subAccountAppId, endPoint, dataSourceType, dataDeliveryFormat, frequencyInMinutes,
                 basicAuthUsername, basicAuthPassword, maxPostSize, startTime, subscriptionId);
             return updateSubscription;
@@ -195,18 +196,17 @@ namespace AvayaCloudClient
         {
             Subscription updatesubscription = new Subscription(dataSourceType, startTime, frequencyInMinutes, maxPostSize, dataDeliveryFormat,
                 endpoint, basicAuthUsername, basicAuthPassword, "DEFAULT", subAccountAppId);
-            HttpResponseMessage httpResponseMessage = await Session.client.PutAsJsonAsync("/spokenAbc/subscriptions/v" + Version + "/subscriptions/" + subscriptionId + "?subAccountAppId=" + subAccountAppId, updatesubscription);
+            HttpResponseMessage httpResponseMessage = await Session.client.PutAsJsonAsync(SUBSCRIPTIONPATH + SLASH + subscriptionId + QUESTIONMARK + SUBACCOUNTKEY + subAccountAppId, updatesubscription);
             var responseJson = await httpResponseMessage.Content.ReadAsStringAsync();
             Subscription createdSubscription = JObject.Parse(responseJson).ToObject<Subscription>();
             return createdSubscription;
         }
         public async Task<bool> deleteSubscription(string subscriptionId)
         {
-            await session.creatLoginRequest();
-            List<string> questions = await session.createQuestionRequest();
-            await session.createQuestionAnswerRequest(questions);
-            string subAccountAppId = await session.getSubAccountAppId();
-            HttpResponseMessage httpResponseMessage = await Session.client.DeleteAsync("/spokenAbc/subscriptions/v" + Version + "/subscriptions/" + subscriptionId + "?subAccountAppId=" + subAccountAppId);
+            await session.login();
+            SubAccount subAccount = await session.getSubAccount();
+            string subAccountAppId = subAccount.AppID;
+            HttpResponseMessage httpResponseMessage = await Session.client.DeleteAsync(SUBSCRIPTIONPATH + SLASH + subscriptionId + QUESTIONMARK + SUBACCOUNTKEY + subAccountAppId);
             var responseJson = await httpResponseMessage.Content.ReadAsStringAsync();
             if (httpResponseMessage.StatusCode.Equals(HttpStatusCode.OK))
             {

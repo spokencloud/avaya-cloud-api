@@ -38,7 +38,7 @@ namespace AvayaCloudClient
             public QApair[] questionAnswerPairs;
 
         }
-        private class SubAccount
+        public class SubAccount
         {
             public int ID;
             public string Name;
@@ -65,7 +65,14 @@ namespace AvayaCloudClient
             client = new HttpClient(handler);
             client.BaseAddress = new Uri(endpoint);
         }
-        public async Task creatLoginRequest()
+        public async Task login()
+        {
+            await createLoginRequest();
+            List<string> questions =  await createQuestionRequest();
+            await createQuestionAnswerRequest(questions);
+
+        }
+        private async Task createLoginRequest()
         {
 
             client.DefaultRequestHeaders.Accept.Clear();
@@ -84,11 +91,10 @@ namespace AvayaCloudClient
 
 
         }
-        public async Task<List<string>> createQuestionRequest()
+        private async Task<List<string>> createQuestionRequest()
         {
             HttpResponseMessage httpResponseMessage = await client.GetAsync("/question/answer");
             var responseJson = await httpResponseMessage.Content.ReadAsStringAsync();
-            //Console.Write("Agent security questions\n" + "----------------------\n" + responseJson + "\n-------------------\n");
             List<string> questions = JObject.Parse(responseJson).SelectToken("questions").ToObject<List<string>>();
             return questions;
         }
@@ -98,7 +104,7 @@ namespace AvayaCloudClient
             string answer = words[words.Length - 1].Trim('?');
             return answer;
         }
-        public async Task createQuestionAnswerRequest(List<string> questions)
+        private async Task createQuestionAnswerRequest(List<string> questions)
         {
             string[] answers = new string[] { getAnswer(questions[0]), getAnswer(questions[1]), getAnswer(questions[2]) };
             QArequest qarequest = new QArequest();
@@ -110,88 +116,15 @@ namespace AvayaCloudClient
             qarequest.questionAnswerPairs = qapairs; 
             HttpResponseMessage httpResponseMessage = await client.PostAsJsonAsync("/user/question/answer", qarequest);
             var responseJson = await httpResponseMessage.Content.ReadAsStringAsync();
-            //Console.Write("Security questions answered correctly? " +responseJson + "\n");
         }
-        public async Task<int> getSubAccountId()
+        public async Task<SubAccount> getSubAccount()
         {
             HttpResponseMessage httpResponseMessage = await client.GetAsync("/user");
             var responseJson = await httpResponseMessage.Content.ReadAsStringAsync();
-            //Console.Write(responseJson);
             List<SubAccount> subAccounts = JObject.Parse(responseJson).SelectToken("accessibleClients").ToObject<List<SubAccount>>();
             var sortedSubAccount = subAccounts.OrderBy(s => s.ID).ToList();
             Console.WriteLine("Selected SubAccount " + sortedSubAccount[0].Name);
-            return sortedSubAccount[0].ID;
-        }
-        public async Task<string> getSubAccountAppId()
-        {
-            HttpResponseMessage httpResponseMessage = await client.GetAsync("/user");
-            var responseJson = await httpResponseMessage.Content.ReadAsStringAsync();
-            //Console.Write(responseJson);
-            List<SubAccount> subAccounts = JObject.Parse(responseJson).SelectToken("accessibleClients").ToObject<List<SubAccount>>();
-            var sortedSubAccount = subAccounts.OrderBy(s => s.ID).ToList();
-            Console.WriteLine("Selected SubAccount " + sortedSubAccount[0].Name);
-            return sortedSubAccount[0].AppID;
-        }
-
-
-        public async Task<Agent> createAgent(string agent_username, string agent_password)
-        {
-            ImplAgent implAgent = new ImplAgent(this);
-            Agent agent = await implAgent.createAgent(agent_username, agent_password);
-            return agent;
-
-        }
-        public async Task<Agent> getAgent(string agent_username)
-        {
-            ImplAgent implAgent = new ImplAgent(this);
-            Agent agent = await implAgent.getAgent(agent_username);
-            return agent;
-        }
-        public async Task deleteAgent(string agent_username)
-        {
-            ImplAgent implAgent = new ImplAgent(this);
-            await implAgent.deleteAgent(agent_username);
-        }
-        public async Task<Subscription> createSubscription(string endPoint, string dataDeliveryFormat, 
-            string dataSourceType, string frequencyInMinutes, string startTime,
-            string basicAuthUsername, string basicAuthPassword, int maxPostSize)
-            
-        {
-            ImplSubscription implSubscription = new ImplSubscription(this);
-            Subscription createdSubscription = await implSubscription.createSubscription(endPoint, dataDeliveryFormat, dataSourceType,
-                frequencyInMinutes, startTime, basicAuthUsername, basicAuthPassword, maxPostSize);
-            return createdSubscription;
-        }
-        public async Task<Subscription> getSubscription(string subscriptionId)
-
-        {
-            ImplSubscription implSubscription = new ImplSubscription(this);
-            Subscription subscription = await implSubscription.getSubscription (subscriptionId);
-            return subscription;
-        }
-        public async Task<List<Subscription>> getAllSubscriptions()
-
-        {
-            ImplSubscription implSubscription = new ImplSubscription(this);
-            List<Subscription> subscriptions = await implSubscription.getAllSubscriptions();
-            return subscriptions;
-        }
-        public async Task<bool> deleteSubscription(string subscriptionId)
-
-        {
-            ImplSubscription implSubscription = new ImplSubscription(this);
-            bool deleted = await implSubscription.deleteSubscription(subscriptionId);
-            return deleted;
-        }
-        public async Task<Subscription> updateSubscription(string endPoint, string dataDeliveryFormat,
-            string dataSourceType, string frequencyInMinutes, string startTime,
-            string basicAuthUsername, string basicAuthPassword, int maxPostSize,string subscriptionId)
-
-        {
-            ImplSubscription implSubscription = new ImplSubscription(this);
-            Subscription updatedSubscription = await implSubscription.updateSubscription(endPoint, dataDeliveryFormat, dataSourceType,
-                frequencyInMinutes, startTime, basicAuthUsername, basicAuthPassword, maxPostSize,subscriptionId);
-            return updatedSubscription;
+            return sortedSubAccount[0];
         }
     }
 }
