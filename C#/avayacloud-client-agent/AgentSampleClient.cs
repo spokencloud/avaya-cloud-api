@@ -14,11 +14,11 @@ namespace AvayaCloudClient
             public string endpoint { get; set; }
             [Option('u', "abcusername", Required = true, HelpText = "User for Avaya cloud.")]
             public string abcusername { get; set; }
-            [Option('p', "abcpassword", Required = false, HelpText = "Password for Avaya cloud.")]
+            [Option('p', "abcpassword", Required = true, HelpText = "Password for Avaya cloud.")]
             public string abcpassword { get; set; }
-            [Option('a', "agent_username", Required = false, HelpText = "Agent name.")]
+            [Option('a', "agent_username", Required = true, HelpText = "Agent name.")]
             public string agent_username { get; set; }
-            [Option('b', "agent_password", Required = false, HelpText = "Agent password .")]
+            [Option('b', "agent_password", Required = true, HelpText = "Agent password .")]
             public string agent_password { get; set; }
         }
                 
