@@ -139,11 +139,11 @@ namespace AvayaCloudClient
             }
         }
         public async Task<Subscription> createSubscription(string endPoint, string dataDeliveryFormat, string dataSourceType, string frequencyInMinutes, string startTime, 
-            string basicAuthUsername, string basicAuthPassword, int maxPostSize)
+            string basicAuthUsername, string basicAuthPassword, int maxPostSize, string subAccountAppId)
         {
             await session.login();
-            SubAccount subAccount = await session.getSubAccount();
-            string subAccountAppId = subAccount.AppID;
+            //check if subaccountAppId is  provided else search for one assigned to user.
+            subAccountAppId = await chooseSubAccountAppId(subAccountAppId);
             Subscription createdSubscription =   await sendCreateSubscriptionRequest(subAccountAppId, endPoint, dataSourceType, dataDeliveryFormat, frequencyInMinutes,
                 basicAuthUsername, basicAuthPassword, maxPostSize, startTime);
             return createdSubscription;
@@ -159,33 +159,33 @@ namespace AvayaCloudClient
             Subscription createdSubscription = JObject.Parse(responseJson).ToObject<Subscription>();
             return createdSubscription;
         }
-        public async Task<Subscription> getSubscription(string subscriptionId)
+        public async Task<Subscription> getSubscription(string subscriptionId, string subAccountAppId)
         {
             await session.login();
-            SubAccount subAccount = await session.getSubAccount();
-            string subAccountAppId = subAccount.AppID;
+            //If subaccountAppId is not provided then search for one assigned.
+            subAccountAppId = await chooseSubAccountAppId(subAccountAppId);
             HttpResponseMessage httpResponseMessage = await Session.client.GetAsync(SUBSCRIPTIONPATH + SLASH + subscriptionId+ QUESTIONMARK + SUBACCOUNTKEY + subAccountAppId);
             var responseJson = await httpResponseMessage.Content.ReadAsStringAsync();
             Subscription createdSubscription = JObject.Parse(responseJson).ToObject<Subscription>();
             return createdSubscription;
         }
 
-        public async Task<List<Subscription>> getAllSubscriptions()
+        public async Task<List<Subscription>> getAllSubscriptions(string subAccountAppId)
         {
             await session.login();
-            SubAccount subAccount = await session.getSubAccount();
-            string subAccountAppId = subAccount.AppID;
+            //check If subaccountAppId is not provided else search for one assigned to user.
+            subAccountAppId = await chooseSubAccountAppId(subAccountAppId);
             HttpResponseMessage httpResponseMessage = await Session.client.GetAsync(SUBSCRIPTIONPATH + QUESTIONMARK + SUBACCOUNTKEY + subAccountAppId);
             var responseJson = await httpResponseMessage.Content.ReadAsStringAsync();
             List<Subscription> subscriptions = JsonConvert.DeserializeObject<IEnumerable<Subscription>>(responseJson).ToList();
             return subscriptions;
         }
         public async Task<Subscription> updateSubscription(string endPoint, string dataDeliveryFormat, string dataSourceType, string frequencyInMinutes, string startTime,
-            string basicAuthUsername, string basicAuthPassword, int maxPostSize, string subscriptionId)
+            string basicAuthUsername, string basicAuthPassword, int maxPostSize, string subscriptionId, string subAccountAppId)
         {
             await session.login();
-            SubAccount subAccount = await session.getSubAccount();
-            string subAccountAppId = subAccount.AppID;
+            //check If subaccountAppId is not provided then search for one assigned to user.
+            subAccountAppId = await chooseSubAccountAppId(subAccountAppId);
             Subscription updateSubscription = await sendUpdateSubscriptionRequest(subAccountAppId, endPoint, dataSourceType, dataDeliveryFormat, frequencyInMinutes,
                 basicAuthUsername, basicAuthPassword, maxPostSize, startTime, subscriptionId);
             return updateSubscription;
@@ -201,11 +201,11 @@ namespace AvayaCloudClient
             Subscription createdSubscription = JObject.Parse(responseJson).ToObject<Subscription>();
             return createdSubscription;
         }
-        public async Task<bool> deleteSubscription(string subscriptionId)
+        public async Task<bool> deleteSubscription(string subscriptionId, string subAccountAppId)
         {
             await session.login();
-            SubAccount subAccount = await session.getSubAccount();
-            string subAccountAppId = subAccount.AppID;
+            //check If subaccountAppId is not provided else search for one assigned to user.
+            subAccountAppId = await chooseSubAccountAppId(subAccountAppId);
             HttpResponseMessage httpResponseMessage = await Session.client.DeleteAsync(SUBSCRIPTIONPATH + SLASH + subscriptionId + QUESTIONMARK + SUBACCOUNTKEY + subAccountAppId);
             var responseJson = await httpResponseMessage.Content.ReadAsStringAsync();
             if (httpResponseMessage.StatusCode.Equals(HttpStatusCode.OK))
@@ -213,6 +213,16 @@ namespace AvayaCloudClient
                 return true;
             }
             return false;
+        }
+        private async Task<string> chooseSubAccountAppId(string argSubAccountAppId)
+        {
+            if (null == argSubAccountAppId)
+            {
+                SubAccount subAccount = await session.getSubAccount();
+                string subAccountAppId = subAccount.AppID;
+                return subAccountAppId;
+            }
+            return argSubAccountAppId;
         }
     }
 }
