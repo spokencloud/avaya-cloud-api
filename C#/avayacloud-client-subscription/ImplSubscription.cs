@@ -142,12 +142,8 @@ namespace AvayaCloudClient
             string basicAuthUsername, string basicAuthPassword, int maxPostSize, string subAccountAppId)
         {
             await session.login();
-            //If subaccountAppId is not provided then search for one assigned.
-            if (null == subAccountAppId)
-            {
-                SubAccount subAccount = await session.getSubAccount();
-                subAccountAppId = subAccount.AppID;
-            }
+            //check if subaccountAppId is  provided else search for one assigned to user.
+            subAccountAppId = await chooseSubAccountAppId(subAccountAppId);
             Subscription createdSubscription =   await sendCreateSubscriptionRequest(subAccountAppId, endPoint, dataSourceType, dataDeliveryFormat, frequencyInMinutes,
                 basicAuthUsername, basicAuthPassword, maxPostSize, startTime);
             return createdSubscription;
@@ -167,11 +163,7 @@ namespace AvayaCloudClient
         {
             await session.login();
             //If subaccountAppId is not provided then search for one assigned.
-            if (null == subAccountAppId)
-            {
-                SubAccount subAccount = await session.getSubAccount();
-                subAccountAppId = subAccount.AppID;
-            }
+            subAccountAppId = await chooseSubAccountAppId(subAccountAppId);
             HttpResponseMessage httpResponseMessage = await Session.client.GetAsync(SUBSCRIPTIONPATH + SLASH + subscriptionId+ QUESTIONMARK + SUBACCOUNTKEY + subAccountAppId);
             var responseJson = await httpResponseMessage.Content.ReadAsStringAsync();
             Subscription createdSubscription = JObject.Parse(responseJson).ToObject<Subscription>();
@@ -181,12 +173,8 @@ namespace AvayaCloudClient
         public async Task<List<Subscription>> getAllSubscriptions(string subAccountAppId)
         {
             await session.login();
-            //If subaccountAppId is not provided then search for one assigned.
-            if (null == subAccountAppId)
-            {
-                SubAccount subAccount = await session.getSubAccount();
-                subAccountAppId = subAccount.AppID;
-            }
+            //check If subaccountAppId is not provided else search for one assigned to user.
+            subAccountAppId = await chooseSubAccountAppId(subAccountAppId);
             HttpResponseMessage httpResponseMessage = await Session.client.GetAsync(SUBSCRIPTIONPATH + QUESTIONMARK + SUBACCOUNTKEY + subAccountAppId);
             var responseJson = await httpResponseMessage.Content.ReadAsStringAsync();
             List<Subscription> subscriptions = JsonConvert.DeserializeObject<IEnumerable<Subscription>>(responseJson).ToList();
@@ -196,12 +184,8 @@ namespace AvayaCloudClient
             string basicAuthUsername, string basicAuthPassword, int maxPostSize, string subscriptionId, string subAccountAppId)
         {
             await session.login();
-            //If subaccountAppId is not provided then search for one assigned.
-            if (null == subAccountAppId)
-            {
-                SubAccount subAccount = await session.getSubAccount();
-                subAccountAppId = subAccount.AppID;
-            }
+            //check If subaccountAppId is not provided then search for one assigned to user.
+            subAccountAppId = await chooseSubAccountAppId(subAccountAppId);
             Subscription updateSubscription = await sendUpdateSubscriptionRequest(subAccountAppId, endPoint, dataSourceType, dataDeliveryFormat, frequencyInMinutes,
                 basicAuthUsername, basicAuthPassword, maxPostSize, startTime, subscriptionId);
             return updateSubscription;
@@ -220,12 +204,8 @@ namespace AvayaCloudClient
         public async Task<bool> deleteSubscription(string subscriptionId, string subAccountAppId)
         {
             await session.login();
-            //If subaccountAppId is not provided then search for one assigned.
-            if (null == subAccountAppId)
-            {
-                SubAccount subAccount = await session.getSubAccount();
-                subAccountAppId = subAccount.AppID;
-            }
+            //check If subaccountAppId is not provided else search for one assigned to user.
+            subAccountAppId = await chooseSubAccountAppId(subAccountAppId);
             HttpResponseMessage httpResponseMessage = await Session.client.DeleteAsync(SUBSCRIPTIONPATH + SLASH + subscriptionId + QUESTIONMARK + SUBACCOUNTKEY + subAccountAppId);
             var responseJson = await httpResponseMessage.Content.ReadAsStringAsync();
             if (httpResponseMessage.StatusCode.Equals(HttpStatusCode.OK))
@@ -233,6 +213,16 @@ namespace AvayaCloudClient
                 return true;
             }
             return false;
+        }
+        private async Task<string> chooseSubAccountAppId(string argSubAccountAppId)
+        {
+            if (null == argSubAccountAppId)
+            {
+                SubAccount subAccount = await session.getSubAccount();
+                string subAccountAppId = subAccount.AppID;
+                return subAccountAppId;
+            }
+            return argSubAccountAppId;
         }
     }
 }
