@@ -127,7 +127,8 @@ namespace AvayaCloudClient
             int length = agentLoginId.Length;
             return agentLoginId.Substring(length - 6, 6);
         }
-        public async Task<Agent> createAgent(string agent_username, string agent_password)
+        public async Task<Agent> createAgent(string agent_username, string agent_password, string firstName,
+          string lastName, string startDate, string endDate)
         {
             await session.login();
             SubAccount subAccount = await session.getSubAccount();
@@ -135,7 +136,11 @@ namespace AvayaCloudClient
             int agentStationGroupId = await this.getAgentStationGroupId(subAccountId);
             string agentLoginId = await this.generateExtension(subAccountId, "AGENT");
             List<int> skillIds = await this.getSkillIds(subAccountId);
-            await sendCreateAgentRequest(subAccountId, agent_username, agent_password, agentStationGroupId, agentLoginId, skillIds);
+            if(null == startDate)
+            {
+                startDate = DateTime.Now.ToString("yyyy-MM-dd");
+            }
+            await sendCreateAgentRequest(subAccountId, agent_username, agent_password,firstName, lastName, startDate, endDate, agentStationGroupId, agentLoginId, skillIds);
             Console.WriteLine("Waiting for Agent creation to complete");
             bool agentCreated = await waitForAgentCreation(agent_username);
             Console.WriteLine(agentCreated ? "Agent creation " + agent_username + " successfull" : "Agent creation failed");
@@ -174,14 +179,14 @@ namespace AvayaCloudClient
             List<int> skillIds = skills.Select(s => s.ID).ToList();
             return skillIds;
         }
-        private async Task sendCreateAgentRequest(int subAccountId, string agent_username, string agent_password,
-            int agentStationGroupId,
+        private async Task sendCreateAgentRequest(int subAccountId, string agent_username, string agent_password, string firstName,
+          string lastName, string startDate, string endDate, int agentStationGroupId,
             string agentLoginId, List<int> skillIds)
         {
             string securityCode = generateSecurityCode(agentLoginId);
             string avayaPassword = generateAvayaPassword(agentLoginId);
-            Agent agent = new Agent(agent_username, "generated", "agent", agent_password, avayaPassword, agentLoginId, subAccountId,
-                agentStationGroupId, securityCode, "2019-06-21", "2038-01-01", skillIds, 0);
+            Agent agent = new Agent(agent_username, firstName, lastName, agent_password, avayaPassword, agentLoginId, subAccountId,
+                agentStationGroupId, securityCode, startDate, endDate, skillIds, 0);
             HttpResponseMessage httpResponseMessage = await Session.client.PostAsJsonAsync("/spokenAbc/jobs/agents", agent);
             var responseJson = await httpResponseMessage.Content.ReadAsStringAsync();
         }
@@ -211,7 +216,7 @@ namespace AvayaCloudClient
         private async Task sendCreateStationRequest(int agentStationGroupId, int subAccountId, string stationExtension, string agent_username)
         {
             string extensionSecurityCode =generateSecurityCode(stationExtension);
-            Station station = new Station(agentStationGroupId, subAccountId, stationExtension, "generated_station", extensionSecurityCode, agent_username);
+            Station station = new Station(agentStationGroupId, subAccountId, stationExtension, agent_username+" station", extensionSecurityCode, agent_username);
             HttpResponseMessage httpResponseMessage = await Session.client.PostAsJsonAsync("/spokenAbc/jobs/stations", station);
             var responseJson = await httpResponseMessage.Content.ReadAsStringAsync();
         }

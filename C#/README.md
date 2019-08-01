@@ -21,7 +21,9 @@ cd \<path to avayacloud-client-agent.proj\> <br />
 
 ## Run the sample client for the entity
 ### For Agent
-avayacloud-client-agent.exe --endpoint \<Avayacloud endpoint\> --abcusername \<Avaya Cloud username\> --abcpassword \<Avaya Cloud password\> --agent_username \<Agent username\> --agent_password \<Agent password\>
+avayacloud-client-agent.exe --endpoint \<Avayacloud endpoint\> --abcusername \<Avaya Cloud username\> --abcpassword \<Avaya Cloud password\> --agent_username \<Agent username\> --agent_password \<Agent password\>  --firstname \<First Name of Agent\> --lastname \<Last Name of Agent\> --startdate \<Start Date for Agent\> --enddate \<End Date  for Agent\>
+#### Notes
+First Name, Last Name, Start Date, End Date are optional arguments.
 ### For Subscription
 avayacloud-client-subscription.exe --endpoint \<Avayacloud endpoint\> --abcusername \<Avaya Cloud username\> --abcpassword \<Avaya Cloud password\> --subscriptionEndPoint \<endpoint\> --dataDeliveryFormat \<delivery format(CSV/JSON)\> --dataSourceType \<ECH/HAGENT/HAGLOG..\> --startTime \<Subscription start time\> --frequencyInMinutes \<frequency of data post in mins\> --subAccountAppId  \<SubAccountAppId for which the subscription data to be fecthed\>
 #### Notes
