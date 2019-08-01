@@ -27,6 +27,8 @@ First Name, Last Name, Start Date, End Date are optional arguments.
 ### For Subscription
 avayacloud-client-subscription.exe --endpoint \<Avayacloud endpoint\> --abcusername \<Avaya Cloud username\> --abcpassword \<Avaya Cloud password\> --subscriptionEndPoint \<endpoint\> --dataDeliveryFormat \<delivery format(CSV/JSON)\> --dataSourceType \<ECH/HAGENT/HAGLOG..\> --startTime \<Subscription start time\> --frequencyInMinutes \<frequency of data post in mins\> --subAccountAppId  \<SubAccountAppId for which the subscription data to be fecthed\>
 #### Notes
-subAccountAppId is an optional argument. It can be used to pass a specific subAccountAppId or 'ALL' if user is a sysadmin to get data of all subaccounts. If nothing is passed one of the subaccounts assigned to the user will be used. 
-Avaya cloud endpoint URL e.g https://integration.bpo.avaya.com/, https://login.bpo.avaya.com/login
+subAccountAppId is an optional argument. It can be used to pass a specific subAccountAppId or 'ALL' if user is a sysadmin to get data of all subaccounts. If nothing is passed one of the subaccounts assigned to the user will be used. <br />
+<br />
+## URLs
+Avaya cloud endpoint URL e.g https://integration.bpo.avaya.com/, https://login.bpo.avaya.com/
 
