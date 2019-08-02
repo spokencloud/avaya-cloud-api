@@ -1,4 +1,4 @@
-# The C# API for the Avaya Public Cloud
+# The C# API for Avaya Public Cloud
 
 ## Prerequisites 
  1.Net Framework 4.7.2+ (Windows Environment) <br />
@@ -12,14 +12,14 @@
 ## Build the whole solution 
 using below command from cmd (This will create executables for each of the entities in respective folders. sln file in under avayacloud-client-common folder)
 cd \<path to avayacloud-client.sln\> <br />
-<Path to msbuild.exe> avayacloud-client.sln /t:Clean,Build /p:Configuration=Release
+\<Path to msbuild.exe\> avayacloud-client.sln /t:Clean,Build /p:Configuration=Release
 
 ## Build the specific project 
 Using below commands from cmd (This will create executables for specifc entity.)
 cd \<path to avayacloud-client-agent.proj\> <br />
-<Path to msbuild.exe> avayacloud-client-agent.proj /t:Clean,Build /p:Configuration=Release
+\<Path to msbuild.exe\> avayacloud-client-agent.proj /t:Clean,Build /p:Configuration=Release
 
-## Run the sample client for the entity
+## Run the sample client for required entity
 ### For Agent
 avayacloud-client-agent.exe --endpoint \<Avayacloud endpoint\> --abcusername \<Avaya Cloud username\> --abcpassword \<Avaya Cloud password\> --agent_username \<Agent username\> --agent_password \<Agent password\>  --firstname \<First Name of Agent\> --lastname \<Last Name of Agent\> --startdate \<Start Date for Agent\> --enddate \<End Date  for Agent\>
 #### Notes
