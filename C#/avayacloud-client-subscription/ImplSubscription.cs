@@ -138,6 +138,26 @@ namespace AvayaCloudClient
                 this.subAccountAppId = subAccountAppId;
             }
         }
+        /// <summary>
+        /// Public API to create a subscription 
+        /// </summary>
+        /// <param name="endPoint">The HTTP/HTTPS endpoint where data will be sent</param>
+        /// <param name="dataDeliveryFormat"> Format for encoding the data.  Valid values are "CSV" and "JSON". If unspecified, the format
+        /// is CSV</param>
+        /// <param name="dataSourceType">The name of the data source for the subscription. Valid values are:
+        ///  ECH, HAGLOG, HAGENT, RT_AGENT_STATE, RT_DID_STATE, RT_SKILL_STATE, RT_VDN_STATE</param>
+        /// <param name="frequencyInMinutes">The frequency of how often data is sent. If the value is zero (default) data is sent as
+        /// quickly as possible.  Other values (ex: 10-mintues) try to batch data for up to Frequency units.</param>
+        /// <param name="startTime"> The start time of the subscription. When created, the data will be sent starting from
+        /// StartTime.</param>
+        /// <param name="basicAuthUsername">If set, the producer will use the indicated BasicAuth username and password to connect to the
+        /// endpoint. BasicAuth will only be used if the protocol is https.</param>
+        /// <param name="basicAuthPassword"></param>
+        /// <param name="maxPostSize">The maximum size (in bytes) of a POST request that the endpoint can accept. The producer will
+        /// always flush before exceeding this number of bytes. The default (0) is unlimited.</param>
+        /// <param name="subAccountAppId">SubAccountAppId for which the subscription data is needed. If login user is sysadmin, then it can fetch data for all 
+        /// subaccount also with subaccountappid as 'ALL'</param>
+        /// <returns>Created Subscription object</returns>
         public async Task<Subscription> createSubscription(string endPoint, string dataDeliveryFormat, string dataSourceType, string frequencyInMinutes, string startTime, 
             string basicAuthUsername, string basicAuthPassword, int maxPostSize, string subAccountAppId)
         {
@@ -159,6 +179,12 @@ namespace AvayaCloudClient
             Subscription createdSubscription = JObject.Parse(responseJson).ToObject<Subscription>();
             return createdSubscription;
         }
+        /// <summary>
+        /// Public API to fetch a subscription
+        /// </summary>
+        /// <param name="subscriptionId">Id of the subscription which was created</param>
+        /// <param name="subAccountAppId">SubAccountAppId of the subscription which was created</param>
+        /// <returns>Subscription object for the given Id</returns>
         public async Task<Subscription> getSubscription(string subscriptionId, string subAccountAppId)
         {
             await session.login();
@@ -169,7 +195,11 @@ namespace AvayaCloudClient
             Subscription createdSubscription = JObject.Parse(responseJson).ToObject<Subscription>();
             return createdSubscription;
         }
-
+        /// <summary>
+        /// Public API to fetch all the subscriptions
+        /// </summary>
+        /// <param name="subAccountAppId">SubAccountAppId of the subscriptions. All the subscriptions for the subaccount will be returned </param>
+        /// <returns>All subscriptions for the given subaccount</returns>
         public async Task<List<Subscription>> getAllSubscriptions(string subAccountAppId)
         {
             await session.login();
@@ -180,6 +210,28 @@ namespace AvayaCloudClient
             List<Subscription> subscriptions = JsonConvert.DeserializeObject<IEnumerable<Subscription>>(responseJson).ToList();
             return subscriptions;
         }
+        /// <summary>
+        /// Public API for updating a subscription.
+        /// </summary>
+        /// <param name="endPoint">The HTTP/HTTPS endpoint where data will be sent</param>
+        /// <param name="dataDeliveryFormat"> Format for encoding the data.  Valid values are "CSV" and "JSON". If unspecified, the format
+        /// is CSV</param>
+        /// <param name="dataSourceType">The name of the data source for the subscription. Valid values are:
+        ///  ECH, HAGLOG, HAGENT, RT_AGENT_STATE, RT_DID_STATE, RT_SKILL_STATE, RT_VDN_STATE</param>
+        /// <param name="frequencyInMinutes">The frequency of how often data is sent. If the value is zero (default) data is sent as
+        /// quickly as possible.  Other values (ex: 10-mintues) try to batch data for up to Frequency units.</param>
+        /// <param name="startTime"> The start time of the subscription. When created, the data will be sent starting from
+        /// StartTime.</param>
+        /// <param name="basicAuthUsername">If set, the producer will use the indicated BasicAuth username and password to connect to the
+        /// endpoint. BasicAuth will only be used if the protocol is https.</param>
+        /// <param name="basicAuthPassword"></param>
+        /// <param name="maxPostSize">The maximum size (in bytes) of a POST request that the endpoint can accept. The producer will
+        /// always flush before exceeding this number of bytes. The default (0) is unlimited.</param>
+        /// <param name="subscriptionId">Id of the subscription which has to be updated. </param>
+        /// <param name="subAccountAppId">SubAccountAppId for which the subscription data is needed. If login user is sysadmin, then it can fetch data for all 
+        /// subaccount also with subaccountappid as 'ALL'</param>
+
+        /// <returns>Updated Subscription Object</returns>
         public async Task<Subscription> updateSubscription(string endPoint, string dataDeliveryFormat, string dataSourceType, string frequencyInMinutes, string startTime,
             string basicAuthUsername, string basicAuthPassword, int maxPostSize, string subscriptionId, string subAccountAppId)
         {
@@ -201,6 +253,13 @@ namespace AvayaCloudClient
             Subscription createdSubscription = JObject.Parse(responseJson).ToObject<Subscription>();
             return createdSubscription;
         }
+        /// <summary>
+        /// Public API for deleting a subscription
+        /// </summary>
+        /// <param name="subscriptionId">Id of the subscription which has to be deleted.</param>
+        /// <param name="subAccountAppId">SubAccountAppId for which the subscription data is to be deleted. If login user is sysadmin, then it can delete subscription for all 
+        /// subaccount also with subaccountappid as 'ALL'</param>
+        /// <returns>Result of subscription deletion.True/False</returns>
         public async Task<bool> deleteSubscription(string subscriptionId, string subAccountAppId)
         {
             await session.login();

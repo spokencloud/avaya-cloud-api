@@ -63,6 +63,10 @@ namespace AvayaCloudClient
             client = new HttpClient(handler);
             client.BaseAddress = new Uri(endpoint);
         }
+        /// <summary>
+        /// Public API to login to Avaya One Cloud CC. This assumes answers for the security questions is the last word of the question.
+        /// </summary>
+        /// <returns></returns>
         public async Task login()
         {
             await createLoginRequest();

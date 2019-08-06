@@ -127,6 +127,16 @@ namespace AvayaCloudClient
             int length = agentLoginId.Length;
             return agentLoginId.Substring(length - 6, 6);
         }
+        /// <summary>
+        /// Public API for creating an Agent
+        /// </summary>
+        /// <param name="agent_username">User name of the Agent.This has to be unique across the system</param>
+        /// <param name="agent_password">Password of the agent.Minimum 8 characters. Must contain at least one digit. Must contain at least one special character </param>
+        /// <param name="firstName">First Name of the Agent</param>
+        /// <param name="lastName">Last Name of the Agent</param>
+        /// <param name="startDate">Start date from which the agent is to be activated in the system</param>
+        /// <param name="endDate">End date till the Agent will be activated in the system</param>
+        /// <returns>Created Agent object</returns>
         public async Task<Agent> createAgent(string agent_username, string agent_password, string firstName,
           string lastName, string startDate, string endDate)
         {
@@ -250,6 +260,11 @@ namespace AvayaCloudClient
             HttpResponseMessage httpResponseMessage = await Session.client.GetAsync("/spokenAbc/stations?clientId=" + subAccountId);
             return httpResponseMessage;
         }
+        /// <summary>
+        /// Public API for fetching an Agent
+        /// </summary>
+        /// <param name="agent_username">Username of the agent to be fetched.</param>
+        /// <returns>Fetched Agent object</returns>
         public async Task<Agent> getAgent(string agent_username)
         {
             await session.login();
@@ -297,6 +312,11 @@ namespace AvayaCloudClient
             if (createdStation != null) Console.WriteLine("Agent exist with username " + agent_username + " and station " + createdStation.stationName);
             return createdAgent;
         }
+        /// <summary>
+        /// Public API to delete an Agent
+        /// </summary>
+        /// <param name="agent_username">Username of the agent to be deleted.</param>
+        /// <returns></returns>
         public async Task deleteAgent(string agent_username)
         {
             await session.login();
