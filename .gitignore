@@ -1,11 +1,7 @@
 *.txt
 *.gz
 PARTNERS
-C#/avayacloud-client/.vs/
-C#/avayacloud-client/bin/
-C#/avayacloud-client/obj/
-C#/avayacloud-client/packages/
-C#/avayacloud-client/packages.config
+
 
 # IntelliJ
 .idea
@@ -13,17 +9,20 @@ C#/avayacloud-client/packages.config
 # Node.js
 node_modules
 package-lock.json
-C#/avayacloud-client-agent/packages.config
-C#/avayacloud-client-agent/.vs/
-C#/avayacloud-client-agent/bin/
-C#/avayacloud-client-agent/obj/
-C#/avayacloud-client-agent/packages/
-C#/avayacloud-client-common/.vs/
-C#/avayacloud-client-common/bin/
-C#/avayacloud-client-common/obj/
-C#/avayacloud-client-common/packages/
-C#/avayacloud-client-subscription/packages.config
-C#/avayacloud-client-subscription/bin/
-C#/avayacloud-client-subscription/obj/
-C#/avayacloud-client-agent/avayacloud-client-agent.csproj.user
-C#/avayacloud-client-subscription/avayacloud-client-subscription.csproj.user
+CSharp/Commands
+CSharp/avayacloud-client-agent/.vs/
+CSharp/avayacloud-client-agent/bin/
+CSharp/avayacloud-client-agent/obj/
+CSharp/avayacloud-client-agent/packages/
+CSharp/avayacloud-client-agent/packages.config
+CSharp/avayacloud-client-common/.vs/
+CSharp/avayacloud-client-common/bin/
+CSharp/avayacloud-client-common/obj/
+CSharp/avayacloud-client-common/packages/
+CSharp/avayacloud-client-subscription/bin/
+CSharp/avayacloud-client-subscription/obj/
+CSharp/avayacloud-client-agent/avayacloud-client-agent.xml
+CSharp/avayacloud-client-common/avayacloud-client-common.xml
+CSharp/avayacloud-client-subscription/avayacloud-client-subscription.xml
+*.user
+CSharp/avayacloud-client-subscription/packages.config
