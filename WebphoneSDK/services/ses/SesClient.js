@@ -41,13 +41,17 @@ const Event = {
   UNMASK: 'UNMASK',
   CALL_DELIVERED: 'CALL_DELIVERED',
   CALL_ORIGINATED: 'CALL_ORIGINATED',
+  CONFIRMED_ORIGINATED: 'CONFIRMED_ORIGINATED',
   HANG_UP: 'HANG_UP',
   TRANSFER: 'TRANSFER',
   CONSULTATION: 'CONSULTATION',
   CONFIRMED_CONSULTATION: 'CONFIRMED_CONSULTATION',
   MERGE: 'MERGE',
-  HEARTBEAT: 'HEARTBEAT'
-};
+  CONFIRMED_WARM_TRANSFER: 'CONFIRMED_WARM_TRANSFER',
+  WARM_TRANSFER_FAILED: 'WARM_TRANSFER', // Backend sends 'WARM_TRANSFER' event upon failure.
+  HEARTBEAT: 'HEARTBEAT',
+  DISCONNECT: 'DISCONNECT'
+}
 
 class SesClient {
   /**
@@ -174,12 +178,12 @@ class SesClient {
   }
 
   get isConnected () {
-    return this._stompClient.connected
+    return (this._stompClient !== null && this._stompClient.connected)
   }
 
   connect () {
     return new Promise((resolve, reject) => {
-      this._stompClient.connect(this._authHeaders, resolve, reject)
+      this._stompClient.connect(this._authHeaders, resolve, () => { this._eventHandlers[Event.DISCONNECT].onSuccess() })
     })
   }
 
@@ -199,6 +203,7 @@ class SesClient {
   disconnect () {
     return new Promise(resolve => {
       this._stompClient.disconnect(resolve)
+      this._stompClient.connected = false
       this._stompClient = null
     })
   }
@@ -220,16 +225,23 @@ class SesClient {
       onCallDeliveredError = noop,
       onCallOriginatedSuccess = noop,
       onCallOriginatedError = noop,
+      onConfirmedOriginatedSuccess = noop,
+      onConfirmedOriginatedError = noop,
       onHangUpSuccess = noop,
       onHangUpError = noop,
       onTransferSuccess = noop,
       onTransferError = noop,
+      onConfirmedWarmTransferSuccess = noop,
+      onConfirmedWarmTransferError = noop,
+      onWarmTransferFailed = noop,
+      onWarmTransferFailedError = noop,
       onConsultationSuccess = noop,
       onConsultationError = noop,
       onConfirmedConsultationSuccess = noop,
       onConfirmedConsultationError = noop,
       onMergeSuccess = noop,
-      onMergeError = noop
+      onMergeError = noop,
+      onDisconnect = noop
     } = handlers || {}
 
     Object.assign(this._eventHandlers, {
@@ -258,6 +270,16 @@ class SesClient {
         onError: onUnmaskRecordingError,
         normalize: noop
       },
+      [Event.CONFIRMED_WARM_TRANSFER]: {
+        onSuccess: onConfirmedWarmTransferSuccess,
+        onError: onConfirmedWarmTransferError,
+        normalize: noop
+      },
+      [Event.WARM_TRANSFER_FAILED]: {
+        onSuccess: onWarmTransferFailed,
+        onError: onWarmTransferFailedError,
+        normalize: noop
+      },
       [Event.CALL_DELIVERED]: {
         onSuccess: onCallDeliveredSuccess,
         onError: onCallDeliveredError,
@@ -266,6 +288,11 @@ class SesClient {
       [Event.CALL_ORIGINATED]: {
         onSuccess: onCallOriginatedSuccess,
         onError: onCallOriginatedError,
+        normalize: Serializer.normalizeCallDetails
+      },
+      [Event.CONFIRMED_ORIGINATED]: {
+        onSuccess: onConfirmedOriginatedSuccess,
+        onError: onConfirmedOriginatedError,
         normalize: Serializer.normalizeCallDetails
       },
       [Event.HANG_UP]: {
@@ -291,6 +318,12 @@ class SesClient {
       [Event.MERGE]: {
         onSuccess: onMergeSuccess,
         onError: onMergeError,
+        normalize: noop
+      },
+      // Disconnect is not message-based event
+      [Event.DISCONNECT]: {
+        onSuccess: onDisconnect,
+        onError: onDisconnect,
         normalize: noop
       }
     })
@@ -319,7 +352,7 @@ class SesClient {
 
   async fetchScreenPopsConfigForSessionId (sessionUid) {
     return new Promise((resolve, reject) => {
-      const subscription = this._stompClient.subscribe('/user/queue/utilities', frame => {
+      const subscription = this._stompClient.subscribe('/user/queue/utilities/screenPopConfig', frame => {
         const parsedFrame = SesClient._parseFrameBody(frame.body)
         const message = Serializer.normalizeMessage(parsedFrame)
         console.log('ScreenPopsConfig message:', message)
@@ -339,7 +372,7 @@ class SesClient {
           subscription.unsubscribe()
         }
       })
-      this._stompClient.send(`/message/utilities/screenPopConfig/${sessionUid}`)
+      this._stompClient.send(`/message/utilities/screenPopConfig/${encodeURIComponent(sessionUid)}`)
     })
   }
 
@@ -348,8 +381,9 @@ class SesClient {
     if (this._eventHandlers.hasOwnProperty(event)) {
       const eventHandler = this._eventHandlers[event]
       if (error) {
-        const errorMessage = Errors.hasOwnProperty(error.code) ? Errors[error.code] : Errors[-1]
-        eventHandler.onError(errorMessage)
+        const webphoneError = { errorCode: error.code, errorMessage: '' }
+        webphoneError.errorMessage = Errors.hasOwnProperty(error.code) ? Errors[error.code] : Errors[-1]
+        eventHandler.onError(webphoneError)
       } else {
         const normalizedData = eventHandler.normalize(data)
         eventHandler.onSuccess(normalizedData)
@@ -395,10 +429,18 @@ class SesClient {
   }
 
   transfer (phoneNumber) {
+    var pattern = /\//g
+    phoneNumber = phoneNumber.replace(pattern, '')
     this._sendMessage({ endpoint: `/message/callControl/transfer/${phoneNumber}` })
   }
 
+  warmTransfer () {
+    this._sendMessage({ endpoint: '/message/callControl/warmTransfer' })
+  }
+
   outboundCall (phoneNumber) {
+    var pattern = /\//g
+    phoneNumber = phoneNumber.replace(pattern, '')
     this._sendMessage({ endpoint: `/message/callControl/outboundCall/${phoneNumber}` })
   }
 
@@ -408,6 +450,8 @@ class SesClient {
   }
 
   consultationCallConnect (phoneNumber) {
+    var pattern = /\//g
+    phoneNumber = phoneNumber.replace(pattern, '')
     this._sendMessage({ endpoint: `/message/callControl/consultationCall/${phoneNumber}` })
     this._consultationCallTrigger = null
   }
@@ -445,11 +489,19 @@ class SesClient {
     this._sendMessage({ endpoint: `/message/callControl/dtmf/${tone}` })
   }
 
-  maskRecording () {
-    this._sendMessage({ endpoint: '/message/callControl/mask' })
+  async _playDtmfTone () {
+    try {
+      const dtmfTone = await AudioManager.getDtmfTone()
+      await AudioManager.playAudio(dtmfTone)
+    } catch (error) {
+    }
   }
 
-  unmaskRecording () {
-    this._sendMessage({ endpoint: '/message/callControl/unmask' })
+  maskRecording (connUid) {
+    this._sendMessage({ endpoint: `/message/callControl/mask/${connUid}` })
+  }
+
+  unmaskRecording (connUid) {
+    this._sendMessage({ endpoint: `/message/callControl/unmask/${connUid}` })
   }
 }
