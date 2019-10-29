@@ -70,14 +70,15 @@ class SesClient {
     this._authToken = authToken
     this._username = username
     this._password = password
+    this._pendingHealthChecks = 0
+    this._healthCheckThreshold = 3
     this._consultationCallTrigger = null
-
-    var ws = new WebSocket(this._url);
-    this._stompClient = Stomp.over(ws);
-
-    console.log('_stompClient ', this._stompClient)
-
-    // this._stompClient = Stomp.over(new WebSocket(this._url))
+	if (url) {
+      var ws = new WebSocket(this._url);
+      this._stompClient = Stomp.over(ws);
+      console.log('_stompClient ', this._stompClient)
+	}
+	
     this._eventHandlers = {}
 
     this._healthCheck = {
@@ -88,7 +89,10 @@ class SesClient {
       latenciesMs: []
     }
 
-    this.configure()
+    if (url) {
+      this.configure()
+    }
+
     this.addEventHandlers()
   }
 
@@ -136,9 +140,14 @@ class SesClient {
 
   sendHeartbeat () {
     if (this._healthCheck.pending) {
-      console.warn('Health check is already pending')
+      if (this._pendingHealthChecks++ >= this._healthCheckThreshold) {
+        this._eventHandlers[Event.DISCONNECT].onSuccess()
+      } else {
+        console.warn('Health check(s) are already pending [pending: %s, maximum allowable: %s]', this._pendingHealthChecks, this._healthCheckThreshold)
+      }
       return
     }
+    this._pendingHealthChecks = 0
 
     Object.assign(this._healthCheck, {
       pending: true,
@@ -329,7 +338,11 @@ class SesClient {
     })
   }
 
-  fetchBootstrapData () {
+  fetchBootstrapData (telecommuteNumber) {
+    const message = {
+      telecommuteNumber: telecommuteNumber
+    }
+
     return new Promise((resolve, reject) => {
       const subscription = this._stompClient.subscribe('/user/queue/utilities', frame => {
         const parsedFrame = SesClient._parseFrameBody(frame.body)
@@ -346,7 +359,7 @@ class SesClient {
           subscription.unsubscribe()
         }
       })
-      this._stompClient.send('/message/utilities/bootstrap')
+      this._sendMessage({ endpoint: '/message/utilities/bootstrap', message })
     })
   }
 
@@ -416,7 +429,9 @@ class SesClient {
   }
 
   _sendMessage ({ endpoint, message, headers = {} }) {
-    this._stompClient.send(endpoint, headers, JSON.stringify(message))
+    if (this._stompClient) {
+      this._stompClient.send(endpoint, headers, JSON.stringify(message))
+    }
   }
 
   setVoiceChannelAgentState (state, auxCode) {

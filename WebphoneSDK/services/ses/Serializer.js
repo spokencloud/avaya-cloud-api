@@ -64,7 +64,9 @@ class Serializer {
       sipConnectionDetails = {},
       authToken = null,
       uploadServiceUrl = null,
-      config = {}
+      config = {},
+      maskEnabled,
+      telecommuterMode
     } = data || {}
     return Object.assign({}, {
       agentId,
@@ -74,7 +76,9 @@ class Serializer {
       sipConnectionDetails: Serializer.normalizeSipConnectionDetails(sipConnectionDetails),
       authToken,
       uploadServiceUrl,
-      config
+      config,
+      maskEnabled,
+      telecommuterMode
     })
   }
 
@@ -97,14 +101,16 @@ class Serializer {
       callerId = null,
       connectionUid = null,
       sessionUid = null,
-      authToken = null
+      authToken = null,
+      skillName = null
     } = data || {}
     return Object.assign({}, {
       callId,
       callerId,
       connectionUid,
       sessionUid,
-      authToken
+      authToken,
+      skillName
     }, data)
   }
 
