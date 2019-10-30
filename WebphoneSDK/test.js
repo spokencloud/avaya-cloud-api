@@ -46,6 +46,7 @@ const state = {
     initializeWebphone: false,
     consultationCall: false,
     merge: false,
+    warmTransfer: false,
     outboundCall: false,
     transfer: false
   }
@@ -61,6 +62,7 @@ HOLD_CALL = 'holdCall',
 OUTBOUND_CALL = 'outboundCall',
 CONSULT_CALL = 'consultCall',
 MERGE_CALL = 'mergeCall',
+WARM_TRANSFER = "warmTransfer",
 TRANSFER_CALL = 'transferCall',
 END_CONSULTATION_CALL = 'endConsultationCall',
 HOLD_CONSULTATION_CALL = 'holdConsultationCall';
@@ -231,6 +233,35 @@ async function commandToWebPhone(command, value) {
           state.pending.transfer = false;
           refreshControls();
         },
+        onConfirmedWarmTransferSuccess: () => {
+          console.log('confirmedWarmTransferSuccess')
+          state.pending.warmTransfer = false;
+          state.onCall = false;
+          state.callDetails.callerId = '';
+          endCallTimer();
+          resetCallTimer();
+          state.options.hold = false;
+          state.options.mute = false;
+          refreshControls();
+	    },
+	    onConfirmedWarmTransferError: error => {
+	      console.error('confirmedWarmTransferError', error)
+	      state.pending.warmTransfer = false;
+	      addErrorMessages(error);
+	      refreshControls();
+	    },
+	    onWarmTransferFailed: () => {
+	      console.error('warmTransferFailed', error)
+	      state.pending.warmTransfer = false;
+	      addErrorMessages(error);
+	      refreshControls();
+	    },
+	    onWarmTransferFailedError: error => {
+	      console.error('warmTransferFailedError', error)
+	      state.pending.warmTransfer = false;
+	      addErrorMessages(error);
+	      refreshControls();    
+	    },
         onConsultationSuccess: callDetails => {
           console.log('onConsultationSuccess', callDetails)
           const { callerId = '' } = callDetails || {}
@@ -331,6 +362,8 @@ async function commandToWebPhone(command, value) {
     makeConsultCall(value);
   } else if (command === MERGE_CALL) {
     makeMergeCalls();
+  } else if (command === WARM_TRANSFER) {
+	makeWarmTransferCall();
   } else if (command === TRANSFER_CALL) {
     makeTransferCall(value);
   } else if (command === END_CONSULTATION_CALL) {
@@ -420,6 +453,12 @@ function makeMergeCalls() {
   state.pending.merge = true;
   refreshControls();
   sesClient.mergeCalls();
+}
+function makeWarmTransferCall() {
+  console.log('actions.warmTransfer');
+  state.pending.warmTransfer = true;
+  refreshControls();
+  sesClient.warmTransfer();
 }
 function makeTransferCall(phoneNo) {
   console.log('actions.transferCall');
