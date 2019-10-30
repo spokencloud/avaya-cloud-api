@@ -64,6 +64,12 @@
       function disableMergeCall() {
         document.getElementById("btnMergeCall").disabled = true;
       }
+      function enableWarmTransfer() {
+        document.getElementById("btnWarmTransfer").disabled = false;
+      }
+      function disableWarmTransfer() {
+        document.getElementById("btnWarmTransfer").disabled = true;
+      }
       function enableConsultCall() {
         document.getElementById("btnConsultCall").disabled = false;
       }
@@ -130,10 +136,12 @@
         }
         if (state.onConsultationCall) {
           enableMergeCall();
+          enableWarmTransfer();
           enableHoldConsultationCall();
           enableEndConsultationCall();
         } else {
           disableMergeCall();
+          disableWarmTransfer();
           disableHoldConsultationCall();
           disableEndConsultationCall();
         }
@@ -214,6 +222,10 @@
       function getHoldConsultationCall() {
         parent.commandToWebPhone(HOLD_CONSULTATION_CALL);
       }
+      function warmTransfer() {
+        parent.commandToWebPhone(WARM_TRANSFER);
+      }
+      
     </script>
 </head>
   <body>
@@ -282,6 +294,9 @@
         </td>
         <td>
           <input disabled type="button" onclick="mergeCall()" value="Merge" id = "btnMergeCall"><br><br>
+        </td>
+        <td>
+          <input disabled type="button" onclick="warmTransfer()" value="Warm Transfer" id = "btnWarmTransfer"><br><br>
         </td>
         <td>
           <input disabled type="button" onclick="getHoldConsultationCall()" value="Hold consultation call" id = "btnHoldConsultationCall"><br><br>
