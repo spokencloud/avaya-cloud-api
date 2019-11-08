@@ -66,6 +66,11 @@ class AgentClient {
 
     let securityCode = this.generateSecurityCode(agentLoginId)
     let avayaPassword = this.generateAvayaPassword(agentLoginId)
+    // hard coding temporarily for tenfold
+    let skillsWithPriority = {
+      "skillNumber": 2710,
+      "skillPriority": 5,
+    }
 
     let agent = {
       "username": agent_username,
@@ -80,6 +85,8 @@ class AgentClient {
       "avayaPassword": avayaPassword,
       "clientId": subAccountId,
       "skillIds": skillIds,
+      // hard coding temporarily for tenfold
+      "agentSkills": [ skillsWithPriority ],
       // no supervisors
       "supervisorId": 0,
       // channel 1 is voice
