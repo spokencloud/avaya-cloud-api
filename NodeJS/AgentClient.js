@@ -29,7 +29,7 @@ class AgentClient {
     )
 
     // wait until agent is created
-    await this.waitForAgentCreation(agent_username)
+    await this.waitForAgentCreation(agentLoginId)
 
     let stationExtension = await this.generateExtension(subAccountId, 'STATION')
     await this.sendCreateStationRequest(
@@ -162,7 +162,7 @@ class AgentClient {
 
     let agent = {}
     try {
-      agent = await this.getAgentOnly(agentUsername)
+      agent = await this.getAgentByUsername(agentUsername)
     } catch (e) {
       if (e.response.status === 404) {
         console.log('agent ' + agentUsername + ' not found')
@@ -197,7 +197,7 @@ class AgentClient {
       })
   }
 
-  async getAgentOnly(agent_username) {
+  async getAgentByUsername(agent_username) {
     return this.session.get('/spokenAbc/agents/username/' + agent_username)
       .then(response => {
         // console.log(response.data)
@@ -205,13 +205,21 @@ class AgentClient {
       })
   }
 
-  async waitForAgentCreation(agent_username) {
+  async getAgentByLoginId(loginId) {
+    return this.session.get('/spokenAbc/agents/loginId/' + loginId)
+      .then(response => {
+        // console.log(response.data)
+        return response.data
+      })
+  }
+
+  async waitForAgentCreation(loginId) {
     return new Promise((resolve, reject) => {
       process.stdout.write("Creating agent.")
       let counter = 0
       const intervalId = setInterval(async () => {
         try {
-          await this.getAgentOnly(agent_username)
+          await this.getAgentByLoginId(loginId)
           console.log('agent created');
           clearInterval(intervalId);
           resolve()
@@ -240,7 +248,7 @@ class AgentClient {
       let counter = 0
       const intervalId = setInterval(async () => {
         try {
-          await this.getAgentOnly(agent_username)
+          await this.getAgentByUsername(agent_username)
           process.stdout.write('.')
           counter++
           if (counter > MAX_RETRY) {
@@ -360,7 +368,7 @@ class AgentClient {
     }
 
     try {
-      let agent = await this.getAgentOnly(agentUsername)
+      let agent = await this.getAgentByUsername(agentUsername)
       await this.deleteAgentOnly(agentUsername, agent.loginId)
       await this.waitForAgentDeletion(agentUsername)
     } catch (e) {
