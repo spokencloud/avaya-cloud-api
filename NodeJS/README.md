@@ -4,11 +4,21 @@ Run 'npm i' in the folder to install node modules
 
 ##  Sample calls
 
+### Run sample agent client to get Skill Information
+Before creating an agent we need to know the available skills.
+node build/AgentSkill.js 
+--endpoint='https://login.bpo.avaya.com' 
+--admin_username='{your_admin_username}'
+--admin_password='{your_admin_password}'
+
+Sample Result : [ { skillNumber: 359, skillName: 'SkillOne' },
+                  { skillNumber: 361, skillName: 'SkillTwo' } ]
+
 ### Run sample agent client
 An agent can receive or make a phone call.
 This sample client creates an agent, reads it back, and deletes it.
 
-node sampleAgentClient.js
+node build/sampleAgentClient.js
   --endpoint='https://login.bpo.avaya.com'
   --admin_username='{your_admin_username}'
   --admin_password='{your_admin_password}'
@@ -21,7 +31,7 @@ Please look in sampleSubscriptionClient.js for how to create
 a data subscription object to pass to the server.
 This sample client creates a subscription, reads it back, and deletes it.
 
-node sampleSubscriptionClient.js
+node build/sampleSubscriptionClient.js
   --endpoint='https://login.bpo.avaya.com'
   --admin_username='{your_admin_username}'
   --admin_password='{your_admin_password}'
