@@ -1,7 +1,4 @@
-const axios = require('axios').default;
-const axiosCookieJarSupport = require('@3846masa/axios-cookiejar-support').default;
-const tough = require('tough-cookie');
-const lodash = require('lodash')
+import * as Constants from "./Constants";
 
 export class Session {
 
@@ -61,8 +58,8 @@ export class Session {
     }
 
     async login() {
-        await this.createLoginRequest()
-        let questionResponse = await this.createQuestionRequest()
+        await this.createLoginRequest();
+        let questionResponse = await this.createQuestionRequest();
         await this.createQuestionAnswerRequest(questionResponse.data)
     }
 
@@ -89,17 +86,17 @@ export class Session {
                 let accessibleSubAccounts = response.data['accessibleClients'];
                // console.log(accessibleSubAccounts);
                 // ensure we always get the same subAccount ordering
-                accessibleSubAccounts = lodash.sortBy(accessibleSubAccounts, ['id'])
+                accessibleSubAccounts = Constants.lodash.sortBy(accessibleSubAccounts, ['id'])
                 let subAccount = accessibleSubAccounts[0]
                 return subAccount
             })
     }
 }
 
-axiosCookieJarSupport(axios);
+Constants.axiosCookieJarSupport(Constants.axios);
 function createAxiosInstance(endpoint: string) {
-    const cookieJar = new tough.CookieJar();
-    const instance = axios.create({
+    const cookieJar = new Constants.tough.CookieJar();
+    const instance = Constants.axios.create({
         baseURL: endpoint,
         withCredentials: true,
         jar: cookieJar,
@@ -122,8 +119,4 @@ module.exports = {
         let session:Session = new Session(axiosInstance, admin_username, admin_password);
         return session
     }
-
-
-
-
 

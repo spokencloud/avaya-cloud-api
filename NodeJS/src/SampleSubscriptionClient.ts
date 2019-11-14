@@ -1,15 +1,13 @@
+import * as Constants from "./Constants";
+import { createSession } from "./session"
+import { createSubscriptionClient } from "./SubscriptionClient";
+import {Subscription} from "./Subscription";
+
 const args = require('minimist')(process.argv.slice(2));
 
-const ENDPOINT_KEY = 'endpoint';
-const ADMIN_USERNAME_KEY = 'admin_username';
-const ADMIN_PASSWORD_KEY = 'admin_password';
-
-const REPLACE_REGEX = /'/g;
-const EMPTY_STRING = "";
-
-let endpoint = args[ENDPOINT_KEY].replace(REPLACE_REGEX, EMPTY_STRING);
-let adminUsername = args[ADMIN_USERNAME_KEY].replace(REPLACE_REGEX, EMPTY_STRING);
-let adminPassword = args[ADMIN_PASSWORD_KEY].replace(REPLACE_REGEX, EMPTY_STRING);
+let endpoint = args[Constants.ENDPOINT_KEY].replace(Constants.REPLACE_REGEX, Constants.EMPTY_STRING);
+let adminUsername = args[Constants.ADMIN_USERNAME_KEY].replace(Constants.REPLACE_REGEX, Constants.EMPTY_STRING);
+let adminPassword = args[Constants.ADMIN_PASSWORD_KEY].replace(Constants.REPLACE_REGEX, Constants.EMPTY_STRING);
 
 function isValidParameter(key: string, parameter: undefined) {
     if (parameter === undefined) {
@@ -20,9 +18,9 @@ function isValidParameter(key: string, parameter: undefined) {
     }
 }
 
-let isEndpointValid = isValidParameter(ENDPOINT_KEY, endpoint);
-let isAdminUsernameValid = isValidParameter(ADMIN_USERNAME_KEY, adminUsername);
-let isAdminPasswordValid = isValidParameter(ADMIN_PASSWORD_KEY, adminPassword);
+let isEndpointValid = isValidParameter(Constants.ENDPOINT_KEY, endpoint);
+let isAdminUsernameValid = isValidParameter(Constants.ADMIN_USERNAME_KEY, adminUsername);
+let isAdminPasswordValid = isValidParameter(Constants.ADMIN_PASSWORD_KEY, adminPassword);
 
 if (!isEndpointValid ||
     !isAdminUsernameValid ||
@@ -30,8 +28,6 @@ if (!isEndpointValid ||
 ) {
     process.exit()
 }
-import { createSession } from "./session"
-import { createSubscriptionClient } from "./SubscriptionClient"
 let session = createSession(endpoint, adminUsername, adminPassword);
 let subscriptionClient = createSubscriptionClient(session);
 
@@ -88,7 +84,7 @@ async function getSubscription(subscriptionId: string) {
         console.error(e)
     }
 }
-import {Subscription} from "./Subscription";
+
 async function updateSubscription(subscription:Subscription) {
     try {
         subscription.dataDeliveryFormat = 'JSON'

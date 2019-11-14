@@ -1,16 +1,9 @@
-const lodash = require('lodash');
 import {Session} from "./session";
+import * as Constants from "./Constants";
 
-const STATION_NAME = 'generated station';
-const AGENT_FIRST_NAME = 'generated';
-const AGENT_LAST_NAME = 'agent';
-// ten seconds
-const INTERVAL_IN_MILLIS = 10 * 1000;
-const MAX_RETRY = 5;
-
-interface SkillPriority{
-    skillNumber:number,
-    skillPriority:number
+export default interface SkillPriority {
+    skillNumber: number,
+    skillPriority: number
 }
 
 class AgentClient {
@@ -52,11 +45,11 @@ class AgentClient {
     }
 
     async getAgentStationGroupId(subAccountId: string) {
-        return this.session.get('/spokenAbc/agentStationGroups/client/' + subAccountId)
+        return this.session.get(Constants.STATION_GROUP_PATH + subAccountId)
             .then((response: { data: any }) => {
                 let agentStationGroups = response.data;
                 // ensure we always get the same subAccount ordering
-                agentStationGroups = lodash.sortBy(agentStationGroups, ['id']);
+                agentStationGroups = Constants.lodash.sortBy(agentStationGroups, ['id']);
                 return agentStationGroups[0].id;
             })
     }
@@ -73,8 +66,8 @@ class AgentClient {
         let avayaPassword = this.generateAvayaPassword(agentLoginId);
         let agent = {
             "username": agent_username,
-            "firstName": AGENT_FIRST_NAME,
-            "lastName": AGENT_LAST_NAME,
+            "firstName": Constants.AGENT_FIRST_NAME,
+            "lastName": Constants.AGENT_LAST_NAME,
             "password": agent_password,
             "loginId": agentLoginId,
             "agentStationGroupId": agentStationGroupId,
@@ -91,7 +84,7 @@ class AgentClient {
             "channelIds": [1]
         };
 
-        return this.session.post('/spokenAbc/jobs/agents', agent)
+        return this.session.post(Constants.AGENT_JOB_PATH, agent)
             .then((result: any) => {
                 return result
             })
@@ -111,7 +104,7 @@ class AgentClient {
 
     async generateExtension(subAccountId: string, type: string) {
         return this.session.post(
-            'spokenAbc/extensions/next/' + subAccountId + '/type/' + type)
+            Constants.EXTENSION_PATH + subAccountId + '/type/' + type)
             .then((response: { data: any }) => {
                 return response.data
             })
@@ -119,7 +112,7 @@ class AgentClient {
 
     async getSkillIds(subAccountId: string) {
         return this.session.get(
-            'spokenAbc/skills/multiClientSkills?clientIds=' + subAccountId + '&skillType=AGENT')
+            Constants.FETCH_SKILL_ID_PATH + subAccountId + '&skillType=AGENT')
             .then((response: { data: { [x: string]: { [x: string]: any } } }) => {
                 // console.log(response)
                 let skillResponses = response.data['skillResponses'][subAccountId];
@@ -136,7 +129,7 @@ class AgentClient {
             });
 
         return this.session.get(
-            'spokenAbc/skills/multiClientSkills?clientIds=' + subAccountId + '&skillType=AGENT')
+            Constants.FETCH_SKILL_ID_PATH + subAccountId + '&skillType=AGENT')
             .then((response: { data: { [x: string]: { [x: string]: any } } }) => {
                 let skillResponses = response.data['skillResponses'][subAccountId];
                 const availableSkills = [];
@@ -164,12 +157,12 @@ class AgentClient {
             "agentStationGroupId": agentStationGroupId,
             "clientId": subAccountId,
             "extension": stationExtension,
-            "name": STATION_NAME,
+            "name": Constants.STATION_NAME,
             "securityCode": securityCode,
             "username": agentUsername
         };
 
-        return this.session.post('/spokenAbc/jobs/stations', station)
+        return this.session.post(Constants.STATION_JOB_PATH, station)
             .then((result: any) => {
                 // console.log(result.data)
                 return result
@@ -193,7 +186,7 @@ class AgentClient {
         let subAccountId = await this.getSubAccountId();
         let station = {};
         try {
-            station = await this.getStationOnly(subAccountId, agentUsername);
+            station = await this.getStationForAgent(subAccountId, agentUsername);
             if (!station) {
                 console.log('station associated with ' + agentUsername + ' not found');
                 station = {}
@@ -217,7 +210,7 @@ class AgentClient {
     }
 
     async getAgentByUsername(agent_username: string) {
-        return this.session.get('/spokenAbc/agents/username/' + agent_username)
+        return this.session.get(Constants.FETCH_AGENT_BY_USERNAME_PATH + agent_username)
             .then((response: { data: any }) => {
                 // console.log(response.data)
                 return response.data
@@ -225,7 +218,7 @@ class AgentClient {
     }
 
     async getAgentByLoginId(loginId: string) {
-        return this.session.get('/spokenAbc/agents/loginId/' + loginId)
+        return this.session.get(Constants.FETCH_AGENT_ID_PATH + loginId)
             .then((response: { data: any }) => {
                 // console.log(response.data)
                 return response.data
@@ -246,8 +239,7 @@ class AgentClient {
                     if (e.response.status === 404) {
                         process.stdout.write('.');
                         counter++;
-                        if (counter > MAX_RETRY) {
-                            console.log();
+                        if (counter > Constants.MAX_RETRY) {
                             clearInterval(intervalId);
                             reject(Error('agent creation failed'))
                         }
@@ -256,7 +248,7 @@ class AgentClient {
                         throw e
                     }
                 }
-            }, INTERVAL_IN_MILLIS);
+            }, Constants.INTERVAL_IN_MILLIS);
             return intervalId
         })
     }
@@ -270,7 +262,7 @@ class AgentClient {
                     await this.getAgentByUsername(agent_username);
                     process.stdout.write('.');
                     counter++;
-                    if (counter > MAX_RETRY) {
+                    if (counter > Constants.MAX_RETRY) {
                         console.log();
                         clearInterval(intervalId);
                         reject(Error('agent deletion failed'))
@@ -285,7 +277,7 @@ class AgentClient {
                         throw e
                     }
                 }
-            }, INTERVAL_IN_MILLIS);
+            }, Constants.INTERVAL_IN_MILLIS);
             return intervalId
         })
     }
@@ -296,7 +288,7 @@ class AgentClient {
             let counter = 0;
             const intervalId = setInterval(async () => {
                 try {
-                    let station = await this.getStationOnly(subAccountId, agent_username);
+                    let station = await this.getStationForAgent(subAccountId, agent_username);
                     if (station) {
                         console.log('station created');
                         clearInterval(intervalId);
@@ -304,7 +296,7 @@ class AgentClient {
                     } else {
                         process.stdout.write('.');
                         counter++;
-                        if (counter > MAX_RETRY) {
+                        if (counter > Constants.MAX_RETRY) {
                             console.log();
                             clearInterval(intervalId);
                             reject(Error('station creation failed'))
@@ -314,7 +306,7 @@ class AgentClient {
                     if (e.response.status === 404) {
                         process.stdout.write('.');
                         counter++;
-                        if (counter > MAX_RETRY) {
+                        if (counter > Constants.MAX_RETRY) {
                             console.log();
                             clearInterval(intervalId);
                             reject(Error('station creation failed'))
@@ -324,7 +316,7 @@ class AgentClient {
                         throw e
                     }
                 }
-            }, INTERVAL_IN_MILLIS);
+            }, Constants.INTERVAL_IN_MILLIS);
             return intervalId
         })
     }
@@ -335,11 +327,11 @@ class AgentClient {
             let counter = 0;
             const intervalId = setInterval(async () => {
                 try {
-                    let station = await this.getStationOnly(subAccountId, agent_username);
+                    let station = await this.getStationForAgent(subAccountId, agent_username);
                     if (station) {
                         process.stdout.write('.');
                         counter++;
-                        if (counter > MAX_RETRY) {
+                        if (counter > Constants.MAX_RETRY) {
                             console.log();
                             clearInterval(intervalId);
                             reject(Error('station deletion failed'))
@@ -359,13 +351,13 @@ class AgentClient {
                         throw e
                     }
                 }
-            }, INTERVAL_IN_MILLIS);
+            }, Constants.INTERVAL_IN_MILLIS);
             return intervalId
         })
     }
 
-    async getStationOnly(subAccountId: string, agent_username: string) {
-        return this.session.get('/spokenAbc/stations?clientId=' + subAccountId)
+    async getStationForAgent(subAccountId: string, agent_username: string) {
+        return this.session.get(Constants.STATION_ONLY_PATH + subAccountId)
             .then((result: { data: any[] }) => {
                 return result.data.find(element => element.username === agent_username);
             })
@@ -376,7 +368,7 @@ class AgentClient {
 
         let subAccountId = await this.getSubAccountId();
 
-        let station = await this.getStationOnly(subAccountId, agentUsername);
+        let station = await this.getStationForAgent(subAccountId, agentUsername);
         // station might have been deleted before, so station might be undefined
         if (station) {
             await this.deleteStationOnly(station.id);
@@ -399,12 +391,12 @@ class AgentClient {
     }
 
     async deleteStationOnly(stationId: string) {
-        return this.session.delete('/spokenAbc/jobs/stations/' + stationId);
+        return this.session.delete(Constants.DELETE_STATION_PATH + stationId);
     }
 
     async deleteAgentOnly(agentUsername: string, agentLoginId: any) {
         let deleteRequest = {'username': agentUsername, 'loginId': agentLoginId};
-        return this.session.post('/spokenAbc/agents/removeAgent', deleteRequest)
+        return this.session.post(Constants.REMOVE_AGENT_PATH, deleteRequest)
     }
 }
 
