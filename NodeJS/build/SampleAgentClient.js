@@ -181,19 +181,18 @@ function main() {
     return __awaiter(this, void 0, void 0, function () {
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: 
-                /*  await createAgent();
-                  await getAgent();
-                  await deleteAgent();
-                */ return [4 /*yield*/, agentSkillNumbers()];
+                case 0: return [4 /*yield*/, createAgent()];
                 case 1:
-                    /*  await createAgent();
-                      await getAgent();
-                      await deleteAgent();
-                    */ _a.sent();
+                    _a.sent();
+                    return [4 /*yield*/, getAgent()];
+                case 2:
+                    _a.sent();
+                    return [4 /*yield*/, deleteAgent()];
+                case 3:
+                    _a.sent();
                     return [2 /*return*/];
             }
         });
     });
 }
-main().then(function (r) { return "Request Completed"; });
+main();

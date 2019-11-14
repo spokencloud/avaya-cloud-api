@@ -24,6 +24,10 @@ node build/sampleAgentClient.js
   --admin_password='{your_admin_password}'
   --agent_username='{your_agent_username}'
   --agent_password='{your_agent_password}'
+  --agent_skill='[{"skillNumber":your_skill_number,"skillPriority":your_skill_priority}]'
+
+Sample Agent Skills: --agent_skill='[{"skillNumber":359,"skillPriority":1}]'
+skillPriority ranges from 1-16
 
 ### Run sample subscription client
 Data subscription allows a user to receive call data on their chosen endpoint.

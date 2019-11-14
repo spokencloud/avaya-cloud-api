@@ -96,4 +96,4 @@ function main() {
         });
     });
 }
-main().then(function (r) { return "Request Completed"; });
+main();
