@@ -9,12 +9,6 @@
     "axios-cookiejar-support": "^0.4.2",
     "lodash": "^4.17.11",
     "minimist": "^1.2.0",
-    "tough-cookie": "^3.0.1",
-    "ts.data.json": "^0.3.0",
-    "typescript-validator": "latest"
-  },
-  "devDependencies": {
-    "@types/node": "^12.12.7",
-    "typescript": "^3.7.2"
+    "tough-cookie": "^3.0.1"
   }
 }
