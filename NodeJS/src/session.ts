@@ -51,7 +51,7 @@ export class Session {
                         {"question":questions[1],"answer":answers[1]},
                         {"question":questions[2],"answer":answers[2]}]}
 
-        return this.axios_instance.post('/user/question/answer', questionAnswer)
+        return this.axios_instance.post(Constants.USER_QUESTION_ANSWER_PATH, questionAnswer)
             .then((result: any) => {
                 return result
             })
@@ -104,19 +104,9 @@ function createAxiosInstance(endpoint: string) {
     return instance
 }
 
-module.exports = {
-    createSession: (endpoint: string, admin_username: string, admin_password: string) => {
-        let axiosInstance = createAxiosInstance(endpoint);
-
-        let session = new Session(axiosInstance, admin_username, admin_password)
-
-        return session
-    }
+export function createSession(endpoint: string, admin_username: string, admin_password: string) {
+    let axiosInstance = createAxiosInstance(endpoint);
+    let session:Session = new Session(axiosInstance, admin_username, admin_password);
+    return session
 }
-
-    export function createSession(endpoint: string, admin_username: string, admin_password: string) {
-        let axiosInstance = createAxiosInstance(endpoint);
-        let session:Session = new Session(axiosInstance, admin_username, admin_password);
-        return session
-    }
 

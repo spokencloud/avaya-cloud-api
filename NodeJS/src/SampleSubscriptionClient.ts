@@ -2,21 +2,13 @@ import * as Constants from "./Constants";
 import { createSession } from "./session"
 import { createSubscriptionClient } from "./SubscriptionClient";
 import {Subscription} from "./Subscription";
+import isValidParameter from "./Utils";
 
 const args = require('minimist')(process.argv.slice(2));
 
 let endpoint = args[Constants.ENDPOINT_KEY].replace(Constants.REPLACE_REGEX, Constants.EMPTY_STRING);
 let adminUsername = args[Constants.ADMIN_USERNAME_KEY].replace(Constants.REPLACE_REGEX, Constants.EMPTY_STRING);
 let adminPassword = args[Constants.ADMIN_PASSWORD_KEY].replace(Constants.REPLACE_REGEX, Constants.EMPTY_STRING);
-
-function isValidParameter(key: string, parameter: undefined) {
-    if (parameter === undefined) {
-        console.log(key + ' was undefined');
-        return false
-    } else {
-        return true
-    }
-}
 
 let isEndpointValid = isValidParameter(Constants.ENDPOINT_KEY, endpoint);
 let isAdminUsernameValid = isValidParameter(Constants.ADMIN_USERNAME_KEY, adminUsername);
