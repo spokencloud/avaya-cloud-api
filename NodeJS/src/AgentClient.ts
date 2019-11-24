@@ -1,4 +1,4 @@
-import {Session} from "./session";
+import { Session } from "./session";
 import * as Constants from "./Constants";
 
 export default interface SkillPriority {
@@ -7,7 +7,7 @@ export default interface SkillPriority {
 }
 
 class AgentClient {
-    session:Session;
+    session: Session;
 
     constructor(session: any) {
         this.session = session
@@ -60,7 +60,7 @@ class AgentClient {
         agent_password: string,
         agentStationGroupId: any,
         agentLoginId: any,
-        skillIds: any, skillsWithPriority:[SkillPriority]) {
+        skillIds: any, skillsWithPriority: [SkillPriority]) {
 
         let securityCode = this.generateSecurityCode(agentLoginId);
         let avayaPassword = this.generateAvayaPassword(agentLoginId);
@@ -199,7 +199,7 @@ class AgentClient {
             }
         }
 
-        return {'agent':agent, 'station': station}
+        return { 'agent': agent, 'station': station }
     }
 
     async getSubAccountId() {
@@ -395,11 +395,11 @@ class AgentClient {
     }
 
     async deleteAgentOnly(agentUsername: string, agentLoginId: any) {
-        let deleteRequest = {'username': agentUsername, 'loginId': agentLoginId};
+        let deleteRequest = { 'username': agentUsername, 'loginId': agentLoginId };
         return this.session.post(Constants.REMOVE_AGENT_PATH, deleteRequest)
     }
 }
 
-export function createAgentClient(session:Session){
+export function createAgentClient(session: Session) {
     return new AgentClient(session);
 }

@@ -1,5 +1,5 @@
-import {Session} from "./session";
-import {Subscription} from "./Subscription";
+import { Session } from "./session";
+import { Subscription } from "./Subscription";
 
 const VERSION = '1.0';
 const SUBSCRIPTION_PATH = '/spokenAbc/subscriptions/v' + VERSION + '/subscriptions';
@@ -8,13 +8,13 @@ const SUB_ACCOUNT_KEY = 'subAccountAppId=';
 const QUESTION_MARK = '?';
 
 class SubscriptionClient {
-    session:Session;
+    session: Session;
 
     constructor(session: any) {
         this.session = session
     }
 
-    async createSubscription(createSubscriptionRequest:Subscription) {
+    async createSubscription(createSubscriptionRequest: Subscription) {
         await this.session.login();
 
         let subAccountAppId = await this.getSubAccountAppId();
@@ -41,7 +41,7 @@ class SubscriptionClient {
             })
     }
 
-    async updateSubscription(updateSubscriptionRequest:Subscription) {
+    async updateSubscription(updateSubscriptionRequest: Subscription) {
         await this.session.login();
 
         let subAccountAppId = await this.getSubAccountAppId();
@@ -55,7 +55,7 @@ class SubscriptionClient {
         return returnedSubscription
     }
 
-    async deleteSubscription(subscriptionId:string) {
+    async deleteSubscription(subscriptionId: string) {
         await this.session.login();
 
         let subAccountAppId = await this.getSubAccountAppId();
@@ -64,7 +64,7 @@ class SubscriptionClient {
             + QUESTION_MARK + SUB_ACCOUNT_KEY + subAccountAppId)
     }
 
-    async getSubscription(subscriptionId:string) {
+    async getSubscription(subscriptionId: string) {
         await this.session.login();
 
         let subAccountAppId = await this.getSubAccountAppId();
@@ -74,6 +74,6 @@ class SubscriptionClient {
     }
 }
 
-export function createSubscriptionClient(session:Session){
+export function createSubscriptionClient(session: Session) {
     return new SubscriptionClient(session);
 }

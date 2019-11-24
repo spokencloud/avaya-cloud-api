@@ -8,31 +8,31 @@ export class Subscription {
     subAccountAppId: string;
     dataSourceType: string;
     startTime: string;
-    frequencyInMinutes:any;
-    maxPostSize:any;
-    dataDeliveryFormat:any;
-    endpoint:any;
-    disableTLSVerify:any;
-    basicAuthUsername:any;
-    basicAuthPassword:any;
-    oldestError?:any;
-    LostPostRequests?:any;
-    LostRecords?:any;
-    lastDataSent?:any;
-    retryPolicy:any;
+    frequencyInMinutes: any;
+    maxPostSize: any;
+    dataDeliveryFormat: any;
+    endpoint: any;
+    disableTLSVerify: any;
+    basicAuthUsername: any;
+    basicAuthPassword: any;
+    oldestError?: any;
+    LostPostRequests?: any;
+    LostRecords?: any;
+    lastDataSent?: any;
+    retryPolicy: any;
 
-    constructor(subscriptionId: any, subAccountAppId: string, dataSourceType: string,startTime: string,
-                frequencyInMinutes:any,maxPostSize:any,
-                dataDeliveryFormat:any,
-                endpoint:any,
-                disableTLSVerify:any,
-                basicAuthUsername:any,
-                basicAuthPassword:any,
-                oldestError:any,
-                LostPostRequests:any,
-                LostRecords:any,
-                lastDataSent:any,
-                retryPolicy:any) {
+    constructor(subscriptionId: any, subAccountAppId: string, dataSourceType: string, startTime: string,
+        frequencyInMinutes: any, maxPostSize: any,
+        dataDeliveryFormat: any,
+        endpoint: any,
+        disableTLSVerify: any,
+        basicAuthUsername: any,
+        basicAuthPassword: any,
+        oldestError: any,
+        LostPostRequests: any,
+        LostRecords: any,
+        lastDataSent: any,
+        retryPolicy: any) {
 
         // The ID of this subscription. Leave blank for new subscriptions.
         this.subscriptionId = subscriptionId;

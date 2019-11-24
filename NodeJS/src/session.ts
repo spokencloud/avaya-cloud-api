@@ -45,11 +45,13 @@ export class Session {
         answers[2] = this.getAnswer(questions[2])
 
         let questionAnswer =
-            {"username":this.admin_username,
-                "questionAnswerPairs":
-                    [{"question":questions[0],"answer":answers[0]},
-                        {"question":questions[1],"answer":answers[1]},
-                        {"question":questions[2],"answer":answers[2]}]}
+        {
+            "username": this.admin_username,
+            "questionAnswerPairs":
+                [{ "question": questions[0], "answer": answers[0] },
+                { "question": questions[1], "answer": answers[1] },
+                { "question": questions[2], "answer": answers[2] }]
+        }
 
         return this.axios_instance.post(Constants.USER_QUESTION_ANSWER_PATH, questionAnswer)
             .then((result: any) => {
@@ -84,7 +86,7 @@ export class Session {
             .then((response: { data: { [x: string]: any; }; }) => {
                 //console.log(response);
                 let accessibleSubAccounts = response.data['accessibleClients'];
-               // console.log(accessibleSubAccounts);
+                // console.log(accessibleSubAccounts);
                 // ensure we always get the same subAccount ordering
                 accessibleSubAccounts = Constants.lodash.sortBy(accessibleSubAccounts, ['id'])
                 let subAccount = accessibleSubAccounts[0]
@@ -106,7 +108,7 @@ function createAxiosInstance(endpoint: string) {
 
 export function createSession(endpoint: string, admin_username: string, admin_password: string) {
     let axiosInstance = createAxiosInstance(endpoint);
-    let session:Session = new Session(axiosInstance, admin_username, admin_password);
+    let session: Session = new Session(axiosInstance, admin_username, admin_password);
     return session
 }
 

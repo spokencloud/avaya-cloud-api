@@ -30,7 +30,7 @@ async function agentSkillNumbers() {
 }
 
 async function main() {
-  await agentSkillNumbers();
+    await agentSkillNumbers();
 }
 
 main();

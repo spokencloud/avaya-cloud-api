@@ -1,7 +1,7 @@
 import * as Constants from "./Constants";
 import { createSession } from "./session"
 import { createSubscriptionClient } from "./SubscriptionClient";
-import {Subscription} from "./Subscription";
+import { Subscription } from "./Subscription";
 import isValidParameter from "./Utils";
 
 const args = require('minimist')(process.argv.slice(2));
@@ -36,7 +36,7 @@ async function createSubscription() {
             "maxPostSize": 0,
             "startTime": "2019-11-04T21:55:24.421Z",
             "disableTLSVerify": true,
-            "subAccountAppId":"ALL"
+            "subAccountAppId": "ALL"
         };
         let returnedSubscriptionRequest = await subscriptionClient.createSubscription(createSubscriptionRequest);
         console.log('subscriptionObject from createSubscription');
@@ -77,7 +77,7 @@ async function getSubscription(subscriptionId: string) {
     }
 }
 
-async function updateSubscription(subscription:Subscription) {
+async function updateSubscription(subscription: Subscription) {
     try {
         subscription.dataDeliveryFormat = 'JSON'
         let returnedSubscriptionRequest = await subscriptionClient.updateSubscription(subscription);
@@ -93,8 +93,8 @@ async function main() {
     await getAllSubscriptions();
     //let subscription = await createSubscription();
     //await updateSubscription(subscription);
-   // await getSubscription(subscription.subscriptionId);
-   // await deleteSubscription(subscription.subscriptionId);
+    // await getSubscription(subscription.subscriptionId);
+    // await deleteSubscription(subscription.subscriptionId);
 }
 
 main();
