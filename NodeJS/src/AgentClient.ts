@@ -6,7 +6,7 @@ export default interface SkillPriority {
     skillPriority: number
 }
 
-class AgentClient {
+export class AgentClient {
     session: Session;
 
     constructor(session: any) {
@@ -93,12 +93,14 @@ class AgentClient {
     generateAvayaPassword(agentLoginId: { toString: () => any }) {
         let agentLoginIdString = agentLoginId.toString();
         let length = agentLoginIdString.length;
+        // substring(starting_index, ending_index), negative starting_index is treated as 0 
         return agentLoginIdString.substring(length - 6, length);
     }
 
     generateSecurityCode(agentLoginId: { toString: () => any }) {
         let agentLoginIdString = agentLoginId.toString();
         let length = agentLoginIdString.length;
+        // substring(starting_index, ending_index), negative starting_index is treated as 0 
         return agentLoginIdString.substring(length - 4, length);
     }
 
