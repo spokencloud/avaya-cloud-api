@@ -11,7 +11,7 @@ interface Credential {
 }
 
 export class RestClient {
-    private baseUrl: string;
+    private baseUrl: string
     masterCredential: Credential
     credentials: Map<string, Credential>
     constructor(baseUrl: string, masterToken: string) {
@@ -20,7 +20,7 @@ export class RestClient {
         this.masterCredential = { token: `Bearer ${masterToken}`, cookieJar: masterCookieJar }
         this.credentials = new Map();
     }
-    getUser() {
+    public getUser() {
         let url = `${this.baseUrl}/user`
         const cookieJar = this.masterCredential.cookieJar
         const options = {
@@ -32,9 +32,43 @@ export class RestClient {
         };
         return axios(options)
             .then((response: any) => response.data)
-
     }
-    printMasterCookieJar(): string {
+    getUserToken(username: string) {
+        let url = `${this.baseUrl}/user/${username}/token`
+        const cookieJar = this.masterCredential.cookieJar
+        const options = {
+            method: 'GET',
+            headers: { 'Authorization': this.masterCredential.token },
+            url,
+            jar: cookieJar,
+            withCredentials: true
+        };
+        return axios(options)
+            .then((response: any) => {
+                return response.data
+            })
+    }
+    storeUserToken(username: string, userToken: string) {
+        let credential = {token:userToken, cookieJar: new CookieJar()}
+        this.credentials.set(username, credential)
+    }
+    public async getAndStoreUserStoken(username:string){
+        if(this.credentials.has(username)){
+            return;
+        }
+        try {
+            let userToken = await this.getUserToken(username)
+            if(!!userToken){
+                console.log(`storing token for ${username}`)
+                this.storeUserToken(username, userToken)
+            } else {
+                throw new Error("token does not exists")
+            }
+        } catch (error) {
+            throw error
+        }
+    }
+    public printMasterCookieJar(): string {
         return JSON.stringify(this.masterCredential.cookieJar)
     }
 
