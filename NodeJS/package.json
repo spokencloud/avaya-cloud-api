@@ -9,7 +9,7 @@
     "start": "tsc-watch --onsuccess \"node dist/src/index.js\"",
     "test-comment": "echo 'if jest command ends with test, files must have test in the name to be run; remove test, jest will run all files.'",
     "test": "jest --env=node --colors --coverage test",
-    "unit": "jest -c=jest.unit.config.js --env=node --colors --coverage __tests__",
+    "unit": "jest -c=jest.unit.config.js --env=node --colors --coverage __unit__",
     "integration": "jest -c=jest.integration.config.js --env=node --colors --coverage  __integration__"
   },
   "dependencies": {
