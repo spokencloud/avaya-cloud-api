@@ -6,6 +6,7 @@ export const tough = require('tough-cookie');
 export const STATION_NAME = 'generated station';
 export const AGENT_FIRST_NAME = 'generated';
 export const AGENT_LAST_NAME = 'agent';
+export const USER_PATH = 'user';
 export const STATION_GROUP_PATH = 'spokenAbc/agentStationGroups/client';
 export const AGENT_JOB_PATH = '/spokenAbc/jobs/agents';
 export const FETCH_SKILL_ID_PATH = 'spokenAbc/skills/multiClientSkills?clientIds=';

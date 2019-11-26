@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "client library for interacting with avaya cloud api",
   "main": "dist/src/index.js",
+  "typings": "dist/src/index.d.ts",
   "license": "SEE LICENSE IN session.js",
   "scripts": {
     "compile": "tsc",

@@ -3,6 +3,8 @@ import { createSession } from "./session"
 import { createSubscriptionClient } from "./SubscriptionClient";
 import { Subscription } from "./Subscription";
 import isValidParameter from "./Utils";
+import { RestClient } from "./RestClient";
+
 
 const args = require('minimist')(process.argv.slice(2));
 
@@ -21,7 +23,10 @@ if (!isEndpointValid ||
     process.exit()
 }
 let session = createSession(endpoint, adminUsername, adminPassword);
-let subscriptionClient = createSubscriptionClient(session);
+// todo: provide token
+let masterToken = ""
+let restClient = new RestClient(endpoint, masterToken)
+let subscriptionClient = createSubscriptionClient(session, restClient);
 
 async function createSubscription() {
     try {

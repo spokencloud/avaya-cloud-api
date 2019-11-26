@@ -1,5 +1,6 @@
 import { Session } from "./session";
 import { Subscription } from "./Subscription";
+import { RestClient } from "./RestClient";
 
 const VERSION = '1.0';
 const SUBSCRIPTION_PATH = '/spokenAbc/subscriptions/v' + VERSION + '/subscriptions';
@@ -9,9 +10,11 @@ const QUESTION_MARK = '?';
 
 class SubscriptionClient {
     session: Session;
+    restClient: RestClient;
 
-    constructor(session: any) {
+    constructor(session: any, restClient: RestClient) {
         this.session = session
+        this.restClient = restClient
     }
 
     async createSubscription(createSubscriptionRequest: Subscription) {
@@ -35,8 +38,8 @@ class SubscriptionClient {
     }
 
     async getSubAccountAppId() {
-        return this.session.getSubAccount()
-            .then(response => {
+        return this.restClient.getSubAccount()
+            .then((response: any) => {
                 return response.appId
             })
     }
@@ -74,6 +77,6 @@ class SubscriptionClient {
     }
 }
 
-export function createSubscriptionClient(session: Session) {
-    return new SubscriptionClient(session);
+export function createSubscriptionClient(session: Session, restClient: RestClient) {
+    return new SubscriptionClient(session, restClient);
 }

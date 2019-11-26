@@ -81,18 +81,6 @@ export class Session {
         return this.axios_instance.put(path, body)
     }
 
-    async getSubAccount() {
-        return this.axios_instance.get('/user')
-            .then((response: { data: { [x: string]: any; }; }) => {
-                //console.log(response);
-                let accessibleSubAccounts = response.data['accessibleClients'];
-                // console.log(accessibleSubAccounts);
-                // ensure we always get the same subAccount ordering
-                accessibleSubAccounts = Constants.lodash.sortBy(accessibleSubAccounts, ['id'])
-                let subAccount = accessibleSubAccounts[0]
-                return subAccount
-            })
-    }
 }
 
 Constants.axiosCookieJarSupport(Constants.axios);

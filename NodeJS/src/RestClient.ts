@@ -1,5 +1,5 @@
 import { CookieJar } from "tough-cookie";
-import { STATION_GROUP_PATH, lodash } from "./Constants";
+import { STATION_GROUP_PATH, USER_PATH, lodash } from "./Constants";
 export const axios = require('axios').default;
 export const axiosCookieJarSupport = require('@3846masa/axios-cookiejar-support').default;
 export const STATION_GROUP_ID_NOT_EXISTS = -1
@@ -39,20 +39,10 @@ export class RestClient {
         this.credentials.set(username, credential)
     }
     public async getAndStoreUserStoken(username: string) {
-        if (this.credentials.has(username)) {
-            return;
-        }
-        try {
-            let userToken = await this.getUserToken(username)
-            if (!!userToken) {
-                console.log(`storing token for ${username}`)
-                this.storeUserToken(username, userToken)
-            } else {
-                throw new Error("token does not exists")
-            }
-        } catch (error) {
-            throw error
-        }
+        let userToken = await this.getUserToken(username)
+        console.log(`storing token for ${username}`)
+        this.storeUserToken(username, userToken)
+
     }
     prepareGetOptions(url: string) {
         const cookieJar = this.masterCredential.cookieJar
@@ -89,6 +79,21 @@ export class RestClient {
             .catch((error: any) => {
                 console.log(error)
                 return - error.response.status
+            })
+    }
+    public async getSubAccount() {
+        let url = `${this.baseUrl}/${USER_PATH}`
+        console.log(`getSubAccount url is ${url}`)
+        const options = this.prepareGetOptions(url)
+        return axios(options)
+            .then((response: { data: { [x: string]: any; }; }) => {
+                //console.log(response);
+                let accessibleSubAccounts = response.data['accessibleClients'];
+                // console.log(accessibleSubAccounts);
+                // ensure we always get the same subAccount ordering
+                accessibleSubAccounts = lodash.sortBy(accessibleSubAccounts, ['id'])
+                let subAccount = accessibleSubAccounts[0]
+                return subAccount
             })
     }
     public printMasterCookieJar(): string {

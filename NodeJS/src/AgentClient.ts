@@ -118,7 +118,7 @@ export class AgentClient {
     async getSkillNumbers() {
         await this.session.login();
 
-        let subAccountId = await this.session.getSubAccount()
+        let subAccountId = await this.restClient.getSubAccount()
             .then((response: { id: any }) => {
                 return response.id
             });
@@ -198,7 +198,7 @@ export class AgentClient {
     }
 
     async getSubAccountId() {
-        return this.session.getSubAccount()
+        return this.restClient.getSubAccount()
             .then((response: { id: any }) => {
                 return response.id
             })
