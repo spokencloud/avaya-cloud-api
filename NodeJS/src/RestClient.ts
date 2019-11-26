@@ -2,7 +2,7 @@ import { CookieJar } from "tough-cookie";
 import { STATION_GROUP_PATH, lodash } from "./Constants";
 export const axios = require('axios').default;
 export const axiosCookieJarSupport = require('@3846masa/axios-cookiejar-support').default;
-
+export const STATION_GROUP_ID_NOT_EXISTS = -1
 axiosCookieJarSupport(axios);
 
 interface Credential {
@@ -54,7 +54,7 @@ export class RestClient {
             throw error
         }
     }
-    prepareGetOptions (url:string) {
+    prepareGetOptions(url: string) {
         const cookieJar = this.masterCredential.cookieJar
         const options = {
             method: 'GET',
@@ -65,15 +65,30 @@ export class RestClient {
         };
         return options
     }
+    /**
+     * Caller should await for the method to finish. When call is successful, a number greater than 0 will be returned.
+     * When subAccountId has no station group defined, -1 will be returned;
+     * For other errors, a negative value of http status code will be returned;
+     * @param subAccountId 
+     */
     public async getAgentStationGroupId(subAccountId: string) {
         let url = `${this.baseUrl}/${STATION_GROUP_PATH}/${subAccountId}`
+        console.log(`getAgentStationGroupId url is ${url}`)
         const options = this.prepareGetOptions(url)
         return axios(options)
             .then((response: any) => {
                 let agentStationGroups = response.data;
+                // console.log(agentStationGroups)
+                if (agentStationGroups.length === 0) {
+                    return STATION_GROUP_ID_NOT_EXISTS
+                }
                 // ensure we always get the same subAccount ordering
                 agentStationGroups = lodash.sortBy(agentStationGroups, ['id']);
                 return agentStationGroups[0].id;
+            })
+            .catch((error: any) => {
+                console.log(error)
+                return - error.response.status
             })
     }
     public printMasterCookieJar(): string {
