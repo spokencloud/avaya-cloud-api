@@ -169,7 +169,7 @@ export class AgentClient {
 
         let agent = {};
         try {
-            agent = await this.getAgentByUsername(agentUsername)
+            agent = await this.restClient.getAgentByUsername(agentUsername)
         } catch (e) {
             if (e.response.status === 404) {
                 console.log('agent ' + agentUsername + ' not found')
@@ -204,13 +204,6 @@ export class AgentClient {
             })
     }
 
-    async getAgentByUsername(agent_username: string) {
-        return this.session.get(Constants.FETCH_AGENT_BY_USERNAME_PATH + agent_username)
-            .then((response: { data: any }) => {
-                // console.log(response.data)
-                return response.data
-            })
-    }
 
     async getAgentByLoginId(loginId: string) {
         return this.session.get(Constants.FETCH_AGENT_ID_PATH + loginId)
@@ -254,7 +247,7 @@ export class AgentClient {
             let counter = 0;
             const intervalId = setInterval(async () => {
                 try {
-                    await this.getAgentByUsername(agent_username);
+                    await this.restClient.getAgentByUsername(agent_username);
                     process.stdout.write('.');
                     counter++;
                     if (counter > Constants.MAX_RETRY) {
@@ -373,7 +366,7 @@ export class AgentClient {
         }
 
         try {
-            let agent = await this.getAgentByUsername(agentUsername);
+            let agent = await this.restClient.getAgentByUsername(agentUsername);
             await this.deleteAgentOnly(agentUsername, agent.loginId);
             await this.waitForAgentDeletion(agentUsername);
         } catch (e) {

@@ -15,7 +15,7 @@ export const EXTENSION_PATH = 'spokenAbc/extensions/next/';
 export const STATION_ONLY_PATH = '/spokenAbc/stations?clientId=';
 export const REMOVE_AGENT_PATH = '/spokenAbc/agents/removeAgent';
 export const DELETE_STATION_PATH = '/spokenAbc/jobs/stations/';
-export const FETCH_AGENT_BY_USERNAME_PATH = '/spokenAbc/agents/username/';
+export const FETCH_AGENT_BY_USERNAME_PATH = 'spokenAbc/agents/username';
 export const FETCH_AGENT_ID_PATH = '/spokenAbc/agents/loginId/';
 export const USER_QUESTION_ANSWER_PATH = '/user/question/answer';
 export const ENDPOINT_KEY = 'endpoint';

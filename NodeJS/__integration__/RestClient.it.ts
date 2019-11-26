@@ -35,4 +35,13 @@ describe("RestClient", () => {
         let id = await restClient.getAgentStationGroupId(clientIdNotExists)
         expect(id).toEqual(-403)
     })
+    test("getSubAccount should return first subaccount", async () => {
+        let subaccount = await restClient.getSubAccount()
+        expect(subaccount.id).toEqual(1)
+    })    
+    test("getAgentByUsername should return agent", async () => {
+        let username = "super1"
+        let agent = await restClient.getAgentByUsername(username)
+        expect(agent.username).toEqual(username)
+    })
 })

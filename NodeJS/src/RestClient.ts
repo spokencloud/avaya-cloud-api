@@ -1,5 +1,5 @@
 import { CookieJar } from "tough-cookie";
-import { STATION_GROUP_PATH, USER_PATH, lodash } from "./Constants";
+import { STATION_GROUP_PATH, USER_PATH, FETCH_AGENT_BY_USERNAME_PATH, lodash } from "./Constants";
 export const axios = require('axios').default;
 export const axiosCookieJarSupport = require('@3846masa/axios-cookiejar-support').default;
 export const STATION_GROUP_ID_NOT_EXISTS = -1
@@ -68,7 +68,6 @@ export class RestClient {
         return axios(options)
             .then((response: any) => {
                 let agentStationGroups = response.data;
-                // console.log(agentStationGroups)
                 if (agentStationGroups.length === 0) {
                     return STATION_GROUP_ID_NOT_EXISTS
                 }
@@ -77,7 +76,6 @@ export class RestClient {
                 return agentStationGroups[0].id;
             })
             .catch((error: any) => {
-                console.log(error)
                 return - error.response.status
             })
     }
@@ -94,6 +92,16 @@ export class RestClient {
                 accessibleSubAccounts = lodash.sortBy(accessibleSubAccounts, ['id'])
                 let subAccount = accessibleSubAccounts[0]
                 return subAccount
+            })
+    }
+    public async getAgentByUsername(agent_username: string) {
+        let url = `${this.baseUrl}/${FETCH_AGENT_BY_USERNAME_PATH}/${agent_username}`
+        console.log(`getAgentByUsername url is ${url}`)
+        const options = this.prepareGetOptions(url)
+        return axios(options)
+            .then((response: { data: any }) => {
+                // console.log(response.data)
+                return response.data
             })
     }
     public printMasterCookieJar(): string {
