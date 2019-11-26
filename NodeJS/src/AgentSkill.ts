@@ -2,6 +2,7 @@ import { createSession } from "./session"
 import { createAgentClient } from "./AgentClient"
 import * as Constants from "./Constants";
 import isValidParameter from "./Utils";
+import { RestClient } from "./RestClient";
 
 const args = require('minimist')(process.argv.slice(2));
 
@@ -19,7 +20,10 @@ if (!isEndpointValid || !isAdminUsernameValid || !isAdminPasswordValid) {
 }
 
 let session = createSession(endpoint, adminUsername, adminPassword);
-let agentClient = createAgentClient(session);
+// todo: provide token
+let masterToken = ""
+let restClient = new RestClient(endpoint, masterToken)
+let agentClient = createAgentClient(session, restClient);
 
 async function agentSkillNumbers() {
     try {

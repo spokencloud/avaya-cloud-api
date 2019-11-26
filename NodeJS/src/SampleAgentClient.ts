@@ -3,6 +3,7 @@ import * as Constants from "./Constants";
 import { createSession } from "./session";
 import SkillPriority, { createAgentClient } from "./AgentClient";
 import isValidParameter, { isValidSkillsWithPriorities } from "./Utils";
+import { RestClient } from "./RestClient";
 
 const args = require('minimist')(process.argv.slice(2));
 
@@ -12,6 +13,7 @@ let adminPassword = args[Constants.ADMIN_PASSWORD_KEY].replace(Constants.REPLACE
 let agentUsername = args[Constants.AGENT_USERNAME_KEY].replace(Constants.REPLACE_REGEX, Constants.EMPTY_STRING);
 let agentPassword = args[Constants.AGENT_PASSWORD_KEY].replace(Constants.REPLACE_REGEX, Constants.EMPTY_STRING);
 let agentSkill = args[Constants.AGENT_SKILL_KEY].replace(Constants.REPLACE_REGEX, Constants.EMPTY_STRING);
+
 
 let isSkillValid = isValidSkillsWithPriorities(Constants.AGENT_SKILL_KEY, agentSkill)
 let isEndpointValid = isValidParameter(Constants.ENDPOINT_KEY, endpoint);
@@ -29,7 +31,10 @@ if (!isEndpointValid ||
     process.exit()
 }
 let session = createSession(endpoint, adminUsername, adminPassword);
-let agentClient = createAgentClient(session);
+// todo: provide token
+let masterToken = ""
+let restClient = new RestClient(endpoint, masterToken)
+let agentClient = createAgentClient(session, restClient);
 let skillWithPriorities: [SkillPriority] = JSON.parse(agentSkill);
 
 async function createAgent() {

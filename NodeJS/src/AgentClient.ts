@@ -1,5 +1,6 @@
 import { Session } from "./session";
 import * as Constants from "./Constants";
+import { RestClient } from "./RestClient";
 
 export default interface SkillPriority {
     skillNumber: number,
@@ -8,15 +9,17 @@ export default interface SkillPriority {
 
 export class AgentClient {
     session: Session;
+    restClient: RestClient;
 
-    constructor(session: any) {
+    constructor(session: any, restClient: RestClient) {
         this.session = session
+        this.restClient = restClient
     }
 
     async createAgent(agent_username: string, agent_password: string, skillsWithPriority: [SkillPriority]) {
         await this.session.login();
         let subAccountId = await this.getSubAccountId();
-        let agentStationGroupId = await this.getAgentStationGroupId(subAccountId);
+        let agentStationGroupId = await this.restClient.getAgentStationGroupId(subAccountId);
         let agentLoginId = await this.generateExtension(subAccountId, 'AGENT');
         let skillIds = await this.getSkillIds(subAccountId);
         await this.sendCreateAgentRequest(
@@ -42,16 +45,6 @@ export class AgentClient {
         // wait until station is created
         await this.waitForStationCreation(subAccountId, agent_username);
         return this.getAgent(agent_username);
-    }
-
-    async getAgentStationGroupId(subAccountId: string) {
-        return this.session.get(Constants.STATION_GROUP_PATH + subAccountId)
-            .then((response: { data: any }) => {
-                let agentStationGroups = response.data;
-                // ensure we always get the same subAccount ordering
-                agentStationGroups = Constants.lodash.sortBy(agentStationGroups, ['id']);
-                return agentStationGroups[0].id;
-            })
     }
 
     async sendCreateAgentRequest(
@@ -402,6 +395,6 @@ export class AgentClient {
     }
 }
 
-export function createAgentClient(session: Session) {
-    return new AgentClient(session);
+export function createAgentClient(session: Session, restClient: RestClient) {
+    return new AgentClient(session, restClient);
 }

@@ -13,7 +13,7 @@ describe("RestClient", () => {
         const restClient = new RestClient("http://localhost:8081", token)
         await restClient.getAndStoreUserStoken("yangadmin1")
         expect(restClient.credentials.has("yangadmin1")).toBeTruthy()
-        let {token: userToken}  = restClient.credentials.get("yangadmin1") || {}
+        let {token: userToken} = restClient.credentials.get("yangadmin1") || { token:""}
         expect(userToken).toEqual(token)
     })
 
