@@ -42,7 +42,7 @@ describe("RestClient", () => {
     test("getAgentByUsername should return agent", async () => {
         let username = "super1"
         let agent = await restClient.getAgentByUsername(username)
-        expect(agent.username).toEqual(username)
+        expect(agent["username"]).toEqual(username)
     })
     test("requestAgentDeletion should return false if agent1 can not be deleted", async () => {
         let username = "agent1"
@@ -61,15 +61,17 @@ describe("RestClient", () => {
         expect(submitted).toBeUndefined()
     })
     test("getAgentByLoginId return undefined when not found", async () => {
-        const loginId = "1"
-        let submitted = await restClient.getAgentByLoginId(loginId)
-        expect(submitted).toBeUndefined()
+        const loginId = 1
+        let submitted = await restClient.getAgentByLoginId(loginId).catch(error => {
+            return error.response.status
+        })
+        expect(submitted).toEqual(404)
     })
     test("getAgentByLoginId return agent", async () => {
-        const loginId = "7300001101"
+        const loginId = 7300001101
         let submitted = await restClient.getAgentByLoginId(loginId)
         expect(submitted).toBeDefined()
-        expect(submitted.loginId).toEqual(loginId)
+        expect(submitted.loginId).toEqual(loginId.toString())
     })
     test("getNextAvailableExtension", async () => {
         let submitted = await restClient.getNextAvailableExtension("1", "AGENT")

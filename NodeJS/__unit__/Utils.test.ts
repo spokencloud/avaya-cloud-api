@@ -1,4 +1,4 @@
-import isValidParameter, { skillDecoder, isValidSkillsWithPriorities } from "../src/Utils"
+import isValidParameter, { skillDecoder, isValidSkillsWithPriorities, sleep } from "../src/Utils"
 import { Ok, Err } from "ts.data.json";
 import SkillPriority from "../src/AgentClient";
 describe("Utils.ts", () => {
@@ -33,7 +33,7 @@ describe("Utils.ts", () => {
     test("isValidSkillsWithPriorities should return true", () => {
         let skill1 = { skillNumber: 5, skillPriority: 10 }
         let skill2 = { skillNumber: 5, skillPriority: 10 }
-        let skills = [ skill1, skill2 ]
+        let skills = [skill1, skill2]
         let str = JSON.stringify(skills)
         let isValid = isValidSkillsWithPriorities('notused', str)
         expect(isValid).toBeTruthy()
@@ -41,9 +41,19 @@ describe("Utils.ts", () => {
     test("isValidSkillsWithPriorities should return false", () => {
         let skill1 = { skillNumber: 5, skillPriority: 10 }
         let skill2 = { skillNumber: 5 }
-        let skills = [ skill1, skill2 ]
+        let skills = [skill1, skill2]
         let str = JSON.stringify(skills)
         let isValid = isValidSkillsWithPriorities('notused', str)
         expect(isValid).toBeFalsy()
+    })
+    test("sleep should sleep", async () => {
+        let d1 = new Date();
+        let start = d1.getTime();
+        const milliseconds = 100
+        await sleep(milliseconds)
+        let d2 = new Date();
+        let end = d2.getTime();
+        console.log(`end=${end}, start=${start}, differenece=${end - start}`)
+        expect((end - start) >= milliseconds).toBeTruthy()
     })
 })

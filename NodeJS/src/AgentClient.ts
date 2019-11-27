@@ -1,5 +1,6 @@
 import * as Constants from "./Constants";
 import { RestClient } from "./RestClient";
+import { sleep } from "./Utils";
 
 export default interface SkillPriority {
     skillNumber: number,
@@ -7,17 +8,38 @@ export default interface SkillPriority {
 }
 
 export class AgentClient {
-    restClient: RestClient
-    subAccountId: string
+
+    private restClient: RestClient
+    private subAccountId: string
+
     constructor(subAccountId: string, restClient: RestClient) {
         this.restClient = restClient
         this.subAccountId = subAccountId
     }
+    /**
+     * TODO: verify input
+     * @param agent_username 
+     * @param agent_password 
+     * @param skillsWithPriority 
+     */
+    public async createAgent(agent_username: string, agent_password: string, skillsWithPriority: [SkillPriority]) {
 
-    async createAgent(agent_username: string, agent_password: string, skillsWithPriority: [SkillPriority]) {
+        // todo: pass it in to reuse
         let agentStationGroupId = await this.restClient.getAgentStationGroupId(this.subAccountId);
+        if (agentStationGroupId < 0) {
+            throw new Error(`subAccount ${this.subAccountId} has no agent station group defined`)
+        }
+
         let agentLoginId = await this.restClient.getNextAvailableExtension(this.subAccountId, 'AGENT');
-        let skillIds = await this.getSkillIds(this.subAccountId);
+        if (agentLoginId < 0) {
+            throw new Error(`subAccount ${this.subAccountId} has no available agent extension`)
+        }
+        // todo: pass it in to reuse
+        let skillIds = await this.getSkillIds();
+        if (skillIds.length == 0) {
+            throw new Error(`subAccount ${this.subAccountId} has no skills`)
+        }
+
         await this.sendCreateAgentRequest(
             this.subAccountId,
             agent_username,
@@ -91,18 +113,18 @@ export class AgentClient {
     }
 
 
-    getSkillIds(subAccountId: string) {
-        return this.restClient.getSubAccountSkills(subAccountId)
+    getSkillIds(): Promise<[]> {
+        return this.restClient.getSubAccountAgentSkills(this.subAccountId)
             .then((response: { data: { [x: string]: { [x: string]: any } } }) => {
                 // console.log(response)
-                let skillResponses = response.data['skillResponses'][subAccountId];
+                let skillResponses = response.data['skillResponses'][this.subAccountId];
                 return skillResponses.map((skillResponse: { id: any }) => skillResponse.id);
             })
 
     }
 
     getSkillNumbers() {
-        return this.restClient.getSubAccountSkills(this.subAccountId)
+        return this.restClient.getSubAccountAgentSkills(this.subAccountId)
             .then((response: { data: { [x: string]: { [x: string]: any } } }) => {
                 let skillResponses = response.data['skillResponses'][this.subAccountId];
                 const availableSkills = [];
@@ -168,33 +190,34 @@ export class AgentClient {
         return { 'agent': agent, 'station': station }
     }
 
-
-    async waitForAgentCreation(loginId: string) {
-        return new Promise((resolve, reject) => {
-            process.stdout.write("Creating agent.");
-            let counter = 0;
-            const intervalId = setInterval(async () => {
-                try {
-                    await this.restClient.getAgentByLoginId(loginId);
-                    console.log('agent created');
-                    clearInterval(intervalId);
-                    resolve()
-                } catch (e) {
-                    if (e.response.status === 404) {
-                        process.stdout.write('.');
-                        counter++;
-                        if (counter > Constants.MAX_RETRY) {
-                            clearInterval(intervalId);
-                            reject(Error('agent creation failed'))
-                        }
-                    } else {
-                        console.log(e);
-                        throw e
-                    }
-                }
-            }, Constants.INTERVAL_IN_MILLIS);
-            return intervalId
+    async existsAgentByLoginId(loginId: number) {
+        let promise = this.restClient.getAgentByLoginId(loginId)
+        return await this.checkAgentPromise(promise)
+    }
+    async existsAgentByUsername(username: string) {
+        let promise = this.restClient.getAgentByUsername(username)
+        return await this.checkAgentPromise(promise)
+    }
+    private checkAgentPromise(promise: Promise<object>): Promise<boolean> {
+        return promise
+        .then(agent => {
+            return true
         })
+        .catch(error => {
+            return false
+        }
+        )
+    }
+    async waitForAgentCreation(loginId: number) {
+        for (let counter = 0; counter < Constants.MAX_RETRY; counter++) {
+            let exists = await this.existsAgentByLoginId(loginId);
+            if (exists) {
+                console.log("agent creation succeeded")
+                return true
+            }
+            sleep(Constants.INTERVAL_IN_MILLIS)
+        }
+        return false
     }
 
     async waitForAgentDeletion(agent_username: string) {

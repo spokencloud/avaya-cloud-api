@@ -27,3 +27,6 @@ export function isValidSkillsWithPriorities(key: string, skillPriorities: string
     }
     return true;
 }
+export async function sleep(ms: number) {
+    await new Promise(resolve => setTimeout(resolve, ms));
+}

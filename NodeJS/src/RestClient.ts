@@ -46,7 +46,7 @@ export class RestClient {
     }
 
     /**
-     * Caller should await for the method to finish. When call is successful, a number greater than 0 will be returned.
+     * Caller should await the method to finish. When call is successful, a number greater than 0 will be returned.
      * When subAccountId has no station group defined, -1 will be returned;
      * For other errors, a negative value of http status code will be returned;
      * @param subAccountId 
@@ -91,16 +91,16 @@ export class RestClient {
         return id
     }
 
-    public getAgentByUsername(agent_username: string) {
-    let url = `${this.baseUrl}/${FETCH_AGENT_BY_USERNAME_PATH}/${agent_username}`
-    console.log(`getAgentByUsername url is ${url}`)
-    const options = this.prepareGetOptions(url)
-    return axios(options)
-        .then((response: { data: any }) => {
-            // console.log(response.data)
-            return response.data
-        })
-}
+    public getAgentByUsername(agent_username: string): Promise<any> {
+        let url = `${this.baseUrl}/${FETCH_AGENT_BY_USERNAME_PATH}/${agent_username}`
+        console.log(`getAgentByUsername url is ${url}`)
+        const options = this.prepareGetOptions(url)
+        return axios(options)
+            .then((response: { data: any }) => {
+                // console.log(response.data)
+                return response.data
+            })
+    }
     /**
      * return true if agent deletion is requested successfully
      * return fasle otherwise
@@ -108,35 +108,35 @@ export class RestClient {
      * @param agentLoginId 
      */
     public requestAgentDeletion(agentUsername: string, agentLoginId: any) {
-    let url = `${this.baseUrl}/${REMOVE_AGENT_PATH}`
-    let deleteRequest = { 'username': agentUsername, 'loginId': agentLoginId };
-    const options = this.prepareBaseOptions()
-    return axios.post(url, deleteRequest, options).then((response: { data: any }) => {
-        return true
-    })
-        .catch((error: any) => {
-            console.log(error.response.status)
-            return false
+        let url = `${this.baseUrl}/${REMOVE_AGENT_PATH}`
+        let deleteRequest = { 'username': agentUsername, 'loginId': agentLoginId };
+        const options = this.prepareBaseOptions()
+        return axios.post(url, deleteRequest, options).then((response: { data: any }) => {
+            return true
         })
-}
+            .catch((error: any) => {
+                console.log(error.response.status)
+                return false
+            })
+    }
 
-prepareBaseOptions() {
-    const cookieJar = this.masterCredential.cookieJar
-    return {
-        headers: { 'Authorization': this.masterCredential.token },
-        jar: cookieJar,
-        withCredentials: true
-    };
-}
-prepareGetOptions(url: string) {
-    return { ...this.prepareBaseOptions(), url, method: 'GET' }
-}
-preparePostOptions(url: string) {
-    return { ...this.prepareBaseOptions(), url, method: 'POST' }
-}
-prepareDeleteOptions(url: string) {
-    return { ...this.prepareBaseOptions(), url, method: 'DELETE' }
-}
+    prepareBaseOptions() {
+        const cookieJar = this.masterCredential.cookieJar
+        return {
+            headers: { 'Authorization': this.masterCredential.token },
+            jar: cookieJar,
+            withCredentials: true
+        };
+    }
+    prepareGetOptions(url: string) {
+        return { ...this.prepareBaseOptions(), url, method: 'GET' }
+    }
+    preparePostOptions(url: string) {
+        return { ...this.prepareBaseOptions(), url, method: 'POST' }
+    }
+    prepareDeleteOptions(url: string) {
+        return { ...this.prepareBaseOptions(), url, method: 'DELETE' }
+    }
 
     /**
      * returns true if request submitted successfully
@@ -144,89 +144,99 @@ prepareDeleteOptions(url: string) {
      * @param stationId
      */
     public requestStationDeletion(stationId: string) {
-    let url = `${this.baseUrl}/${DELETE_STATION_PATH}/${stationId}`
-    let options = this.prepareDeleteOptions(url)
-    return axios(options)
-        .then((response: any) => {
-            return true
-        })
-        .catch((error: any) => {
-            console.log(error.response.status)
-            return false
-        })
-}
+        let url = `${this.baseUrl}/${DELETE_STATION_PATH}/${stationId}`
+        let options = this.prepareDeleteOptions(url)
+        return axios(options)
+            .then((response: any) => {
+                return true
+            })
+            .catch((error: any) => {
+                console.log(error.response.status)
+                return false
+            })
+    }
     /**
      * return station or undefined
      * @param subAccountId
      * @param agentUsername 
      */
     public getStationForAgent(subAccountId: string, agentUsername: string) {
-    let url = `${this.baseUrl}/${STATION_ONLY_PATH}${subAccountId}`
-    let options = this.prepareGetOptions(url)
-    return axios(options)
-        .then((result: { data: any[] }) => {
-            return result.data.find(element => element.username === agentUsername);
-        })
-        .catch((error: any) => {
-            console.log(error.response.status)
-        })
-}
+        let url = `${this.baseUrl}/${STATION_ONLY_PATH}${subAccountId}`
+        let options = this.prepareGetOptions(url)
+        return axios(options)
+            .then((result: { data: any[] }) => {
+                return result.data.find(element => element.username === agentUsername);
+            })
+            .catch((error: any) => {
+                console.log(error.response.status)
+            })
+    }
     /**
      * return agent or undefined
      * @param loginId 
      */
-    public getAgentByLoginId(loginId: string) {
-    let url = `${this.baseUrl}/${FETCH_AGENT_ID_PATH}/${loginId}`
-    let options = this.prepareGetOptions(url)
-    return axios(options)
-        .then((response: { data: any }) => {
-            return response.data
-        })
-        .catch((error: any) => {
-            console.log(error.response.status)
-        })
-}
+    public getAgentByLoginId(loginId: number): Promise<any> {
+        let url = `${this.baseUrl}/${FETCH_AGENT_ID_PATH}/${loginId}`
+        let options = this.prepareGetOptions(url)
+        return axios(options)
+            .then((response: { data: any }) => {
+                return response.data
+            })
+     
+    }
     public createAgentJob(agent: any) {
-    let url = `${this.baseUrl}/${AGENT_JOB_PATH}`
-    let options = this.prepareBaseOptions()
-    return axios.post(url, agent, options)
-        .then((result: any) => {
-            return result
-        })
-}
+        let url = `${this.baseUrl}/${AGENT_JOB_PATH}`
+        let options = this.prepareBaseOptions()
+        return axios.post(url, agent, options)
+            .then((result: any) => {
+                return result
+            })
+    }
+    /**
+     * return extension number if successful.otherwise a negative status code
+     * @param subAccountId 
+     * @param type 
+     */
+    public getNextAvailableExtension(subAccountId: string, type: string): Promise<number> {
+        let url = `${this.baseUrl}/${EXTENSION_PATH}/${subAccountId}/type/${type}`
+        let options = this.preparePostOptions(url)
+        return axios(options)
+            .then((response: { data: any }) => {
+                return response.data
+            })
+            .catch((error: any) => {
+                console.log(error.response.status)
+                return - error.response.status
+            })
+    }
+    public createStationJob(station: object): Promise<number> {
+        let url = `${this.baseUrl}/${STATION_JOB_PATH}`
+        let options = this.prepareBaseOptions()
+        return axios.post(url, station, options)
+            .then((result: any) => {
+                // console.log(result.data)
+                return result
+            })
+            .catch((error: any) => {
+                console.log(error.response.status)
+                return - error.response.status
+            })
+    }
 
-    public getNextAvailableExtension(subAccountId: string, type: string) {
-    let url = `${this.baseUrl}/${EXTENSION_PATH}/${subAccountId}/type/${type}`
-    let options = this.preparePostOptions(url)
-    return axios(options)
-        .then((response: { data: any }) => {
-            return response.data
-        })
-}
-    public createStationJob(station: any){
-    let url = `${this.baseUrl}/${STATION_JOB_PATH}`
-    let options = this.prepareBaseOptions()
-    return axios.post(url, station, options)
-        .then((result: any) => {
-            // console.log(result.data)
-            return result
-        })
-}
 
-
-    public getSubAccountSkills(subAccountId: string) {
-    let url = `${this.baseUrl}/${FETCH_SKILL_ID_PATH}/${subAccountId}&skillType=AGENT`
-    let options = this.prepareGetOptions(url)
-    return axios(options)
-        .then((response: any) => {
-            return response
-        })
-}
+    public getSubAccountAgentSkills(subAccountId: string) {
+        let url = `${this.baseUrl}/${FETCH_SKILL_ID_PATH}/${subAccountId}&skillType=AGENT`
+        let options = this.prepareGetOptions(url)
+        return axios(options)
+            .then((response: any) => {
+                return response
+            })
+    }
 
 
     public printMasterCookieJar(): string {
-    return JSON.stringify(this.masterCredential.cookieJar)
-}
+        return JSON.stringify(this.masterCredential.cookieJar)
+    }
 
 }
 
