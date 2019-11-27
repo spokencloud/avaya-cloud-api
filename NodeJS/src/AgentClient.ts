@@ -181,7 +181,7 @@ export class AgentClient {
         let subAccountId = await this.getSubAccountId();
         let station = {};
         try {
-            station = await this.getStationForAgent(subAccountId, agentUsername);
+            station = await this.restClient.getStationForAgent(subAccountId, agentUsername);
             if (!station) {
                 console.log('station associated with ' + agentUsername + ' not found');
                 station = {}
@@ -204,22 +204,13 @@ export class AgentClient {
             })
     }
 
-
-    async getAgentByLoginId(loginId: string) {
-        return this.session.get(Constants.FETCH_AGENT_ID_PATH + loginId)
-            .then((response: { data: any }) => {
-                // console.log(response.data)
-                return response.data
-            })
-    }
-
     async waitForAgentCreation(loginId: string) {
         return new Promise((resolve, reject) => {
             process.stdout.write("Creating agent.");
             let counter = 0;
             const intervalId = setInterval(async () => {
                 try {
-                    await this.getAgentByLoginId(loginId);
+                    await this.restClient.getAgentByLoginId(loginId);
                     console.log('agent created');
                     clearInterval(intervalId);
                     resolve()
@@ -276,7 +267,7 @@ export class AgentClient {
             let counter = 0;
             const intervalId = setInterval(async () => {
                 try {
-                    let station = await this.getStationForAgent(subAccountId, agent_username);
+                    let station = await this.restClient.getStationForAgent(subAccountId, agent_username);
                     if (station) {
                         console.log('station created');
                         clearInterval(intervalId);
@@ -315,7 +306,7 @@ export class AgentClient {
             let counter = 0;
             const intervalId = setInterval(async () => {
                 try {
-                    let station = await this.getStationForAgent(subAccountId, agent_username);
+                    let station = await this.restClient.getStationForAgent(subAccountId, agent_username);
                     if (station) {
                         process.stdout.write('.');
                         counter++;
@@ -344,18 +335,13 @@ export class AgentClient {
         })
     }
 
-    async getStationForAgent(subAccountId: string, agent_username: string) {
-        return this.session.get(Constants.STATION_ONLY_PATH + subAccountId)
-            .then((result: { data: any[] }) => {
-                return result.data.find(element => element.username === agent_username);
-            })
-    }
+
 
     async deleteAgent(agentUsername: string) {
 
         let subAccountId = await this.getSubAccountId();
 
-        let station = await this.getStationForAgent(subAccountId, agentUsername);
+        let station = await this.restClient.getStationForAgent(subAccountId, agentUsername);
         // station might have been deleted before, so station might be undefined
         if (station) {
             await this.restClient.requestStationDeletion(station.id);

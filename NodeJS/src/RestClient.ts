@@ -1,5 +1,5 @@
 import { CookieJar } from "tough-cookie";
-import { STATION_GROUP_PATH, USER_PATH, REMOVE_AGENT_PATH, FETCH_AGENT_BY_USERNAME_PATH, DELETE_STATION_PATH, lodash } from "./Constants";
+import { STATION_GROUP_PATH, USER_PATH, REMOVE_AGENT_PATH, FETCH_AGENT_BY_USERNAME_PATH,FETCH_AGENT_ID_PATH, DELETE_STATION_PATH, STATION_ONLY_PATH, lodash } from "./Constants";
 export const axios = require('axios').default;
 export const axiosCookieJarSupport = require('@3846masa/axios-cookiejar-support').default;
 export const STATION_GROUP_ID_NOT_EXISTS = -1
@@ -78,7 +78,6 @@ export class RestClient {
                 //console.log(response);
                 let accessibleSubAccounts = response.data['accessibleClients'];
                 // console.log(accessibleSubAccounts);
-                // ensure we always get the same subAccount ordering
                 accessibleSubAccounts = lodash.sortBy(accessibleSubAccounts, ['id'])
                 let subAccount = accessibleSubAccounts[0]
                 return subAccount
@@ -144,6 +143,37 @@ export class RestClient {
             .catch((error: any) => {
                 console.log(error.response.status)
                 return false
+            })
+    }
+    /**
+     * return station or undefined
+     * @param subAccountId
+     * @param agentUsername 
+     */
+    public async getStationForAgent(subAccountId: string, agentUsername: string) {
+        let url = `${this.baseUrl}/${STATION_ONLY_PATH}${subAccountId}`
+        let options = this.prepareGetOptions(url)
+        return axios(options)
+            .then((result: { data: any[] }) => {
+                return result.data.find(element => element.username === agentUsername);
+            })
+            .catch((error: any) => {
+                console.log(error.response.status)
+            })
+    }
+    /**
+     * return agent or undefined
+     * @param loginId 
+     */
+    public async getAgentByLoginId(loginId: string) {
+        let url = `${this.baseUrl}/${FETCH_AGENT_ID_PATH}/${loginId}`
+        let options = this.prepareGetOptions(url)
+        return axios(options)
+            .then((response: { data: any }) => {
+                return response.data
+            })
+            .catch((error: any) => {
+                console.log(error.response.status)
             })
     }
     public printMasterCookieJar(): string {

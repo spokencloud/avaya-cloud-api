@@ -54,5 +54,23 @@ describe("RestClient", () => {
         let submitted = await restClient.requestStationDeletion(stationId)
         expect(submitted).toBeFalsy()
     })
+    test("getStationForAgent return undefined when not found", async () => {
+        const subAccountId = "1"
+        const username = "super1"
+        let submitted = await restClient.getStationForAgent(subAccountId, username)
+        expect(submitted).toBeUndefined()
+    })
+    test("getAgentByLoginId return undefined when not found", async () => {
+        const loginId = "1"
+        let submitted = await restClient.getAgentByLoginId(loginId)
+        expect(submitted).toBeUndefined()
+    })
+    test("getAgentByLoginId return agent", async () => {
+        const loginId = "7300001101"
+        let submitted = await restClient.getAgentByLoginId(loginId)
+        expect(submitted).toBeDefined()
+        expect(submitted.loginId).toEqual(loginId)
+    })
+
 
 })
