@@ -7,7 +7,7 @@ describe("AgentClient.ts", () => {
     beforeEach(() => {
         // Cast to any if mocking and not fulfilling the static type
         let restClient: any = RestClient as jest.Mock
-        client = new AgentClient(restClient)
+        client = new AgentClient("1", restClient)
     });
 
     test("generateAvayaPassword should return last 6 characters", () => {

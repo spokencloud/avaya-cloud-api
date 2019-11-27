@@ -7,19 +7,19 @@ export default interface SkillPriority {
 }
 
 export class AgentClient {
-    restClient: RestClient;
-
-    constructor(restClient: RestClient) {
+    restClient: RestClient
+    subAccountId: string
+    constructor(subAccountId: string, restClient: RestClient) {
         this.restClient = restClient
+        this.subAccountId = subAccountId
     }
 
     async createAgent(agent_username: string, agent_password: string, skillsWithPriority: [SkillPriority]) {
-        let subAccountId = await this.getSubAccountId();
-        let agentStationGroupId = await this.restClient.getAgentStationGroupId(subAccountId);
-        let agentLoginId = await this.restClient.getNextAvailableExtension(subAccountId, 'AGENT');
-        let skillIds = await this.getSkillIds(subAccountId);
+        let agentStationGroupId = await this.restClient.getAgentStationGroupId(this.subAccountId);
+        let agentLoginId = await this.restClient.getNextAvailableExtension(this.subAccountId, 'AGENT');
+        let skillIds = await this.getSkillIds(this.subAccountId);
         await this.sendCreateAgentRequest(
-            subAccountId,
+            this.subAccountId,
             agent_username,
             agent_password,
             agentStationGroupId,
@@ -30,16 +30,16 @@ export class AgentClient {
         // wait until agent is created
         await this.waitForAgentCreation(agentLoginId);
 
-        let stationExtension = await this.restClient.getNextAvailableExtension(subAccountId, 'STATION');
+        let stationExtension = await this.restClient.getNextAvailableExtension(this.subAccountId, 'STATION');
         await this.sendCreateStationRequest(
             agentStationGroupId,
-            subAccountId,
+            this.subAccountId,
             stationExtension,
             agent_username
         );
 
         // wait until station is created
-        await this.waitForStationCreation(subAccountId, agent_username);
+        await this.waitForStationCreation(agent_username);
         return this.getAgent(agent_username);
     }
 
@@ -101,10 +101,10 @@ export class AgentClient {
 
     }
 
-    getSkillNumbers(subAccountId: string) {
-        return this.restClient.getSubAccountSkills(subAccountId)
+    getSkillNumbers() {
+        return this.restClient.getSubAccountSkills(this.subAccountId)
             .then((response: { data: { [x: string]: { [x: string]: any } } }) => {
-                let skillResponses = response.data['skillResponses'][subAccountId];
+                let skillResponses = response.data['skillResponses'][this.subAccountId];
                 const availableSkills = [];
                 for (let skill of skillResponses) {
                     let skillInfo = {
@@ -150,10 +150,9 @@ export class AgentClient {
             }
         }
 
-        let subAccountId = await this.getSubAccountId();
         let station = {};
         try {
-            station = await this.restClient.getStationForAgent(subAccountId, agentUsername);
+            station = await this.restClient.getStationForAgent(this.subAccountId, agentUsername);
             if (!station) {
                 console.log('station associated with ' + agentUsername + ' not found');
                 station = {}
@@ -169,12 +168,6 @@ export class AgentClient {
         return { 'agent': agent, 'station': station }
     }
 
-    async getSubAccountId() {
-        return this.restClient.getSubAccount()
-            .then((response: { id: any }) => {
-                return response.id
-            })
-    }
 
     async waitForAgentCreation(loginId: string) {
         return new Promise((resolve, reject) => {
@@ -233,13 +226,13 @@ export class AgentClient {
         })
     }
 
-    async waitForStationCreation(subAccountId: any, agent_username: string) {
+    async waitForStationCreation(agent_username: string) {
         return new Promise((resolve, reject) => {
             process.stdout.write("Creating station.");
             let counter = 0;
             const intervalId = setInterval(async () => {
                 try {
-                    let station = await this.restClient.getStationForAgent(subAccountId, agent_username);
+                    let station = await this.restClient.getStationForAgent(this.subAccountId, agent_username);
                     if (station) {
                         console.log('station created');
                         clearInterval(intervalId);
@@ -272,13 +265,13 @@ export class AgentClient {
         })
     }
 
-    async waitForStationDeletion(subAccountId: any, agent_username: any) {
+    async waitForStationDeletion(agent_username: any) {
         return new Promise((resolve, reject) => {
             process.stdout.write("Deleting station.");
             let counter = 0;
             const intervalId = setInterval(async () => {
                 try {
-                    let station = await this.restClient.getStationForAgent(subAccountId, agent_username);
+                    let station = await this.restClient.getStationForAgent(this.subAccountId, agent_username);
                     if (station) {
                         process.stdout.write('.');
                         counter++;
@@ -311,13 +304,11 @@ export class AgentClient {
 
     async deleteAgent(agentUsername: string) {
 
-        let subAccountId = await this.getSubAccountId();
-
-        let station = await this.restClient.getStationForAgent(subAccountId, agentUsername);
+        let station = await this.restClient.getStationForAgent(this.subAccountId, agentUsername);
         // station might have been deleted before, so station might be undefined
         if (station) {
             await this.restClient.requestStationDeletion(station.id);
-            await this.waitForStationDeletion(subAccountId, agentUsername)
+            await this.waitForStationDeletion(agentUsername)
         } else {
             console.log('station associated with ' + agentUsername + ' has already been deleted')
         }
@@ -337,6 +328,8 @@ export class AgentClient {
         }
     }
 }
-export function createAgentClient(restClient: RestClient) {
-    return new AgentClient(restClient);
+export async function createAgentClient(restClient: RestClient): Promise<AgentClient> {
+    let subAccountId = await restClient.getSubAccountId()
+    return new AgentClient(subAccountId, restClient);
+
 }

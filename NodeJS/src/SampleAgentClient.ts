@@ -1,7 +1,7 @@
 import { Err, Ok, Result } from "ts.data.json/dist/result";
 import * as Constants from "./Constants";
 import { createSession } from "./session";
-import SkillPriority, { createAgentClient } from "./AgentClient";
+import SkillPriority, { createAgentClient, AgentClient } from "./AgentClient";
 import isValidParameter, { isValidSkillsWithPriorities } from "./Utils";
 import { RestClient } from "./RestClient";
 
@@ -34,10 +34,9 @@ let session = createSession(endpoint, adminUsername, adminPassword);
 // todo: provide token
 let masterToken = ""
 let restClient = new RestClient(endpoint, masterToken)
-let agentClient = createAgentClient(restClient);
 let skillWithPriorities: [SkillPriority] = JSON.parse(agentSkill);
 
-async function createAgent() {
+async function createAgent(agentClient: AgentClient) {
     try {
         let agentObject = await agentClient.createAgent(agentUsername, agentPassword, skillWithPriorities);
         console.log('agentObject from createAgent');
@@ -47,7 +46,7 @@ async function createAgent() {
     }
 }
 
-async function getAgent() {
+async function getAgent(agentClient: AgentClient) {
     try {
         let agentObject = await agentClient.getAgent(agentUsername);
         console.log('agentObject from getAgent');
@@ -57,7 +56,7 @@ async function getAgent() {
     }
 }
 
-async function deleteAgent() {
+async function deleteAgent(agentClient: AgentClient) {
     try {
         await agentClient.deleteAgent(agentUsername)
     } catch (e) {
@@ -66,11 +65,11 @@ async function deleteAgent() {
 }
 
 async function main() {
-    await createAgent();
-    await getAgent();
-    await deleteAgent();
+    let agentClient = await createAgentClient(restClient);
+    await createAgent(agentClient);
+    await getAgent(agentClient);
+    await deleteAgent(agentClient);
 
 }
-
 main();
 

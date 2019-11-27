@@ -1,5 +1,5 @@
 import { createSession } from "./session"
-import { createAgentClient } from "./AgentClient"
+import { createAgentClient, AgentClient } from "./AgentClient"
 import * as Constants from "./Constants";
 import isValidParameter from "./Utils";
 import { RestClient } from "./RestClient";
@@ -22,19 +22,18 @@ if (!isEndpointValid || !isAdminUsernameValid || !isAdminPasswordValid) {
 // todo: provide token
 let masterToken = ""
 let restClient = new RestClient(endpoint, masterToken)
-let agentClient = createAgentClient(restClient);
 
-async function agentSkillNumbers() {
+async function agentSkillNumbers(agentClient: AgentClient) {
     try {
-        let subAccountId = await agentClient.getSubAccountId()
-        await agentClient.getSkillNumbers(subAccountId);
+        await agentClient.getSkillNumbers();
     } catch (e) {
         console.error(e)
     }
 }
 
 async function main() {
-    await agentSkillNumbers();
+    let agentClient = await createAgentClient(restClient);
+    await agentSkillNumbers(agentClient);
 }
 
 main();
