@@ -71,6 +71,11 @@ describe("RestClient", () => {
         expect(submitted).toBeDefined()
         expect(submitted.loginId).toEqual(loginId)
     })
+    test("getNextAvailableExtension", async () => {
+        let submitted = await restClient.getNextAvailableExtension("1", "AGENT")
+        console.log(submitted)
+        expect(submitted).toBeDefined()
+    })
 
 
 })

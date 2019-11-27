@@ -34,7 +34,7 @@ let session = createSession(endpoint, adminUsername, adminPassword);
 // todo: provide token
 let masterToken = ""
 let restClient = new RestClient(endpoint, masterToken)
-let agentClient = createAgentClient(session, restClient);
+let agentClient = createAgentClient(restClient);
 let skillWithPriorities: [SkillPriority] = JSON.parse(agentSkill);
 
 async function createAgent() {

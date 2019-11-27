@@ -1,4 +1,3 @@
-import { Session } from "./session";
 import * as Constants from "./Constants";
 import { RestClient } from "./RestClient";
 
@@ -8,19 +7,16 @@ export default interface SkillPriority {
 }
 
 export class AgentClient {
-    session: Session;
     restClient: RestClient;
 
-    constructor(session: any, restClient: RestClient) {
-        this.session = session
+    constructor(restClient: RestClient) {
         this.restClient = restClient
     }
 
     async createAgent(agent_username: string, agent_password: string, skillsWithPriority: [SkillPriority]) {
-        await this.session.login();
         let subAccountId = await this.getSubAccountId();
         let agentStationGroupId = await this.restClient.getAgentStationGroupId(subAccountId);
-        let agentLoginId = await this.generateExtension(subAccountId, 'AGENT');
+        let agentLoginId = await this.restClient.getNextAvailableExtension(subAccountId, 'AGENT');
         let skillIds = await this.getSkillIds(subAccountId);
         await this.sendCreateAgentRequest(
             subAccountId,
@@ -34,7 +30,7 @@ export class AgentClient {
         // wait until agent is created
         await this.waitForAgentCreation(agentLoginId);
 
-        let stationExtension = await this.generateExtension(subAccountId, 'STATION');
+        let stationExtension = await this.restClient.getNextAvailableExtension(subAccountId, 'STATION');
         await this.sendCreateStationRequest(
             agentStationGroupId,
             subAccountId,
@@ -77,10 +73,7 @@ export class AgentClient {
             "channelIds": [1]
         };
 
-        return this.session.post(Constants.AGENT_JOB_PATH, agent)
-            .then((result: any) => {
-                return result
-            })
+        return this.restClient.createAgentJob(agent)
     }
 
     generateAvayaPassword(agentLoginId: { toString: () => any }) {
@@ -97,34 +90,19 @@ export class AgentClient {
         return agentLoginIdString.substring(length - 4, length);
     }
 
-    async generateExtension(subAccountId: string, type: string) {
-        return this.session.post(
-            Constants.EXTENSION_PATH + subAccountId + '/type/' + type)
-            .then((response: { data: any }) => {
-                return response.data
-            })
-    }
 
-    async getSkillIds(subAccountId: string) {
-        return this.session.get(
-            Constants.FETCH_SKILL_ID_PATH + subAccountId + '&skillType=AGENT')
+    getSkillIds(subAccountId: string) {
+        return this.restClient.getSubAccountSkills(subAccountId)
             .then((response: { data: { [x: string]: { [x: string]: any } } }) => {
                 // console.log(response)
                 let skillResponses = response.data['skillResponses'][subAccountId];
                 return skillResponses.map((skillResponse: { id: any }) => skillResponse.id);
             })
+
     }
 
-    async getSkillNumbers() {
-        await this.session.login();
-
-        let subAccountId = await this.restClient.getSubAccount()
-            .then((response: { id: any }) => {
-                return response.id
-            });
-
-        return this.session.get(
-            Constants.FETCH_SKILL_ID_PATH + subAccountId + '&skillType=AGENT')
+    getSkillNumbers(subAccountId: string) {
+        return this.restClient.getSubAccountSkills(subAccountId)
             .then((response: { data: { [x: string]: { [x: string]: any } } }) => {
                 let skillResponses = response.data['skillResponses'][subAccountId];
                 const availableSkills = [];
@@ -140,7 +118,7 @@ export class AgentClient {
             })
     }
 
-    async sendCreateStationRequest(
+    sendCreateStationRequest(
         agentStationGroupId: any,
         subAccountId: any,
         stationExtension: { toString: () => any },
@@ -157,16 +135,10 @@ export class AgentClient {
             "username": agentUsername
         };
 
-        return this.session.post(Constants.STATION_JOB_PATH, station)
-            .then((result: any) => {
-                // console.log(result.data)
-                return result
-            })
+        return this.restClient.createStationJob(station)
     }
 
     async getAgent(agentUsername: string) {
-        await this.session.login();
-
         let agent = {};
         try {
             agent = await this.restClient.getAgentByUsername(agentUsername)
@@ -353,7 +325,7 @@ export class AgentClient {
         try {
             let agent = await this.restClient.getAgentByUsername(agentUsername);
             let submitted = await this.restClient.requestAgentDeletion(agentUsername, agent.loginId);
-            if(submitted) {
+            if (submitted) {
                 await this.waitForAgentDeletion(agentUsername);
             }
         } catch (e) {
@@ -364,11 +336,7 @@ export class AgentClient {
             }
         }
     }
-
-
-
 }
-
-export function createAgentClient(session: Session, restClient: RestClient) {
-    return new AgentClient(session, restClient);
+export function createAgentClient(restClient: RestClient) {
+    return new AgentClient(restClient);
 }

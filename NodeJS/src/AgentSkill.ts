@@ -19,15 +19,15 @@ if (!isEndpointValid || !isAdminUsernameValid || !isAdminPasswordValid) {
     process.exit();
 }
 
-let session = createSession(endpoint, adminUsername, adminPassword);
 // todo: provide token
 let masterToken = ""
 let restClient = new RestClient(endpoint, masterToken)
-let agentClient = createAgentClient(session, restClient);
+let agentClient = createAgentClient(restClient);
 
 async function agentSkillNumbers() {
     try {
-        await agentClient.getSkillNumbers();
+        let subAccountId = await agentClient.getSubAccountId()
+        await agentClient.getSkillNumbers(subAccountId);
     } catch (e) {
         console.error(e)
     }

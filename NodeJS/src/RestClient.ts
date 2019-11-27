@@ -1,5 +1,5 @@
 import { CookieJar } from "tough-cookie";
-import { STATION_GROUP_PATH, USER_PATH, REMOVE_AGENT_PATH, FETCH_AGENT_BY_USERNAME_PATH,FETCH_AGENT_ID_PATH, DELETE_STATION_PATH, STATION_ONLY_PATH, lodash } from "./Constants";
+import { STATION_JOB_PATH, STATION_GROUP_PATH, FETCH_SKILL_ID_PATH, EXTENSION_PATH, USER_PATH, REMOVE_AGENT_PATH, AGENT_JOB_PATH, FETCH_AGENT_BY_USERNAME_PATH, FETCH_AGENT_ID_PATH, DELETE_STATION_PATH, STATION_ONLY_PATH, lodash } from "./Constants";
 export const axios = require('axios').default;
 export const axiosCookieJarSupport = require('@3846masa/axios-cookiejar-support').default;
 export const STATION_GROUP_ID_NOT_EXISTS = -1
@@ -51,7 +51,7 @@ export class RestClient {
      * For other errors, a negative value of http status code will be returned;
      * @param subAccountId 
      */
-    public async getAgentStationGroupId(subAccountId: string) {
+    public getAgentStationGroupId(subAccountId: string) {
         let url = `${this.baseUrl}/${STATION_GROUP_PATH}/${subAccountId}`
         console.log(`getAgentStationGroupId url is ${url}`)
         const options = this.prepareGetOptions(url)
@@ -69,7 +69,7 @@ export class RestClient {
                 return - error.response.status
             })
     }
-    public async getSubAccount() {
+    public getSubAccount() {
         let url = `${this.baseUrl}/${USER_PATH}`
         console.log(`getSubAccount url is ${url}`)
         const options = this.prepareGetOptions(url)
@@ -83,7 +83,7 @@ export class RestClient {
                 return subAccount
             })
     }
-    public async getAgentByUsername(agent_username: string) {
+    public getAgentByUsername(agent_username: string) {
         let url = `${this.baseUrl}/${FETCH_AGENT_BY_USERNAME_PATH}/${agent_username}`
         console.log(`getAgentByUsername url is ${url}`)
         const options = this.prepareGetOptions(url)
@@ -99,7 +99,7 @@ export class RestClient {
      * @param agentUsername 
      * @param agentLoginId 
      */
-    public async requestAgentDeletion(agentUsername: string, agentLoginId: any) {
+    public requestAgentDeletion(agentUsername: string, agentLoginId: any) {
         let url = `${this.baseUrl}/${REMOVE_AGENT_PATH}`
         let deleteRequest = { 'username': agentUsername, 'loginId': agentLoginId };
         const options = this.prepareBaseOptions()
@@ -123,8 +123,10 @@ export class RestClient {
     prepareGetOptions(url: string) {
         return { ...this.prepareBaseOptions(), url, method: 'GET' }
     }
-
-    prepareDeleteOptions(url: string ){
+    preparePostOptions(url: string) {
+        return { ...this.prepareBaseOptions(), url, method: 'POST' }
+    }
+    prepareDeleteOptions(url: string) {
         return { ...this.prepareBaseOptions(), url, method: 'DELETE' }
     }
 
@@ -133,7 +135,7 @@ export class RestClient {
      * returns false otherwise
      * @param stationId
      */
-    public async requestStationDeletion(stationId: string) {
+    public requestStationDeletion(stationId: string) {
         let url = `${this.baseUrl}/${DELETE_STATION_PATH}/${stationId}`
         let options = this.prepareDeleteOptions(url)
         return axios(options)
@@ -150,7 +152,7 @@ export class RestClient {
      * @param subAccountId
      * @param agentUsername 
      */
-    public async getStationForAgent(subAccountId: string, agentUsername: string) {
+    public getStationForAgent(subAccountId: string, agentUsername: string) {
         let url = `${this.baseUrl}/${STATION_ONLY_PATH}${subAccountId}`
         let options = this.prepareGetOptions(url)
         return axios(options)
@@ -165,7 +167,7 @@ export class RestClient {
      * return agent or undefined
      * @param loginId 
      */
-    public async getAgentByLoginId(loginId: string) {
+    public getAgentByLoginId(loginId: string) {
         let url = `${this.baseUrl}/${FETCH_AGENT_ID_PATH}/${loginId}`
         let options = this.prepareGetOptions(url)
         return axios(options)
@@ -176,6 +178,44 @@ export class RestClient {
                 console.log(error.response.status)
             })
     }
+    public createAgentJob(agent: any) {
+        let url = `${this.baseUrl}/${AGENT_JOB_PATH}`
+        let options = this.prepareBaseOptions()
+        return axios.post(url, agent, options)
+            .then((result: any) => {
+                return result
+            })
+    }
+
+    public getNextAvailableExtension(subAccountId: string, type: string) {
+        let url = `${this.baseUrl}/${EXTENSION_PATH}/${subAccountId}/type/${type}`
+        let options = this.preparePostOptions(url)
+        return axios(options)
+            .then((response: { data: any }) => {
+                return response.data
+            })
+    }
+    public createStationJob(station:any){
+        let url = `${this.baseUrl}/${STATION_JOB_PATH}`
+        let options = this.prepareBaseOptions()
+        return axios.post(url, station, options)
+        .then((result: any) => {
+            // console.log(result.data)
+            return result
+        })
+    }
+
+
+    public getSubAccountSkills(subAccountId: string) {
+        let url = `${this.baseUrl}/${FETCH_SKILL_ID_PATH}/${subAccountId}&skillType=AGENT`
+        let options = this.prepareGetOptions(url)
+        return axios(options)
+        .then((response:any)=>{
+            return response
+        })
+    }
+
+
     public printMasterCookieJar(): string {
         return JSON.stringify(this.masterCredential.cookieJar)
     }

@@ -5,10 +5,9 @@ import { RestClient } from "../src/RestClient";
 describe("AgentClient.ts", () => {
     let client: AgentClient;
     beforeEach(() => {
-        let session = Session as jest.Mock<Session>
         // Cast to any if mocking and not fulfilling the static type
         let restClient: any = RestClient as jest.Mock
-        client = new AgentClient(session, restClient)
+        client = new AgentClient(restClient)
     });
 
     test("generateAvayaPassword should return last 6 characters", () => {
