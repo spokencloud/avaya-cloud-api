@@ -41,7 +41,6 @@ export class AgentClient {
         }
 
         await this.sendCreateAgentRequest(
-            this.subAccountId,
             agent_username,
             agent_password,
             agentStationGroupId,
@@ -53,6 +52,10 @@ export class AgentClient {
         await this.waitForAgentCreation(agentLoginId);
 
         let stationExtension = await this.restClient.getNextAvailableExtension(this.subAccountId, 'STATION');
+        if (stationExtension < 0) {
+            throw new Error(`subAccount ${this.subAccountId} has station extensions available`)
+        }
+
         await this.sendCreateStationRequest(
             agentStationGroupId,
             this.subAccountId,
@@ -66,7 +69,6 @@ export class AgentClient {
     }
 
     async sendCreateAgentRequest(
-        subAccountId: any,
         agent_username: string,
         agent_password: string,
         agentStationGroupId: any,
@@ -86,7 +88,7 @@ export class AgentClient {
             "startDate": "2019-03-21",
             "endDate": "2038-01-01",
             "avayaPassword": avayaPassword,
-            "clientId": subAccountId,
+            "clientId": this.subAccountId,
             "skillIds": skillIds,
             "agentSkills": skillsWithPriority,
             // no supervisors
@@ -190,29 +192,29 @@ export class AgentClient {
         return { 'agent': agent, 'station': station }
     }
 
-    async existsAgentByLoginId(loginId: number) {
+    existsAgentByLoginId(loginId: number) {
         let promise = this.restClient.getAgentByLoginId(loginId)
-        return await this.checkAgentPromise(promise)
+        return this.checkAgentPromise(promise)
     }
-    async existsAgentByUsername(username: string) {
+    existsAgentByUsername(username: string) {
         let promise = this.restClient.getAgentByUsername(username)
-        return await this.checkAgentPromise(promise)
+        return this.checkAgentPromise(promise)
     }
     private checkAgentPromise(promise: Promise<object>): Promise<boolean> {
         return promise
-        .then(agent => {
-            return true
-        })
-        .catch(error => {
-            return false
-        }
-        )
+            .then(agent => {
+                return true
+            })
+            .catch(error => {
+                return false
+            }
+            )
     }
-    async waitForAgentCreation(loginId: number) {
+
+    async repeat(callback: () => Promise<boolean>) {
         for (let counter = 0; counter < Constants.MAX_RETRY; counter++) {
-            let exists = await this.existsAgentByLoginId(loginId);
-            if (exists) {
-                console.log("agent creation succeeded")
+            let result = await callback()
+            if (result) {
                 return true
             }
             sleep(Constants.INTERVAL_IN_MILLIS)
@@ -220,110 +222,38 @@ export class AgentClient {
         return false
     }
 
+    async waitForAgentCreation(loginId: number) {
+        let callback = () => {
+            return this.existsAgentByLoginId(loginId)
+        }
+        return this.repeat(callback)
+    }
+
     async waitForAgentDeletion(agent_username: string) {
-        return new Promise((resolve, reject) => {
-            process.stdout.write("Deleting agent.");
-            let counter = 0;
-            const intervalId = setInterval(async () => {
-                try {
-                    await this.restClient.getAgentByUsername(agent_username);
-                    process.stdout.write('.');
-                    counter++;
-                    if (counter > Constants.MAX_RETRY) {
-                        console.log();
-                        clearInterval(intervalId);
-                        reject(Error('agent deletion failed'))
-                    }
-                } catch (e) {
-                    if (e.response.status === 404) {
-                        console.log('agent deleted');
-                        clearInterval(intervalId);
-                        resolve()
-                    } else {
-                        console.log(e);
-                        throw e
-                    }
-                }
-            }, Constants.INTERVAL_IN_MILLIS);
-            return intervalId
-        })
+        let callback = () => {
+            return this.existsAgentByUsername(agent_username)
+                .then(result => !result)
+        }
+        return this.repeat(callback)
     }
 
     async waitForStationCreation(agent_username: string) {
-        return new Promise((resolve, reject) => {
-            process.stdout.write("Creating station.");
-            let counter = 0;
-            const intervalId = setInterval(async () => {
-                try {
-                    let station = await this.restClient.getStationForAgent(this.subAccountId, agent_username);
-                    if (station) {
-                        console.log('station created');
-                        clearInterval(intervalId);
-                        resolve()
-                    } else {
-                        process.stdout.write('.');
-                        counter++;
-                        if (counter > Constants.MAX_RETRY) {
-                            console.log();
-                            clearInterval(intervalId);
-                            reject(Error('station creation failed'))
-                        }
-                    }
-                } catch (e) {
-                    if (e.response.status === 404) {
-                        process.stdout.write('.');
-                        counter++;
-                        if (counter > Constants.MAX_RETRY) {
-                            console.log();
-                            clearInterval(intervalId);
-                            reject(Error('station creation failed'))
-                        }
-                    } else {
-                        console.log(e);
-                        throw e
-                    }
-                }
-            }, Constants.INTERVAL_IN_MILLIS);
-            return intervalId
-        })
+        let callback = () => {
+            return this.restClient
+                .getStationForAgent(this.subAccountId, agent_username)
+                .then((station: any) => station !== undefined)
+        }
+        return this.repeat(callback)
     }
 
-    async waitForStationDeletion(agent_username: any) {
-        return new Promise((resolve, reject) => {
-            process.stdout.write("Deleting station.");
-            let counter = 0;
-            const intervalId = setInterval(async () => {
-                try {
-                    let station = await this.restClient.getStationForAgent(this.subAccountId, agent_username);
-                    if (station) {
-                        process.stdout.write('.');
-                        counter++;
-                        if (counter > Constants.MAX_RETRY) {
-                            console.log();
-                            clearInterval(intervalId);
-                            reject(Error('station deletion failed'))
-                        }
-                    } else {
-                        console.log('station deleted');
-                        clearInterval(intervalId);
-                        resolve()
-                    }
-                } catch (e) {
-                    if (e.response.status === 404) {
-                        console.log('station deleted');
-                        clearInterval(intervalId);
-                        resolve()
-                    } else {
-                        console.log(e);
-                        throw e
-                    }
-                }
-            }, Constants.INTERVAL_IN_MILLIS);
-            return intervalId
-        })
+    async waitForStationDeletion(agent_username: string) {
+        let callback = () => {
+            return this.restClient
+                .getStationForAgent(this.subAccountId, agent_username)
+                .then((station: any) => station === undefined)
+        }
+        return this.repeat(callback)
     }
-
-
 
     async deleteAgent(agentUsername: string) {
 
