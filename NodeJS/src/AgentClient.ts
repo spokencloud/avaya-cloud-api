@@ -200,7 +200,7 @@ export class AgentClient {
         let promise = this.restClient.getAgentByUsername(username)
         return this.checkAgentPromise(promise)
     }
-    private checkAgentPromise(promise: Promise<object>): Promise<boolean> {
+    checkAgentPromise(promise: Promise<any>): Promise<boolean> {
         return promise
             .then(agent => {
                 return true
@@ -211,16 +211,26 @@ export class AgentClient {
             )
     }
 
-    async repeat(callback: () => Promise<boolean>) {
-        for (let counter = 0; counter < Constants.MAX_RETRY; counter++) {
+    private async repeat(callback: () => Promise<boolean>) {
+        return this.redo(callback, Constants.MAX_RETRY, Constants.INTERVAL_IN_MILLIS)
+    }
+    /*
+    call back need to always resolve to either true or false
+    */
+    async redo(callback: () => Promise<boolean>, retries: number, millis:number) {
+        console.log(`entering redo ${retries}`)
+        for (let count = 0; count < retries; count++) {
+
             let result = await callback()
+            console.log(`count=${count}result=${result}`)
             if (result) {
                 return true
             }
-            sleep(Constants.INTERVAL_IN_MILLIS)
+            sleep(millis)
         }
         return false
     }
+    
 
     async waitForAgentCreation(loginId: number) {
         let callback = () => {

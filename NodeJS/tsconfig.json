@@ -15,5 +15,5 @@
     "declaration": true,                      /* Create d.ts file */
     "forceConsistentCasingInFileNames": true  /* Disallow inconsistently-cased references to the same file. */
   },
-  "exclude": ["node_modules", "dist", "jest*.js", "sample", "__unit__", "__integration__"]         /* Exclude files from compilation */
+  "exclude": ["node_modules", "dist", "jest*.js"]         /* Exclude files from compilation , "sample", "__unit__", "__integration__" */
 }
