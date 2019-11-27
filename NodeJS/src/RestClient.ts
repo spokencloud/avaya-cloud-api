@@ -1,5 +1,5 @@
 import { CookieJar } from "tough-cookie";
-import { STATION_GROUP_PATH, USER_PATH, FETCH_AGENT_BY_USERNAME_PATH, lodash } from "./Constants";
+import { STATION_GROUP_PATH, USER_PATH, REMOVE_AGENT_PATH, FETCH_AGENT_BY_USERNAME_PATH, DELETE_STATION_PATH, lodash } from "./Constants";
 export const axios = require('axios').default;
 export const axiosCookieJarSupport = require('@3846masa/axios-cookiejar-support').default;
 export const STATION_GROUP_ID_NOT_EXISTS = -1
@@ -44,17 +44,7 @@ export class RestClient {
         this.storeUserToken(username, userToken)
 
     }
-    prepareGetOptions(url: string) {
-        const cookieJar = this.masterCredential.cookieJar
-        const options = {
-            method: 'GET',
-            headers: { 'Authorization': this.masterCredential.token },
-            url,
-            jar: cookieJar,
-            withCredentials: true
-        };
-        return options
-    }
+
     /**
      * Caller should await for the method to finish. When call is successful, a number greater than 0 will be returned.
      * When subAccountId has no station group defined, -1 will be returned;
@@ -102,6 +92,58 @@ export class RestClient {
             .then((response: { data: any }) => {
                 // console.log(response.data)
                 return response.data
+            })
+    }
+    /**
+     * return true if agent deletion is requested successfully
+     * return fasle otherwise
+     * @param agentUsername 
+     * @param agentLoginId 
+     */
+    public async requestAgentDeletion(agentUsername: string, agentLoginId: any) {
+        let url = `${this.baseUrl}/${REMOVE_AGENT_PATH}`
+        let deleteRequest = { 'username': agentUsername, 'loginId': agentLoginId };
+        const options = this.prepareBaseOptions()
+        return axios.post(url, deleteRequest, options).then((response: { data: any }) => {
+            return true
+        })
+            .catch((error: any) => {
+                console.log(error.response.status)
+                return false
+            })
+    }
+
+    prepareBaseOptions() {
+        const cookieJar = this.masterCredential.cookieJar
+        return {
+            headers: { 'Authorization': this.masterCredential.token },
+            jar: cookieJar,
+            withCredentials: true
+        };
+    }
+    prepareGetOptions(url: string) {
+        return { ...this.prepareBaseOptions(), url, method: 'GET' }
+    }
+
+    prepareDeleteOptions(url: string ){
+        return { ...this.prepareBaseOptions(), url, method: 'DELETE' }
+    }
+
+    /**
+     * returns true if request submitted successfully
+     * returns false otherwise
+     * @param stationId
+     */
+    public async requestStationDeletion(stationId: string) {
+        let url = `${this.baseUrl}/${DELETE_STATION_PATH}/${stationId}`
+        let options = this.prepareDeleteOptions(url)
+        return axios(options)
+            .then((response: any) => {
+                return true
+            })
+            .catch((error: any) => {
+                console.log(error.response.status)
+                return false
             })
     }
     public printMasterCookieJar(): string {

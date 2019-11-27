@@ -38,10 +38,21 @@ describe("RestClient", () => {
     test("getSubAccount should return first subaccount", async () => {
         let subaccount = await restClient.getSubAccount()
         expect(subaccount.id).toEqual(1)
-    })    
+    })
     test("getAgentByUsername should return agent", async () => {
         let username = "super1"
         let agent = await restClient.getAgentByUsername(username)
         expect(agent.username).toEqual(username)
     })
+    test("requestAgentDeletion should return false if agent1 can not be deleted", async () => {
+        let username = "agent1"
+        let submitted = await restClient.requestAgentDeletion(username, "7300001102")
+        expect(submitted).toBeFalsy()
+    })
+    test("requestStationDeletion should return false if station id not exist", async () => {
+        let stationId = "1"
+        let submitted = await restClient.requestStationDeletion(stationId)
+        expect(submitted).toBeFalsy()
+    })
+
 })

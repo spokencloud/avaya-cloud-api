@@ -352,14 +352,13 @@ export class AgentClient {
     }
 
     async deleteAgent(agentUsername: string) {
-        await this.session.login();
 
         let subAccountId = await this.getSubAccountId();
 
         let station = await this.getStationForAgent(subAccountId, agentUsername);
         // station might have been deleted before, so station might be undefined
         if (station) {
-            await this.deleteStationOnly(station.id);
+            await this.restClient.requestStationDeletion(station.id);
             await this.waitForStationDeletion(subAccountId, agentUsername)
         } else {
             console.log('station associated with ' + agentUsername + ' has already been deleted')
@@ -367,8 +366,10 @@ export class AgentClient {
 
         try {
             let agent = await this.restClient.getAgentByUsername(agentUsername);
-            await this.deleteAgentOnly(agentUsername, agent.loginId);
-            await this.waitForAgentDeletion(agentUsername);
+            let submitted = await this.restClient.requestAgentDeletion(agentUsername, agent.loginId);
+            if(submitted) {
+                await this.waitForAgentDeletion(agentUsername);
+            }
         } catch (e) {
             if (e.response.status === 404) {
                 console.log('agent ' + agentUsername + ' has already been deleted')
@@ -378,14 +379,8 @@ export class AgentClient {
         }
     }
 
-    async deleteStationOnly(stationId: string) {
-        return this.session.delete(Constants.DELETE_STATION_PATH + stationId);
-    }
 
-    async deleteAgentOnly(agentUsername: string, agentLoginId: any) {
-        let deleteRequest = { 'username': agentUsername, 'loginId': agentLoginId };
-        return this.session.post(Constants.REMOVE_AGENT_PATH, deleteRequest)
-    }
+
 }
 
 export function createAgentClient(session: Session, restClient: RestClient) {
