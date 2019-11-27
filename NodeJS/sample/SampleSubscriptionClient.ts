@@ -1,9 +1,9 @@
-import * as Constants from "./Constants";
-import { createSession } from "./session"
-import { createSubscriptionClient } from "./SubscriptionClient";
-import { Subscription } from "./Subscription";
-import isValidParameter from "./Utils";
-import { RestClient } from "./RestClient";
+import * as Constants from "../src/Constants";
+import { createSession } from "../src/session"
+import { createSubscriptionClient } from "../src/SubscriptionClient";
+import { Subscription } from "../src/Subscription";
+import isValidParameter from "../src/Utils";
+import { RestClient } from "../src/RestClient";
 
 
 const args = require('minimist')(process.argv.slice(2));

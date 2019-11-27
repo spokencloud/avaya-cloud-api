@@ -1,9 +1,9 @@
 import { Err, Ok, Result } from "ts.data.json/dist/result";
-import * as Constants from "./Constants";
-import { createSession } from "./session";
-import SkillPriority, { createAgentClient, AgentClient } from "./AgentClient";
-import isValidParameter, { isValidSkillsWithPriorities } from "./Utils";
-import { RestClient } from "./RestClient";
+import * as Constants from "../src/Constants";
+import { createSession } from "../src/session";
+import SkillPriority, { createAgentClient, AgentClient } from "../src/AgentClient";
+import isValidParameter, { isValidSkillsWithPriorities } from "../src/Utils";
+import { RestClient } from "../src/RestClient";
 
 const args = require('minimist')(process.argv.slice(2));
 
