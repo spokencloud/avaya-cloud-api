@@ -1,4 +1,4 @@
-import isValidParameter, { skillDecoder, isValidSkillsWithPriorities, sleep } from "../src/Utils"
+import isValidParameter, { skillDecoder, randomString, isValidSkillsWithPriorities, sleep } from "../src/Utils"
 import { Ok, Err } from "ts.data.json";
 import SkillPriority from "../src/AgentClient";
 describe("Utils.ts", () => {
@@ -55,5 +55,10 @@ describe("Utils.ts", () => {
         let end = d2.getTime();
         console.log(`end=${end}, start=${start}, differenece=${end - start}`)
         expect((end - start) >= milliseconds).toBeTruthy()
+    })
+    test("randomString should return string of correct length", () => {
+        let actual = randomString(10)
+        console.log(actual)
+        expect(actual.length).toEqual(10)
     })
 })

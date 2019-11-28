@@ -19,4 +19,13 @@ describe("AgentClient", () => {
         let result = await agentClient.waitForAgentDeletion("agent1")
         expect(result).toBeTruthy()
      })
+     test("getSkillIds should return skillIds", async () => {
+         let skillIds = await agentClient.getSkillIds()
+         expect(skillIds.length).toBeGreaterThan(0)
+     })
+     test("getSkillNumbers should return skillNumbers", async () => {
+         let skillNumbers = await agentClient.getSkillNumbers()
+         expect(skillNumbers.length).toBeGreaterThan(0)
+     })
+     test("")
 })

@@ -26,7 +26,7 @@ describe("RestClient", () => {
         expect(id).toEqual(1)
     })
     test("getAgentStationGroupId should return STATION_GROUP_ID_NOT_EXISTS if no station groups exist", async () => {
-        let clientIdWithoutAgentStationGroups = "1"
+        let clientIdWithoutAgentStationGroups = "3"
         let id = await restClient.getAgentStationGroupId(clientIdWithoutAgentStationGroups)
         expect(id).toEqual(STATION_GROUP_ID_NOT_EXISTS)
     })
@@ -78,6 +78,15 @@ describe("RestClient", () => {
         console.log(submitted)
         expect(submitted).toBeDefined()
     })
-
+    test("getSubAccountAgentSkills should return skills", async () => {
+        // make sure client has some skills defined
+        let skills = await restClient.getSubAccountAgentSkills("2")
+        expect(skills.data['skillResponses']["2"] ).toBeDefined()
+    })
+    test("getSubAccountAgentSkills should return empty skills", async () => {
+        // make sure client does not have skills
+        let skills = await restClient.getSubAccountAgentSkills("22")
+        expect(skills.data['skillResponses']["2"] ).toBeUndefined()
+    })
 
 })

@@ -51,6 +51,7 @@ export class AgentClient {
         // wait until agent is created
         await this.waitForAgentCreation(agentLoginId);
 
+        // todo: resume station creation or check how many extensions left before calling
         let stationExtension = await this.restClient.getNextAvailableExtension(this.subAccountId, 'STATION');
         if (stationExtension < 0) {
             throw new Error(`subAccount ${this.subAccountId} has station extensions available`)
@@ -118,9 +119,13 @@ export class AgentClient {
     getSkillIds(): Promise<[]> {
         return this.restClient.getSubAccountAgentSkills(this.subAccountId)
             .then((response: { data: { [x: string]: { [x: string]: any } } }) => {
-                // console.log(response)
+                console.log(response.data)
                 let skillResponses = response.data['skillResponses'][this.subAccountId];
-                return skillResponses.map((skillResponse: { id: any }) => skillResponse.id);
+                if(skillResponses){
+                    return skillResponses.map((skillResponse: { id: any }) => skillResponse.id);
+                } else {
+                    return []
+                }
             })
 
     }
@@ -129,6 +134,9 @@ export class AgentClient {
         return this.restClient.getSubAccountAgentSkills(this.subAccountId)
             .then((response: { data: { [x: string]: { [x: string]: any } } }) => {
                 let skillResponses = response.data['skillResponses'][this.subAccountId];
+                if(skillResponses === undefined){
+                    return []
+                }
                 const availableSkills = [];
                 for (let skill of skillResponses) {
                     let skillInfo = {
@@ -217,7 +225,7 @@ export class AgentClient {
     /*
     call back need to always resolve to either true or false
     */
-    async redo(callback: () => Promise<boolean>, retries: number, millis:number) {
+    async redo(callback: () => Promise<boolean>, retries: number, millis: number) {
         console.log(`entering redo ${retries}`)
         for (let count = 0; count < retries; count++) {
 
@@ -230,7 +238,7 @@ export class AgentClient {
         }
         return false
     }
-    
+
 
     async waitForAgentCreation(loginId: number) {
         let callback = () => {

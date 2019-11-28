@@ -111,9 +111,10 @@ export class RestClient {
         let url = `${this.baseUrl}/${REMOVE_AGENT_PATH}`
         let deleteRequest = { 'username': agentUsername, 'loginId': agentLoginId };
         const options = this.prepareBaseOptions()
-        return axios.post(url, deleteRequest, options).then((response: { data: any }) => {
-            return true
-        })
+        return axios.post(url, deleteRequest, options)
+            .then((response: { data: any }) => {
+                return true
+            })
             .catch((error: any) => {
                 console.log(error.response.status)
                 return false
@@ -169,6 +170,7 @@ export class RestClient {
             })
             .catch((error: any) => {
                 console.log(error.response.status)
+                // implicit returning undefined
             })
     }
     /**
@@ -182,7 +184,7 @@ export class RestClient {
             .then((response: { data: any }) => {
                 return response.data
             })
-     
+
     }
     public createAgentJob(agent: any) {
         let url = `${this.baseUrl}/${AGENT_JOB_PATH}`
@@ -223,16 +225,15 @@ export class RestClient {
             })
     }
 
-
     public getSubAccountAgentSkills(subAccountId: string) {
-        let url = `${this.baseUrl}/${FETCH_SKILL_ID_PATH}/${subAccountId}&skillType=AGENT`
+        let url = `${this.baseUrl}/${FETCH_SKILL_ID_PATH}${subAccountId}&skillType=AGENT`
+        console.log(url)
         let options = this.prepareGetOptions(url)
         return axios(options)
             .then((response: any) => {
                 return response
             })
     }
-
 
     public printMasterCookieJar(): string {
         return JSON.stringify(this.masterCredential.cookieJar)

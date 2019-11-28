@@ -18,6 +18,18 @@ export const skillDecoder = JsonDecoder.object<SkillPriority>(
     'SkillPriority'
 );
 
+export function randomString(length: number): string {
+    let inOptions: string = 'abcdefghijklmnopqrstuvwxyz0123456789';
+    let outString: string = inOptions.charAt(Math.floor(Math.random() * 26));
+
+    for (let i = 1; i < length; i++) {
+      outString += inOptions.charAt(Math.floor(Math.random() * inOptions.length));
+    }
+
+    return outString;
+  }
+
+
 export function isValidSkillsWithPriorities(key: string, skillPriorities: string): boolean {
     let obj: [SkillPriority] = JSON.parse(skillPriorities);
     for (let skill of obj) {
