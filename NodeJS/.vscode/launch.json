@@ -38,6 +38,7 @@
             "program": "${workspaceFolder}/node_modules/.bin/jest",
             "args": [
               "${fileBasenameNoExtension}",
+              "--detectOpenHandles",
               "--config",
               "jest.config.js"
             ],

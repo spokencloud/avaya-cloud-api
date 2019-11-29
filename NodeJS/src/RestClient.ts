@@ -170,7 +170,7 @@ export class RestClient {
             })
             .catch((error: any) => {
                 console.log(error.response.status)
-                // implicit returning undefined
+                return undefined
             })
     }
     /**

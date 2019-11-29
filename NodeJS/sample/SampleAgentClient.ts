@@ -38,7 +38,7 @@ let skillWithPriorities: [SkillPriority] = JSON.parse(agentSkill);
 
 async function createAgent(agentClient: AgentClient) {
     try {
-        let agentObject = await agentClient.createAgent(agentUsername, agentPassword, skillWithPriorities);
+        let agentObject = await agentClient.createAgentAndStation(agentUsername, agentPassword, skillWithPriorities);
         console.log('agentObject from createAgent');
         console.log(agentObject)
     } catch (e) {

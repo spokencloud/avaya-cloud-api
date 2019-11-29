@@ -27,5 +27,5 @@ export const AGENT_SKILL_KEY = 'agent_skill';
 export const REPLACE_REGEX = /'/g;
 export const EMPTY_STRING = "";
 // ten seconds
-export const INTERVAL_IN_MILLIS = 10 * 1000;
+export const INTERVAL_IN_MILLIS = 10000;
 export const MAX_RETRY = 5;
