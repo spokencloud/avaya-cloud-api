@@ -88,5 +88,9 @@ describe("RestClient", () => {
         let skills = await restClient.getSubAccountAgentSkills("22")
         expect(skills.data['skillResponses']["2"] ).toBeUndefined()
     })
-
+    xtest("requestAgentDeletion should return false if ddksgy3dnr can not be deleted", async () => {
+        let username = "ddksgy3dnr"
+        let submitted = await restClient.requestAgentDeletion(username, "7300000100")
+        expect(submitted).toBeTruthy()
+     })
 })

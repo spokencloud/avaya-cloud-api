@@ -41,7 +41,7 @@ describe("AgentClient", () => {
       expect(result.agent.username).toEqual(username)
    }, testTimeOut)
 
-   xtest("createStationIfNotExists should return true", async () => {
+   test("createStationIfNotExists should return true", async () => {
       let result = await agentClient.createStationIfNotExists("ddksgy3dnr", "2")
       expect(result).toBeTruthy()
    })
@@ -49,9 +49,4 @@ describe("AgentClient", () => {
       let result = await agentClient.deleteAgentAndStation("ddksgy3dnr")
       expect(result).toBeTruthy()
    }, testTimeOut)
-   xtest("requestAgentDeletion should return false if ddksgy3dnr can not be deleted", async () => {
-      let username = "ddksgy3dnr"
-      let submitted = await restClient.requestAgentDeletion(username, "7300000100")
-      expect(submitted).toBeTruthy()
-   })
 })
