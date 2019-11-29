@@ -248,7 +248,7 @@ export class AgentClient {
                 console.log("result is true exiting redo...")
                 return true
             }
-            sleep(millis)
+            await sleep(millis)
         }
         return false
     }

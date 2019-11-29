@@ -39,6 +39,10 @@ export function isValidSkillsWithPriorities(key: string, skillPriorities: string
     }
     return true;
 }
+/**
+ * sleep for millis seconds must be called with await
+ * @param ms 
+ */
 export async function sleep(ms: number) {
     await new Promise(resolve => setTimeout(resolve, ms));
 }

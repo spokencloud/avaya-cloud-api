@@ -49,7 +49,7 @@ describe("Utils.ts", () => {
     test("sleep should sleep", async () => {
         let d1 = new Date();
         let start = d1.getTime();
-        const milliseconds = 100
+        const milliseconds = 5000
         await sleep(milliseconds)
         let d2 = new Date();
         let end = d2.getTime();

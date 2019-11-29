@@ -28,13 +28,6 @@ describe("AgentClient", () => {
          let skillNumbers = await agentClient.getSkillNumbers()
          expect(skillNumbers.length).toBeGreaterThan(0)
      })
-     // todo: right now this takes too long to finish
-     test("createAgent", async () => {
-        let skillPriority = {skillNumber: 100, skillPriority: 2}
-        let username = "ddksgy3dnr" // randomString(10)
-        let result =await agentClient.createAgentAndStation(username, "Passw0rd!", [skillPriority])
-        console.log(restClient)
-     })
      test("existsAgentByLoginId should return true when agent exists", async () => {
         let exists = await agentClient.existsAgentByLoginId(7300000100)
         expect(exists).toBeTruthy()
