@@ -18,29 +18,28 @@ export class AgentClient {
     }
     /**
      * TODO: verify input
-     * @param agent_username 
-     * @param agent_password 
+     * @param agentUsername 
+     * @param agentPassword 
      * @param skillsWithPriority 
      */
-    public async createAgentAndStation(agent_username: string, agent_password: string, skillsWithPriority: [SkillPriority]) {
+    public async createAgentAndStation(agentUsername: string, agentPassword: string, skillsWithPriority: [SkillPriority]) {
         // todo: pass it in to reuse
         let agentStationGroupId = await this.restClient.getAgentStationGroupId(this.subAccountId);
         if (agentStationGroupId < 0) {
             throw new Error(`subAccount ${this.subAccountId} has no agent station group defined`)
         }
 
-        await this.createUserIfNotExists(agent_username, agent_password, skillsWithPriority, agentStationGroupId)
-        await this.createStationIfNotExists(agent_username, agentStationGroupId)
+        await this.createUserIfNotExists(agentUsername, agentPassword, skillsWithPriority, agentStationGroupId)
+        await this.createStationIfNotExists(agentUsername, agentStationGroupId)
 
-        return this.getAgentAndStation(agent_username);
+        return this.getAgentAndStation(agentUsername);
     }
 
-    public async createStationIfNotExists(agent_username: string, agentStationGroupId: string) {
-        let stationExists = await this.existsStationForAgent(agent_username)
+    public async createStationIfNotExists(agentUsername: string, agentStationGroupId: string) {
+        let stationExists = await this.existsStationForAgent(agentUsername)
         if (stationExists) {
             return Promise.resolve(true)
         }
-        // todo: resume station creation or check how many extensions left before calling
         let stationExtension = await this.restClient.getNextAvailableExtension(this.subAccountId, 'STATION');
         if (stationExtension < 0) {
             throw new Error(`subAccount ${this.subAccountId} has no station extensions available`)
@@ -49,17 +48,13 @@ export class AgentClient {
             agentStationGroupId,
             this.subAccountId,
             stationExtension,
-            agent_username
+            agentUsername
         );
-
-
-        // wait until station is created
-        return await this.waitForStationCreation(agent_username);
-
+        return await this.waitForStationCreation(agentUsername);
     }
-    public async createUserIfNotExists(agent_username: string, agent_password: string, skillsWithPriority: [SkillPriority], agentStationGroupId: string) {
 
-        let userExists = await this.existsAgentByUsername(agent_username)
+    public async createUserIfNotExists(agentUsername: string, agentPassword: string, skillsWithPriority: [SkillPriority], agentStationGroupId: string) {
+        let userExists = await this.existsAgentByUsername(agentUsername)
         if (userExists) {
             return Promise.resolve(true)
         }
@@ -73,20 +68,19 @@ export class AgentClient {
         if (skillIds.length == 0) {
             throw new Error(`subAccount ${this.subAccountId} has no skills`)
         }
+
         await this.sendCreateAgentRequest(
-            agent_username,
-            agent_password,
+            agentUsername,
+            agentPassword,
             agentStationGroupId,
             agentLoginId,
             skillIds, skillsWithPriority
         );
-        // wait until agent is created
         return await this.waitForAgentCreation(agentLoginId);
-
     }
     async sendCreateAgentRequest(
-        agent_username: string,
-        agent_password: string,
+        agentUsername: string,
+        agentPassword: string,
         agentStationGroupId: any,
         agentLoginId: any,
         skillIds: any, skillsWithPriority: [SkillPriority]) {
@@ -94,10 +88,10 @@ export class AgentClient {
         let securityCode = this.generateSecurityCode(agentLoginId);
         let avayaPassword = this.generateAvayaPassword(agentLoginId);
         let agent = {
-            "username": agent_username,
+            "username": agentUsername,
             "firstName": Constants.AGENT_FIRST_NAME,
             "lastName": Constants.AGENT_LAST_NAME,
-            "password": agent_password,
+            "password": agentPassword,
             "loginId": agentLoginId,
             "agentStationGroupId": agentStationGroupId,
             "securityCode": securityCode,
@@ -129,7 +123,6 @@ export class AgentClient {
         // substring(starting_index, ending_index), negative starting_index is treated as 0 
         return agentLoginIdString.substring(length - 4, length);
     }
-
 
     getSkillIds(): Promise<[]> {
         return this.restClient.getSubAccountAgentSkills(this.subAccountId)
@@ -186,42 +179,34 @@ export class AgentClient {
     }
 
     async getAgent(agentUsername: string) {
-
         return this.restClient
             .getAgentByUsername(agentUsername)
             .then(agent => agent)
             .catch(error => { return undefined })
-
     }
+
+    async getStation(agentUsername: string) {
+        return this.restClient
+            .getStationForAgent(this.subAccountId, agentUsername)
+            .then((response: any) => response)
+            .catch((error: any) => { return undefined })
+    }
+
     async getAgentAndStation(agentUsername: string) {
         let agent = await this.getAgent(agentUsername)
-        let station = {};
-        try {
-            station = await this.restClient.getStationForAgent(this.subAccountId, agentUsername);
-            if (!station) {
-                console.log('station associated with ' + agentUsername + ' not found');
-                station = {}
-            }
-        } catch (e) {
-            if (e.response.status === 404) {
-                console.log('station associated with ' + agentUsername + ' not found')
-            } else {
-                throw e
-            }
-        }
-
-        return { 'agent': agent, 'station': station }
+        let station = await this.getStation(agentUsername)
+        return { 'agent': agent || {}, 'station': station || {} }
     }
 
     existsAgentByLoginId(loginId: number) {
         let promise = this.restClient.getAgentByLoginId(loginId)
-        return this.checkAgentPromise(promise)
+        return this.existsAgent(promise)
     }
     existsAgentByUsername(username: string) {
         let promise = this.restClient.getAgentByUsername(username)
-        return this.checkAgentPromise(promise)
+        return this.existsAgent(promise)
     }
-    checkAgentPromise(promise: Promise<any>): Promise<boolean> {
+    existsAgent(promise: Promise<any>): Promise<boolean> {
         return promise
             .then(agent => {
                 return true
@@ -232,16 +217,25 @@ export class AgentClient {
             )
     }
 
+    existsStationForAgent(agentUsername: string) {
+        return this.restClient
+            .getStationForAgent(this.subAccountId, agentUsername)
+            .then((station: any) => station !== undefined)
+    }
+
     private async repeat(callback: () => Promise<boolean>) {
         return this.redo(callback, Constants.MAX_RETRY, Constants.INTERVAL_IN_MILLIS)
     }
-    /*
-    call back need to always resolve to either true or false
-    */
+
+    /**
+     * redo action, as a callback function, a number of times
+     * @param callback need to always resolve to either true or false
+     * @param retries max number of retries
+     * @param millis time to sleep before retry
+     */
     async redo(callback: () => Promise<boolean>, retries: number, millis: number) {
         console.log(`entering redo ${retries}`)
         for (let count = 0; count < retries; count++) {
-
             let result = await callback()
             console.log(`redo count=${count}; result=${result}`)
             if (result) {
@@ -253,7 +247,6 @@ export class AgentClient {
         return false
     }
 
-
     async waitForAgentCreation(loginId: number) {
         let callback = () => {
             return this.existsAgentByLoginId(loginId)
@@ -261,36 +254,31 @@ export class AgentClient {
         return this.repeat(callback)
     }
 
-    async waitForAgentDeletion(agent_username: string) {
+    async waitForAgentDeletion(agentUsername: string) {
         let callback = () => {
-            return this.existsAgentByUsername(agent_username)
+            return this.existsAgentByUsername(agentUsername)
                 .then(result => !result)
         }
         return this.repeat(callback)
     }
 
-    existsStationForAgent(agent_username: string) {
-        return this.restClient
-            .getStationForAgent(this.subAccountId, agent_username)
-            .then((station: any) => station !== undefined)
-    }
-    async waitForStationCreation(agent_username: string) {
+    async waitForStationCreation(agentUsername: string) {
         let callback = () => {
-            return this.existsStationForAgent(agent_username)
+            return this.existsStationForAgent(agentUsername)
         }
         return this.repeat(callback)
     }
 
-    async waitForStationDeletion(agent_username: string) {
+    async waitForStationDeletion(agentUsername: string) {
         let callback = () => {
             return this.restClient
-                .getStationForAgent(this.subAccountId, agent_username)
+                .getStationForAgent(this.subAccountId, agentUsername)
                 .then((station: any) => station === undefined)
         }
         return this.repeat(callback)
     }
 
-    async deleteAgent(agentUsername: string) {
+    async deleteAgentAndStation(agentUsername: string) {
 
         let station = await this.restClient.getStationForAgent(this.subAccountId, agentUsername);
         // station might have been deleted before, so station might be undefined

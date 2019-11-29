@@ -58,7 +58,7 @@ async function getAgent(agentClient: AgentClient) {
 
 async function deleteAgent(agentClient: AgentClient) {
     try {
-        await agentClient.deleteAgent(agentUsername)
+        await agentClient.deleteAgentAndStation(agentUsername)
     } catch (e) {
         console.error(e)
     }

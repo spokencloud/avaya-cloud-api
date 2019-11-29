@@ -64,11 +64,11 @@ describe("AgentClient.ts", () => {
         expect(result).toBeFalsy()
     })
     test("checkAgentPromise should return false", async () => {
-       let result = await client.checkAgentPromise(Promise.reject(true))
+       let result = await client.existsAgent(Promise.reject(true))
        expect(result).toBeFalsy()
     })
     test("checkAgentPromise should return true", async () => {
-        let result = await client.checkAgentPromise(Promise.resolve(true))
+        let result = await client.existsAgent(Promise.resolve(true))
         expect(result).toBeTruthy()
      })
 })
