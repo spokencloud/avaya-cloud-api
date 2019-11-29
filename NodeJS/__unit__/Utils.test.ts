@@ -1,5 +1,5 @@
 import isValidParameter, { skillDecoder, randomString, isValidSkillsWithPriorities, sleep } from "../src/Utils"
-import { Ok, Err } from "ts.data.json";
+import { Ok } from "ts.data.json";
 import SkillPriority from "../src/AgentClient";
 describe("Utils.ts", () => {
 
@@ -16,18 +16,17 @@ describe("Utils.ts", () => {
         expect(isValidParameter("key", param)).toBe(true);
     });
 
-    test("SkillDecoder could decodePromise", async (done) => {
+    test("SkillDecoder could decodePromise", async () => {
         let skill1 = { skillNumber: 5, skillPriority: 10 }
         let obj = await skillDecoder.decodePromise(skill1)
         expect(obj).toEqual(skill1)
-        done()
     });
     test("SkillDecoder could decode", () => {
         let skill1 = { skillNumber: 5, skillPriority: 10 }
         let result = skillDecoder.decode(skill1)
         expect(result).toBeInstanceOf(Ok)
         let ok = result as Ok<SkillPriority>
-        // Since left is SkillPriority object and right a plain object, use toEqual,not toBe
+        // use toEqual to compare a SkillPriority object and a plain object
         expect(ok.value).toEqual(skill1)
     });
     test("isValidSkillsWithPriorities should return true", () => {
@@ -53,12 +52,11 @@ describe("Utils.ts", () => {
         await sleep(milliseconds)
         let d2 = new Date();
         let end = d2.getTime();
-        console.log(`end=${end}, start=${start}, differenece=${end - start}`)
+        // console.log(`end=${end}, start=${start}, differenece=${end - start}`)
         expect((end - start) >= milliseconds).toBeTruthy()
     })
     test("randomString should return string of correct length", () => {
         let actual = randomString(10)
-        console.log(actual)
         expect(actual.length).toEqual(10)
     })
 })
