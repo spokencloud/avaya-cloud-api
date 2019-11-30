@@ -1,34 +1,19 @@
 import * as Constants from "../src/Constants";
 import { createSession } from "../src/session"
-import { createSubscriptionClient } from "../src/SubscriptionClient";
+import { createSubscriptionClient, SubscriptionClient } from "../src/SubscriptionClient";
 import { Subscription } from "../src/Subscription";
-import isValidParameter from "../src/Utils";
+import {getValue} from "../src/Utils";
 import { RestClient } from "../src/RestClient";
 
 
 const args = require('minimist')(process.argv.slice(2));
 
-let endpoint = args[Constants.ENDPOINT_KEY].replace(Constants.REPLACE_REGEX, Constants.EMPTY_STRING);
-let adminUsername = args[Constants.ADMIN_USERNAME_KEY].replace(Constants.REPLACE_REGEX, Constants.EMPTY_STRING);
-let adminPassword = args[Constants.ADMIN_PASSWORD_KEY].replace(Constants.REPLACE_REGEX, Constants.EMPTY_STRING);
+let endpoint = getValue(Constants.ENDPOINT_KEY, args)
+let masterToken = getValue(Constants.API_KEY, args)
 
-let isEndpointValid = isValidParameter(Constants.ENDPOINT_KEY, endpoint);
-let isAdminUsernameValid = isValidParameter(Constants.ADMIN_USERNAME_KEY, adminUsername);
-let isAdminPasswordValid = isValidParameter(Constants.ADMIN_PASSWORD_KEY, adminPassword);
-
-if (!isEndpointValid ||
-    !isAdminUsernameValid ||
-    !isAdminPasswordValid
-) {
-    process.exit()
-}
-let session = createSession(endpoint, adminUsername, adminPassword);
-// todo: provide token
-let masterToken = ""
 let restClient = new RestClient(endpoint, masterToken)
-let subscriptionClient = createSubscriptionClient(session, restClient);
 
-async function createSubscription() {
+async function createSubscription(subscriptionClient: SubscriptionClient) {
     try {
         let createSubscriptionRequest = {
             "dataSourceType": "HAGENT",
@@ -52,7 +37,7 @@ async function createSubscription() {
     }
 }
 
-async function deleteSubscription(subscriptionId: string) {
+async function deleteSubscription(subscriptionClient: SubscriptionClient, subscriptionId: string) {
     try {
         await subscriptionClient.deleteSubscription(subscriptionId);
         console.log('subscription with ' + subscriptionId + ' deleted');
@@ -61,7 +46,7 @@ async function deleteSubscription(subscriptionId: string) {
     }
 }
 
-async function getAllSubscriptions() {
+async function getAllSubscriptions(subscriptionClient: SubscriptionClient) {
     try {
         let allSubscriptions = await subscriptionClient.getAllSubscriptions();
         console.log('all subscriptions:');
@@ -71,7 +56,7 @@ async function getAllSubscriptions() {
     }
 }
 
-async function getSubscription(subscriptionId: string) {
+async function getSubscription(subscriptionClient: SubscriptionClient, subscriptionId: string) {
     try {
         let subscriptionObject = await subscriptionClient.getSubscription(subscriptionId)
             .then((result: { data: any }) => result.data);
@@ -82,7 +67,7 @@ async function getSubscription(subscriptionId: string) {
     }
 }
 
-async function updateSubscription(subscription: Subscription) {
+async function updateSubscription(subscriptionClient: SubscriptionClient,subscription: Subscription) {
     try {
         subscription.dataDeliveryFormat = 'JSON'
         let returnedSubscriptionRequest = await subscriptionClient.updateSubscription(subscription);
@@ -95,7 +80,9 @@ async function updateSubscription(subscription: Subscription) {
 }
 
 async function main() {
-    await getAllSubscriptions();
+    let subscriptionClient = await createSubscriptionClient(restClient);
+
+    await getAllSubscriptions(subscriptionClient);
     //let subscription = await createSubscription();
     //await updateSubscription(subscription);
     // await getSubscription(subscription.subscriptionId);

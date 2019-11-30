@@ -1,40 +1,27 @@
-import { Err, Ok, Result } from "ts.data.json/dist/result";
-import * as Constants from "../src/Constants";
-import { createSession } from "../src/session";
-import SkillPriority, { createAgentClient, AgentClient } from "../src/AgentClient";
-import isValidParameter, { isValidSkillsWithPriorities } from "../src/Utils";
-import { RestClient } from "../src/RestClient";
+import * as Constants from "../src/Constants"
+import SkillPriority, { createAgentClient, AgentClient } from "../src/AgentClient"
+import isValidParameter, { isValidSkillsWithPriorities } from "../src/Utils"
+import { RestClient } from "../src/RestClient"
+import {getValue} from "../src/Utils"
 
 const args = require('minimist')(process.argv.slice(2));
 
-let endpoint = args[Constants.ENDPOINT_KEY].replace(Constants.REPLACE_REGEX, Constants.EMPTY_STRING);
-let adminUsername = args[Constants.ADMIN_USERNAME_KEY].replace(Constants.REPLACE_REGEX, Constants.EMPTY_STRING);
-let adminPassword = args[Constants.ADMIN_PASSWORD_KEY].replace(Constants.REPLACE_REGEX, Constants.EMPTY_STRING);
-let agentUsername = args[Constants.AGENT_USERNAME_KEY].replace(Constants.REPLACE_REGEX, Constants.EMPTY_STRING);
-let agentPassword = args[Constants.AGENT_PASSWORD_KEY].replace(Constants.REPLACE_REGEX, Constants.EMPTY_STRING);
-let agentSkill = args[Constants.AGENT_SKILL_KEY].replace(Constants.REPLACE_REGEX, Constants.EMPTY_STRING);
-
-
-let isSkillValid = isValidSkillsWithPriorities(Constants.AGENT_SKILL_KEY, agentSkill)
-let isEndpointValid = isValidParameter(Constants.ENDPOINT_KEY, endpoint);
-let isAdminUsernameValid = isValidParameter(Constants.ADMIN_USERNAME_KEY, adminUsername);
-let isAdminPasswordValid = isValidParameter(Constants.ADMIN_PASSWORD_KEY, adminPassword);
-let isAgentUsernameValid = isValidParameter(Constants.AGENT_USERNAME_KEY, agentUsername);
-let isAgentPasswordValid = isValidParameter(Constants.AGENT_PASSWORD_KEY, agentPassword);
-
-if (!isEndpointValid ||
-    !isAdminUsernameValid ||
-    !isAdminPasswordValid ||
-    !isAgentUsernameValid ||
-    !isAgentPasswordValid || !isSkillValid) {
-    console.log("Invalid input provided..!!")
-    process.exit()
+function getAgentSkill(){
+    let value = getValue(Constants.AGENT_SKILL_KEY, args)
+    if(isValidSkillsWithPriorities(Constants.AGENT_SKILL_KEY, value)){
+        return JSON.parse(value)
+    }else {
+        throw new Error(`skill priorities have to be specified in json format`)
+    }
 }
-let session = createSession(endpoint, adminUsername, adminPassword);
-// todo: provide token
-let masterToken = ""
+
+let endpoint = getValue(Constants.ENDPOINT_KEY, args)
+let masterToken = getValue(Constants.API_KEY, args)
+let agentUsername = getValue(Constants.AGENT_USERNAME_KEY, args)
+let agentPassword = getValue(Constants.AGENT_PASSWORD_KEY, args)
+
 let restClient = new RestClient(endpoint, masterToken)
-let skillWithPriorities: [SkillPriority] = JSON.parse(agentSkill);
+let skillWithPriorities: [SkillPriority] = getAgentSkill()
 
 async function createAgent(agentClient: AgentClient) {
     try {

@@ -18,9 +18,15 @@ export const DELETE_STATION_PATH = 'spokenAbc/jobs/stations';
 export const FETCH_AGENT_BY_USERNAME_PATH = 'spokenAbc/agents/username';
 export const FETCH_AGENT_ID_PATH = 'spokenAbc/agents/loginId';
 export const USER_QUESTION_ANSWER_PATH = '/user/question/answer';
+
+export const VERSION = '1.0';
+export const SUBSCRIPTION_PATH = 'spokenAbc/subscriptions/v' + VERSION + '/subscriptions';
+export const SLASH = '/';
+export const SUB_ACCOUNT_KEY = 'subAccountAppId=';
+export const QUESTION_MARK = '?';
+
 export const ENDPOINT_KEY = 'endpoint';
-export const ADMIN_USERNAME_KEY = 'admin_username';
-export const ADMIN_PASSWORD_KEY = 'admin_password';
+export const API_KEY = 'api_key';
 export const AGENT_USERNAME_KEY = 'agent_username';
 export const AGENT_PASSWORD_KEY = 'agent_password';
 export const AGENT_SKILL_KEY = 'agent_skill';

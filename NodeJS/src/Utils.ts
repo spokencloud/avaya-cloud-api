@@ -1,5 +1,6 @@
 import { Err, JsonDecoder } from "ts.data.json";
 import SkillPriority from "./AgentClient";
+import {REPLACE_REGEX, EMPTY_STRING} from "./Constants"
 
 export default function isValidParameter(key: string, parameter: any): boolean {
     if (parameter === undefined) {
@@ -45,4 +46,18 @@ export function isValidSkillsWithPriorities(key: string, skillPriorities: string
  */
 export async function sleep(ms: number) {
     await new Promise(resolve => setTimeout(resolve, ms));
+}
+
+
+export function removeSingleQuote(s:string){
+    return s.replace(REPLACE_REGEX, EMPTY_STRING);
+}
+
+export function getValue(key: string, args: any){
+    let value = removeSingleQuote(args[key])
+    if(isValidParameter(key, value)){
+        return value
+    }else {
+        throw new Error(`${key} needs to be specified`)
+    }
 }

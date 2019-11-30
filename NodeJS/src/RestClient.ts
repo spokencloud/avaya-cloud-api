@@ -1,5 +1,5 @@
 import { CookieJar } from "tough-cookie";
-import { STATION_JOB_PATH, STATION_GROUP_PATH, FETCH_SKILL_ID_PATH, EXTENSION_PATH, USER_PATH, REMOVE_AGENT_PATH, AGENT_JOB_PATH, FETCH_AGENT_BY_USERNAME_PATH, FETCH_AGENT_ID_PATH, DELETE_STATION_PATH, STATION_ONLY_PATH, lodash } from "./Constants";
+import { STATION_JOB_PATH, STATION_GROUP_PATH, FETCH_SKILL_ID_PATH, EXTENSION_PATH, USER_PATH, REMOVE_AGENT_PATH, AGENT_JOB_PATH, FETCH_AGENT_BY_USERNAME_PATH, FETCH_AGENT_ID_PATH, DELETE_STATION_PATH, STATION_ONLY_PATH, SUBSCRIPTION_PATH, VERSION, SUB_ACCOUNT_KEY, lodash } from "./Constants";
 export const axios = require('axios').default;
 export const axiosCookieJarSupport = require('@3846masa/axios-cookiejar-support').default;
 export const STATION_GROUP_ID_NOT_EXISTS = -1
@@ -11,6 +11,8 @@ interface Credential {
 }
 
 export class RestClient {
+
+
     private baseUrl: string
     masterCredential: Credential
     credentials: Map<string, Credential>
@@ -26,7 +28,7 @@ export class RestClient {
         return axios(options)
             .then((response: any) => response.data)
     }
-    getUserToken(username: string) {
+    public getUserToken(username: string) {
         let url = `${this.baseUrl}/user/${username}/token`
         const options = this.prepareGetOptions(url)
         return axios(options)
@@ -89,6 +91,14 @@ export class RestClient {
                 return response.id
             })
         return id
+    }
+
+    public async getSubAccountAppId() {
+        let appId = await this.getSubAccount()
+            .then((response: any) => {
+                return response.appId
+            })
+        return appId
     }
 
     public getAgentByUsername(agent_username: string): Promise<any> {
@@ -233,6 +243,39 @@ export class RestClient {
             .then((response: any) => {
                 return response
             })
+    }
+
+    public createDataSubscription(subAccountAppId: string, createSubscriptionRequest: any) {
+        let url = `${SUBSCRIPTION_PATH}?${SUB_ACCOUNT_KEY}=${subAccountAppId}`
+        console.log(`createDataSubscription url = ${url}`)
+        let options = this.prepareBaseOptions()
+        return axios.post(url, createSubscriptionRequest, options)
+            .then((response: any) => response.data)
+    }
+
+    public getAllSubscriptions(subAccountAppId: string) {
+        let url = `${SUBSCRIPTION_PATH}?${SUB_ACCOUNT_KEY}=${subAccountAppId}`
+        let options = this.prepareGetOptions(url)
+        return axios(options)
+            .then((response: any) => response.data)
+    }
+    public updateDataSubscription(subAccountAppId: string, subscriptionId: any, updateSubscriptionRequest: any) {
+        let url = `${SUBSCRIPTION_PATH}/${subscriptionId}?${SUB_ACCOUNT_KEY}=${subAccountAppId}`
+        let options = this.prepareBaseOptions()
+        return axios.put(url, updateSubscriptionRequest, options)
+    }
+
+    public deleteDataSubscription(subAccountAppId: string, subscriptionId: string) {
+        let url = `${SUBSCRIPTION_PATH}/${subscriptionId}?${SUB_ACCOUNT_KEY}=${subAccountAppId}`
+        let options = this.prepareDeleteOptions(url)
+        return axios(options)
+            .then((response: any) => response.data)
+    }
+    public getDataSubscription(subAccountAppId: string, subscriptionId: string) {
+        let url = `${SUBSCRIPTION_PATH}/${subscriptionId}?${SUB_ACCOUNT_KEY}=${subAccountAppId}`
+        let options = this.prepareGetOptions(url)
+        return axios(options)
+            .then((response: any) => response.data)
     }
 
     public printMasterCookieJar(): string {
