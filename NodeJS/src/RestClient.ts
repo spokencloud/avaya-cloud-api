@@ -245,7 +245,7 @@ export class RestClient {
             })
     }
 
-    makeSubAccountSubscriptionUrl(subAccountAppId:string){
+    makeSubAccountSubscriptionUrl(subAccountAppId: string) {
         return `${this.baseUrl}/${SUBSCRIPTION_PATH}?${SUB_ACCOUNT_KEY}=${subAccountAppId}`
     }
     public createDataSubscription(subAccountAppId: string, createSubscriptionRequest: any) {
@@ -254,7 +254,7 @@ export class RestClient {
         let options = this.prepareBaseOptions()
         return axios.post(url, createSubscriptionRequest, options)
             .then((response: any) => response.data)
-            .catch((error:any) => {
+            .catch((error: any) => {
                 console.log(error.response.status);
                 return {}
             })
@@ -270,6 +270,7 @@ export class RestClient {
         let url = this.makeSubscriptionUrl(subAccountAppId, subscriptionId)
         let options = this.prepareBaseOptions()
         return axios.put(url, updateSubscriptionRequest, options)
+            .catch((error: any) => error.response.status)
     }
 
     public deleteDataSubscription(subAccountAppId: string, subscriptionId: string) {
@@ -278,7 +279,7 @@ export class RestClient {
         return axios(options)
             .then((response: any) => response.data)
     }
-    makeSubscriptionUrl(subAccountAppId:string, subscriptionId: string){
+    makeSubscriptionUrl(subAccountAppId: string, subscriptionId: string) {
         return `${this.baseUrl}/${SUBSCRIPTION_PATH}/${subscriptionId}?${SUB_ACCOUNT_KEY}=${subAccountAppId}`
     }
     public getDataSubscription(subAccountAppId: string, subscriptionId: string) {
@@ -287,7 +288,7 @@ export class RestClient {
         let options = this.prepareGetOptions(url)
         return axios(options)
             .then((response: any) => response.data)
-            .catch((error:any) => {
+            .catch((error: any) => {
                 console.log(error.response.status);
                 return {}
             })
