@@ -22,7 +22,7 @@ export const USER_QUESTION_ANSWER_PATH = '/user/question/answer';
 export const VERSION = '1.0';
 export const SUBSCRIPTION_PATH = 'spokenAbc/subscriptions/v' + VERSION + '/subscriptions';
 export const SLASH = '/';
-export const SUB_ACCOUNT_KEY = 'subAccountAppId=';
+export const SUB_ACCOUNT_KEY = 'subAccountAppId';
 export const QUESTION_MARK = '?';
 
 export const ENDPOINT_KEY = 'endpoint';

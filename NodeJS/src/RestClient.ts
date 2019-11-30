@@ -245,37 +245,52 @@ export class RestClient {
             })
     }
 
+    makeSubAccountSubscriptionUrl(subAccountAppId:string){
+        return `${this.baseUrl}/${SUBSCRIPTION_PATH}?${SUB_ACCOUNT_KEY}=${subAccountAppId}`
+    }
     public createDataSubscription(subAccountAppId: string, createSubscriptionRequest: any) {
-        let url = `${SUBSCRIPTION_PATH}?${SUB_ACCOUNT_KEY}=${subAccountAppId}`
+        let url = this.makeSubAccountSubscriptionUrl(subAccountAppId)
         console.log(`createDataSubscription url = ${url}`)
         let options = this.prepareBaseOptions()
         return axios.post(url, createSubscriptionRequest, options)
             .then((response: any) => response.data)
+            .catch((error:any) => {
+                console.log(error.response.status);
+                return {}
+            })
     }
 
     public getAllSubscriptions(subAccountAppId: string) {
-        let url = `${SUBSCRIPTION_PATH}?${SUB_ACCOUNT_KEY}=${subAccountAppId}`
+        let url = this.makeSubAccountSubscriptionUrl(subAccountAppId)
         let options = this.prepareGetOptions(url)
         return axios(options)
             .then((response: any) => response.data)
     }
     public updateDataSubscription(subAccountAppId: string, subscriptionId: any, updateSubscriptionRequest: any) {
-        let url = `${SUBSCRIPTION_PATH}/${subscriptionId}?${SUB_ACCOUNT_KEY}=${subAccountAppId}`
+        let url = this.makeSubscriptionUrl(subAccountAppId, subscriptionId)
         let options = this.prepareBaseOptions()
         return axios.put(url, updateSubscriptionRequest, options)
     }
 
     public deleteDataSubscription(subAccountAppId: string, subscriptionId: string) {
-        let url = `${SUBSCRIPTION_PATH}/${subscriptionId}?${SUB_ACCOUNT_KEY}=${subAccountAppId}`
+        let url = this.makeSubscriptionUrl(subAccountAppId, subscriptionId)
         let options = this.prepareDeleteOptions(url)
         return axios(options)
             .then((response: any) => response.data)
     }
+    makeSubscriptionUrl(subAccountAppId:string, subscriptionId: string){
+        return `${this.baseUrl}/${SUBSCRIPTION_PATH}/${subscriptionId}?${SUB_ACCOUNT_KEY}=${subAccountAppId}`
+    }
     public getDataSubscription(subAccountAppId: string, subscriptionId: string) {
-        let url = `${SUBSCRIPTION_PATH}/${subscriptionId}?${SUB_ACCOUNT_KEY}=${subAccountAppId}`
+        let url = this.makeSubscriptionUrl(subAccountAppId, subscriptionId)
+        console.log(url)
         let options = this.prepareGetOptions(url)
         return axios(options)
             .then((response: any) => response.data)
+            .catch((error:any) => {
+                console.log(error.response.status);
+                return {}
+            })
     }
 
     public printMasterCookieJar(): string {

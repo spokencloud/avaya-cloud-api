@@ -38,5 +38,11 @@ describe("RestClient", () => {
         restClient.storeUserToken("username", "token")
         expect(restClient.credentials.has("username")).toBeTruthy()
     })
+    test("makeSubscriptionUrl should return correct url", () => {
+        const subAccountAppId = "app"
+        const subscriptionId = "1"
+        let url = restClient.makeSubscriptionUrl(subAccountAppId, subscriptionId)
+        expect(url).toEqual("spokenAbc/subscriptions/v1.0/subscriptions/1?subAccountAppId==app")
+    })
 
 })
