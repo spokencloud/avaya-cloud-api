@@ -42,7 +42,7 @@ describe("RestClient", () => {
         const subAccountAppId = "app"
         const subscriptionId = "1"
         let url = restClient.makeSubscriptionUrl(subAccountAppId, subscriptionId)
-        expect(url).toEqual("spokenAbc/subscriptions/v1.0/subscriptions/1?subAccountAppId==app")
+        expect(url).toContain("/spokenAbc/subscriptions/v1.0/subscriptions/1?subAccountAppId=app")
     })
 
 })

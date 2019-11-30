@@ -54,9 +54,9 @@ export function removeSingleQuote(s:string){
 }
 
 export function getValue(key: string, args: any){
-    let value = removeSingleQuote(args[key])
+    let value = args[key]
     if(isValidParameter(key, value)){
-        return value
+        return removeSingleQuote(value)
     }else {
         throw new Error(`${key} needs to be specified`)
     }

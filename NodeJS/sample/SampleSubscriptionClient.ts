@@ -8,10 +8,17 @@ import { RestClient } from "../src/RestClient";
 
 const args = require('minimist')(process.argv.slice(2));
 
-let endpoint = getValue(Constants.ENDPOINT_KEY, args)
-let masterToken = getValue(Constants.API_KEY, args)
+let endpoint, masterToken
+try{
+     endpoint= getValue(Constants.ENDPOINT_KEY, args)
+     masterToken = getValue(Constants.API_KEY, args)
+     let restClient = new RestClient(endpoint, masterToken)
+     main(restClient);
+}catch(error){
+    process.exit(-1)
+}
 
-let restClient = new RestClient(endpoint, masterToken)
+
 
 async function createSubscription(subscriptionClient: SubscriptionClient) {
     try {
@@ -79,7 +86,7 @@ async function updateSubscription(subscriptionClient: SubscriptionClient,subscri
     }
 }
 
-async function main() {
+async function main(restClient:RestClient) {
     let subscriptionClient = await createSubscriptionClient(restClient);
 
     await getAllSubscriptions(subscriptionClient);
@@ -89,5 +96,4 @@ async function main() {
     // await deleteSubscription(subscription.subscriptionId);
 }
 
-main();
 
