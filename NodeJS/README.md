@@ -18,13 +18,11 @@ Sample Result : [ { skillNumber: 359, skillName: 'SkillOne' },
 An agent can receive or make a phone call.
 This sample client creates an agent, reads it back, and deletes it.
 
-node build/sampleAgentClient.js
-  --endpoint='https://login.bpo.avaya.com'
-  --admin_username='{your_admin_username}'
-  --admin_password='{your_admin_password}'
-  --agent_username='{your_agent_username}'
-  --agent_password='{your_agent_password}'
-  --agent_skill='[{"skillNumber":your_skill_number,"skillPriority":your_skill_priority}]'
+node dist/sample/SampleAgentClient.js 
+--endpoint='http://localhost:8081' --api_key=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ5YW5nYWRtaW4xIiwiaXNzIjoiQUJDX1NFQ1VSSVRZX0dBVEVXQVkifQ.4kf1hrPV6C30PZu3tx48dgsaev9UowvG7pVszXKhghY 
+--agent_username=tenfoldagent1 
+--agent_password=Passw0rd@1 
+--agent_skill='[{"skillNumber":100, "skillPriority":5}]'
 
 Sample Agent Skills: --agent_skill='[{"skillNumber":359,"skillPriority":1}]'
 skillPriority ranges from 1-16
@@ -35,7 +33,4 @@ Please look in sampleSubscriptionClient.js for how to create
 a data subscription object to pass to the server.
 This sample client creates a subscription, reads it back, and deletes it.
 
-node build/sampleSubscriptionClient.js
-  --endpoint='https://login.bpo.avaya.com'
-  --admin_username='{your_admin_username}'
-  --admin_password='{your_admin_password}'
+node dist/sample/SampleSubscriptionClient.js --endpoint='http://localhost:8081' --api_key=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ5YW5nYWRtaW4xIiwiaXNzIjoiQUJDX1NFQ1VSSVRZX0dBVEVXQVkifQ.4kf1hrPV6C30PZu3tx48dgsaev9UowvG7pVszXKhghY

@@ -48,3 +48,8 @@ export async function createSubscriptionClient(restClient: RestClient) {
     let subAccountAppId = await restClient.getSubAccountAppId()
     return new SubscriptionClient(subAccountAppId, restClient);
 }
+
+export async function createInstance(endpoint: string, apiKey: string) {
+    let restClient = new RestClient(endpoint, apiKey)
+    return await createSubscriptionClient(restClient);
+}

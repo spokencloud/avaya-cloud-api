@@ -305,3 +305,7 @@ export async function createAgentClient(restClient: RestClient): Promise<AgentCl
     return new AgentClient(subAccountId, restClient);
 
 }
+export async function createInstance(endpoint: string, apiKey: string): Promise<AgentClient> {
+    let restClient = new RestClient(endpoint, apiKey)
+    return await createAgentClient(restClient)
+}

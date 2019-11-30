@@ -1,24 +1,21 @@
 import * as Constants from "../src/Constants";
 import { createSession } from "../src/session"
-import { createSubscriptionClient, SubscriptionClient } from "../src/SubscriptionClient";
+import { createInstance, SubscriptionClient } from "../src/SubscriptionClient";
 import { Subscription } from "../src/Subscription";
-import {getValue} from "../src/Utils";
+import { getValue } from "../src/Utils";
 import { RestClient } from "../src/RestClient";
 
 
 const args = require('minimist')(process.argv.slice(2));
 
-let endpoint, masterToken
-try{
-     endpoint= getValue(Constants.ENDPOINT_KEY, args)
-     masterToken = getValue(Constants.API_KEY, args)
-     let restClient = new RestClient(endpoint, masterToken)
-     main(restClient);
-}catch(error){
+let endpoint, apiKey
+try {
+    endpoint = getValue(Constants.ENDPOINT_KEY, args)
+    apiKey = getValue(Constants.API_KEY, args)
+    main(endpoint, apiKey);
+} catch (error) {
     process.exit(-1)
 }
-
-
 
 async function createSubscription(subscriptionClient: SubscriptionClient) {
     try {
@@ -74,7 +71,7 @@ async function getSubscription(subscriptionClient: SubscriptionClient, subscript
     }
 }
 
-async function updateSubscription(subscriptionClient: SubscriptionClient,subscription: Subscription) {
+async function updateSubscription(subscriptionClient: SubscriptionClient, subscription: Subscription) {
     try {
         subscription.dataDeliveryFormat = 'JSON'
         let returnedSubscriptionRequest = await subscriptionClient.updateSubscription(subscription);
@@ -86,8 +83,8 @@ async function updateSubscription(subscriptionClient: SubscriptionClient,subscri
     }
 }
 
-async function main(restClient:RestClient) {
-    let subscriptionClient = await createSubscriptionClient(restClient);
+async function main(endpoint: string, apiKey: string) {
+    let subscriptionClient = await createInstance(endpoint, apiKey);
 
     await getAllSubscriptions(subscriptionClient);
     //let subscription = await createSubscription();
