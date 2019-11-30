@@ -15,8 +15,29 @@ describe("RestClient Subscription Integration Test", () => {
         let subscriptions = await restClient.getDataSubscription(subAccountAppId, subscriptionId)
         expect(subscriptions).toEqual({})
     })
+    test("", async () =>{
+        let createSubscriptionRequest = {
+            "dataSourceType": "HAGENT",
+            "dataDeliveryFormat": "CSV",
+            "endpoint": "https://example.com",
+            "retryPolicy": "DEFAULT",
+            "basicAuthUsername": "avaya",
+            "basicAuthPassword": "password",
+            "frequencyInMinutes": 0,
+            "maxPostSize": 0,
+            "startTime": "2019-11-04T21:55:24.421Z",
+            "disableTLSVerify": true,
+            "subAccountAppId": "ALL"
+        };
+        let subAccountAppId = "MYA_MYARec"
 
-    test("updateDataSubscription on nonexist subscription should fail", async () => {
+        let subscription = await restClient.createDataSubscription(subAccountAppId, createSubscriptionRequest)
+        console.log(subscription)
+        expect(subscription.subAccountAppId).toEqual(subAccountAppId)
+    }
+    )
+
+    xtest("updateDataSubscription on nonexist subscription should fail", async () => {
         let subAccountAppId = "MYA_MYARec"
         let subscriptionId = "1"
         let updateSubscriptionRequest = {
@@ -35,5 +56,11 @@ describe("RestClient Subscription Integration Test", () => {
         let subscriptionId = "1"
         let subscriptions = await restClient.deleteDataSubscription(subAccountAppId, subscriptionId)
         expect(subscriptions).toEqual("")
+    })
+
+    test("getAllSubscriptions should return subscriptions", async () => {
+        let subAccountAppId = "MYA_MYARec"
+        let subscriptions = await restClient.getAllSubscriptions(subAccountAppId)
+        expect(subscriptions.length).toBeGreaterThan(0)
     })
 })
