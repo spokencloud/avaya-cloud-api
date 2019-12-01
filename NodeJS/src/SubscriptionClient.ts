@@ -1,6 +1,8 @@
-import { Subscription } from "./Subscription";
-import { RestClient } from "./RestClient";
+import { Subscription } from "./Subscription"
+import { RestClient } from "./RestClient"
+import { log4js } from "./Constants"
 
+const logger = log4js.getLogger('SubscriptionClient');
 
 export class SubscriptionClient {
     subAccountAppId: string
@@ -25,7 +27,6 @@ export class SubscriptionClient {
     }
 
     public async updateSubscription(updateSubscriptionRequest: Subscription) {
-
         updateSubscriptionRequest.subAccountAppId = this.subAccountAppId;
         let returnedSubscription = await this.restClient.updateDataSubscription(this.subAccountAppId,
             updateSubscriptionRequest.subscriptionId,

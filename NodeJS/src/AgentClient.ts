@@ -2,6 +2,8 @@ import * as Constants from "./Constants";
 import { RestClient } from "./RestClient";
 import { sleep } from "./Utils";
 
+const logger = Constants.log4js.getLogger('AgentClient');
+
 export default interface SkillPriority {
     skillNumber: number,
     skillPriority: number
@@ -127,7 +129,7 @@ export class AgentClient {
     getSkillIds(): Promise<[]> {
         return this.restClient.getSubAccountAgentSkills(this.subAccountId)
             .then((response: { data: { [x: string]: { [x: string]: any } } }) => {
-                console.log(response.data)
+                logger.debug(response.data)
                 let skillResponses = response.data['skillResponses'][this.subAccountId];
                 if (skillResponses) {
                     return skillResponses.map((skillResponse: { id: any }) => skillResponse.id);
@@ -153,7 +155,7 @@ export class AgentClient {
                     };
                     availableSkills.push(skillInfo);
                 }
-                console.log(availableSkills);
+                logger.debug(availableSkills);
                 return availableSkills;
             })
     }
@@ -234,12 +236,12 @@ export class AgentClient {
      * @param millis time to sleep before retry
      */
     async redo(callback: () => Promise<boolean>, retries: number, millis: number) {
-        console.log(`entering redo ${retries}`)
+        logger.debug(`entering redo ${retries}`)
         for (let count = 0; count < retries; count++) {
             let result = await callback()
-            console.log(`redo count=${count}; result=${result}`)
+            logger.debug(`redo count=${count}; result=${result}`)
             if (result) {
-                console.log("result is true exiting redo...")
+                logger.debug("result is true exiting redo...")
                 return true
             }
             await sleep(millis)
@@ -286,7 +288,7 @@ export class AgentClient {
             await this.restClient.requestStationDeletion(station.id);
             await this.waitForStationDeletion(agentUsername)
         } else {
-            console.log('station associated with ' + agentUsername + ' has already been deleted')
+            logger.debug('station associated with ' + agentUsername + ' has already been deleted')
         }
 
         let agent = await this.getAgent(agentUsername);

@@ -1,4 +1,4 @@
-import { RestClient, STATION_GROUP_ID_NOT_EXISTS } from "../src/RestClient";
+import { RestClient } from "../src/RestClient";
 
 describe("RestClient Subscription Integration Test", () => {
 

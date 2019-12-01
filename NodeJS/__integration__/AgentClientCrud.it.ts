@@ -1,5 +1,5 @@
 import { AgentClient, createAgentClient } from "../src/AgentClient"
-import { RestClient, STATION_GROUP_ID_NOT_EXISTS } from "../src/RestClient"
+import { RestClient } from "../src/RestClient"
 import * as Constants from "../src/Constants";
 
 /**

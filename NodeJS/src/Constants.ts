@@ -2,7 +2,7 @@ export const lodash = require('lodash');
 export const axios = require('axios').default;
 export const axiosCookieJarSupport = require('@3846masa/axios-cookiejar-support').default;
 export const tough = require('tough-cookie');
-
+export const log4js = require('@log4js-node/log4js-api');
 export const STATION_NAME = 'generated station';
 export const AGENT_FIRST_NAME = 'generated';
 export const AGENT_LAST_NAME = 'agent';

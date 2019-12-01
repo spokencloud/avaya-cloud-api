@@ -1,8 +1,11 @@
 import { CookieJar } from "tough-cookie";
-import { STATION_JOB_PATH, STATION_GROUP_PATH, FETCH_SKILL_ID_PATH, EXTENSION_PATH, USER_PATH, REMOVE_AGENT_PATH, AGENT_JOB_PATH, FETCH_AGENT_BY_USERNAME_PATH, FETCH_AGENT_ID_PATH, DELETE_STATION_PATH, STATION_ONLY_PATH, SUBSCRIPTION_PATH, VERSION, SUB_ACCOUNT_KEY, lodash } from "./Constants";
-export const axios = require('axios').default;
-export const axiosCookieJarSupport = require('@3846masa/axios-cookiejar-support').default;
+import { log4js, STATION_JOB_PATH, STATION_GROUP_PATH, FETCH_SKILL_ID_PATH, EXTENSION_PATH, USER_PATH, REMOVE_AGENT_PATH, AGENT_JOB_PATH, FETCH_AGENT_BY_USERNAME_PATH, FETCH_AGENT_ID_PATH, DELETE_STATION_PATH, STATION_ONLY_PATH, SUBSCRIPTION_PATH, VERSION, SUB_ACCOUNT_KEY, lodash } from "./Constants";
 export const STATION_GROUP_ID_NOT_EXISTS = -1
+
+const axios = require('axios').default;
+const axiosCookieJarSupport = require('@3846masa/axios-cookiejar-support').default;
+const logger = log4js.getLogger('AgentClient');
+
 axiosCookieJarSupport(axios);
 
 interface Credential {
@@ -42,7 +45,7 @@ export class RestClient {
     }
     public async getAndStoreUserStoken(username: string) {
         let userToken = await this.getUserToken(username)
-        console.log(`storing token for ${username}`)
+        logger.debug(`storing token for ${username}`)
         this.storeUserToken(username, userToken)
 
     }
@@ -55,7 +58,7 @@ export class RestClient {
      */
     public getAgentStationGroupId(subAccountId: string) {
         let url = `${this.baseUrl}/${STATION_GROUP_PATH}/${subAccountId}`
-        console.log(`getAgentStationGroupId url is ${url}`)
+        logger.debug(`getAgentStationGroupId url is ${url}`)
         const options = this.prepareGetOptions(url)
         return axios(options)
             .then((response: any) => {
@@ -73,13 +76,13 @@ export class RestClient {
     }
     public getSubAccount() {
         let url = `${this.baseUrl}/${USER_PATH}`
-        console.log(`getSubAccount url is ${url}`)
+        logger.debug(`getSubAccount url is ${url}`)
         const options = this.prepareGetOptions(url)
         return axios(options)
             .then((response: { data: { [x: string]: any; }; }) => {
-                //console.log(response);
+                //logger.debug(response);
                 let accessibleSubAccounts = response.data['accessibleClients'];
-                // console.log(accessibleSubAccounts);
+                // logger.debug(accessibleSubAccounts);
                 accessibleSubAccounts = lodash.sortBy(accessibleSubAccounts, ['id'])
                 let subAccount = accessibleSubAccounts[0]
                 return subAccount
@@ -103,11 +106,11 @@ export class RestClient {
 
     public getAgentByUsername(agent_username: string): Promise<any> {
         let url = `${this.baseUrl}/${FETCH_AGENT_BY_USERNAME_PATH}/${agent_username}`
-        console.log(`getAgentByUsername url is ${url}`)
+        logger.debug(`getAgentByUsername url is ${url}`)
         const options = this.prepareGetOptions(url)
         return axios(options)
             .then((response: { data: any }) => {
-                // console.log(response.data)
+                // logger.debug(response.data)
                 return response.data
             })
     }
@@ -126,7 +129,7 @@ export class RestClient {
                 return true
             })
             .catch((error: any) => {
-                console.log(error.response.status)
+                logger.debug(error.response.status)
                 return false
             })
     }
@@ -162,7 +165,7 @@ export class RestClient {
                 return true
             })
             .catch((error: any) => {
-                console.log(error.response.status)
+                logger.debug(error.response.status)
                 return false
             })
     }
@@ -179,7 +182,7 @@ export class RestClient {
                 return result.data.find(element => element.username === agentUsername);
             })
             .catch((error: any) => {
-                console.log(error.response.status)
+                logger.debug(error.response.status)
                 return undefined
             })
     }
@@ -217,7 +220,7 @@ export class RestClient {
                 return response.data
             })
             .catch((error: any) => {
-                console.log(error.response.status)
+                logger.debug(error.response.status)
                 return - error.response.status
             })
     }
@@ -226,18 +229,18 @@ export class RestClient {
         let options = this.prepareBaseOptions()
         return axios.post(url, station, options)
             .then((result: any) => {
-                // console.log(result.data)
+                // logger.debug(result.data)
                 return result
             })
             .catch((error: any) => {
-                console.log(error.response.status)
+                logger.debug(error.response.status)
                 return - error.response.status
             })
     }
 
     public getSubAccountAgentSkills(subAccountId: string) {
         let url = `${this.baseUrl}/${FETCH_SKILL_ID_PATH}${subAccountId}&skillType=AGENT`
-        console.log(url)
+        logger.debug(url)
         let options = this.prepareGetOptions(url)
         return axios(options)
             .then((response: any) => {
@@ -250,12 +253,12 @@ export class RestClient {
     }
     public createDataSubscription(subAccountAppId: string, createSubscriptionRequest: any) {
         let url = this.makeSubAccountSubscriptionUrl(subAccountAppId)
-        console.log(`createDataSubscription url = ${url}`)
+        logger.debug(`createDataSubscription url = ${url}`)
         let options = this.prepareBaseOptions()
         return axios.post(url, createSubscriptionRequest, options)
             .then((response: any) => response.data)
             .catch((error: any) => {
-                console.log(error.response.status);
+                logger.debug(error.response.status);
                 return {}
             })
     }
@@ -284,12 +287,12 @@ export class RestClient {
     }
     public getDataSubscription(subAccountAppId: string, subscriptionId: string) {
         let url = this.makeSubscriptionUrl(subAccountAppId, subscriptionId)
-        console.log(url)
+        logger.debug(url)
         let options = this.prepareGetOptions(url)
         return axios(options)
             .then((response: any) => response.data)
             .catch((error: any) => {
-                console.log(error.response.status);
+                logger.debug(error.response.status);
                 return {}
             })
     }

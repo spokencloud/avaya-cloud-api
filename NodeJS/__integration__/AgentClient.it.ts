@@ -1,6 +1,5 @@
 import { AgentClient, createAgentClient } from "../src/AgentClient"
-import { RestClient, STATION_GROUP_ID_NOT_EXISTS } from "../src/RestClient"
-import { randomString } from "../src/Utils"
+import { RestClient } from "../src/RestClient"
 
 describe("AgentClient", () => {
     // yangadmin1

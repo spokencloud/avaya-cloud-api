@@ -1,4 +1,4 @@
-import SkillPriority, { AgentClient } from "../src/AgentClient";
+import { AgentClient } from "../src/AgentClient";
 import { RestClient } from "../src/RestClient";
 
 describe("AgentClient.ts", () => {

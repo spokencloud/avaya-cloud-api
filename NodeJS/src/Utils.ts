@@ -1,10 +1,12 @@
 import { Err, JsonDecoder } from "ts.data.json";
 import SkillPriority from "./AgentClient";
-import {REPLACE_REGEX, EMPTY_STRING} from "./Constants"
+import {log4js, REPLACE_REGEX, EMPTY_STRING} from "./Constants"
+
+const logger = log4js.getLogger('Utils');
 
 export default function isValidParameter(key: string, parameter: any): boolean {
     if (parameter === undefined) {
-        console.error(key + ' was undefined');
+        logger.error(key + ' was undefined');
         return false;
     }
     return true;
