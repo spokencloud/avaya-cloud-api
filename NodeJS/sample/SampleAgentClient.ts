@@ -60,6 +60,13 @@ async function deleteAgent(agentClient: AgentClient) {
         console.error(e)
     }
 }
+async function agentSkillNumbers(agentClient: AgentClient) {
+    try {
+        return await agentClient.getSkillNumbers();
+    } catch (e) {
+        console.error(e)
+    }
+}
 
 async function main() {
     let agentClient = await createInstance(endpoint, apiKey);

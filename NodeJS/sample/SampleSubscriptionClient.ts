@@ -1,10 +1,7 @@
 import * as Constants from "../src/Constants";
-import { createSession } from "../src/session"
 import { createInstance, SubscriptionClient } from "../src/SubscriptionClient";
 import { Subscription } from "../src/Subscription";
 import { getValue } from "../src/Utils";
-import { RestClient } from "../src/RestClient";
-
 
 const args = require('minimist')(process.argv.slice(2));
 

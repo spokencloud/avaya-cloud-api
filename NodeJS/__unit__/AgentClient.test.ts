@@ -1,5 +1,4 @@
 import SkillPriority, { AgentClient } from "../src/AgentClient";
-import { Session } from "../src/session";
 import { RestClient } from "../src/RestClient";
 
 describe("AgentClient.ts", () => {
