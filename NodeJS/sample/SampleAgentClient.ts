@@ -1,5 +1,5 @@
 import * as Constants from "../src/Constants"
-import SkillPriority, { createInstance, AgentClient } from "../src/AgentClient"
+import SkillPriority, { createAgentClient, AgentClient } from "../src/AgentClient"
 import { isValidSkillsWithPriorities } from "../src/Utils"
 import { getValue } from "../src/Utils"
 
@@ -69,7 +69,7 @@ async function agentSkillNumbers(agentClient: AgentClient) {
 }
 
 async function main() {
-    let agentClient = await createInstance(endpoint, apiKey);
+    let agentClient = await createAgentClient(endpoint, apiKey);
     await createAgent(agentClient);
     await getAgent(agentClient);
     await deleteAgent(agentClient);

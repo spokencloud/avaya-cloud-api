@@ -44,13 +44,11 @@ export class SubscriptionClient {
         return this.restClient.getDataSubscription(this.subAccountAppId, subscriptionId)
     }
 }
-
-export async function createSubscriptionClient(restClient: RestClient) {
+async function createInstance(restClient: RestClient){
     let subAccountAppId = await restClient.getSubAccountAppId()
     return new SubscriptionClient(subAccountAppId, restClient);
 }
-
-export async function createInstance(endpoint: string, apiKey: string) {
+export async function createSubscriptionClient(endpoint: string, apiKey: string) {
     let restClient = new RestClient(endpoint, apiKey)
-    return await createSubscriptionClient(restClient);
+    return await createInstance(restClient)
 }

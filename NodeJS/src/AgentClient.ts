@@ -302,12 +302,12 @@ export class AgentClient {
         return false
     }
 }
-export async function createAgentClient(restClient: RestClient): Promise<AgentClient> {
+async function createInstance(restClient: RestClient){
     let subAccountId = await restClient.getSubAccountId()
     return new AgentClient(subAccountId, restClient);
-
 }
-export async function createInstance(endpoint: string, apiKey: string): Promise<AgentClient> {
+
+export async function createAgentClient(endpoint: string, apiKey: string): Promise<AgentClient> {
     let restClient = new RestClient(endpoint, apiKey)
-    return await createAgentClient(restClient)
+    return await createInstance(restClient)
 }

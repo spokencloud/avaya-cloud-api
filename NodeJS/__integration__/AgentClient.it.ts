@@ -8,8 +8,7 @@ describe("AgentClient", () => {
     let agentClient: AgentClient
 
     beforeEach(async () => {
-        restClient = new RestClient("http://localhost:8081", token)
-        agentClient = await createAgentClient(restClient)
+        agentClient = await createAgentClient("http://localhost:8081", token)
     });
     test("waitForStationDeletion should return true", async () => {
        let result = await agentClient.waitForStationDeletion("agentNotExists")
