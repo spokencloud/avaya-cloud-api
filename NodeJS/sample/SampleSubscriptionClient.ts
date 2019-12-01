@@ -1,5 +1,5 @@
 import * as Constants from "../src/Constants";
-import { createInstance, SubscriptionClient } from "../src/SubscriptionClient";
+import { createSubscriptionClient, SubscriptionClient } from "../src/SubscriptionClient";
 import { Subscription } from "../src/Subscription";
 import { getValue } from "../src/Utils";
 
@@ -81,7 +81,7 @@ async function updateSubscription(subscriptionClient: SubscriptionClient, subscr
 }
 
 async function main(endpoint: string, apiKey: string) {
-    let subscriptionClient = await createInstance(endpoint, apiKey);
+    let subscriptionClient = await createSubscriptionClient(endpoint, apiKey);
 
     await getAllSubscriptions(subscriptionClient);
     //let subscription = await createSubscription();

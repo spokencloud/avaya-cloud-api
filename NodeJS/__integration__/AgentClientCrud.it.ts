@@ -1,5 +1,4 @@
 import { AgentClient, createAgentClient } from "../src/AgentClient"
-import { RestClient } from "../src/RestClient"
 import * as Constants from "../src/Constants";
 
 /**
@@ -13,14 +12,12 @@ import * as Constants from "../src/Constants";
 describe("AgentClient", () => {
    // yangadmin1
    const token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ5YW5nYWRtaW4xIiwiaXNzIjoiQUJDX1NFQ1VSSVRZX0dBVEVXQVkifQ.4kf1hrPV6C30PZu3tx48dgsaev9UowvG7pVszXKhghY"
-   let restClient: RestClient
    let agentClient: AgentClient
    // set timeout for tests that have to wait for agent and station jobs to complete
    const testTimeOut = 2 * Constants.MAX_RETRY * Constants.INTERVAL_IN_MILLIS
 
    beforeEach(async () => {
-      restClient = new RestClient("http://localhost:8081", token)
-      agentClient = await createAgentClient(restClient)
+      agentClient = await createAgentClient("http://localhost:8081", token)
    });
 
    test("waitForStationDeletion should return true", async () => {

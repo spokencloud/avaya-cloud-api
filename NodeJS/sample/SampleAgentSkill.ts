@@ -1,5 +1,5 @@
 import * as Constants from "../src/Constants"
-import SkillPriority, { createInstance, AgentClient } from "../src/AgentClient"
+import { createAgentClient, AgentClient } from "../src/AgentClient"
 import { getValue } from "../src/Utils"
 
 const args = require('minimist')(process.argv.slice(2));
@@ -25,7 +25,7 @@ async function agentSkillNumbers(agentClient: AgentClient) {
 }
 
 async function main() {
-    let agentClient = await createInstance(endpoint, apiKey);
+    let agentClient = await createAgentClient(endpoint, apiKey);
     await agentSkillNumbers(agentClient);
 
 }
