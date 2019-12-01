@@ -1,79 +1,56 @@
-import {Session} from "./session";
-import {Subscription} from "./Subscription";
+import { Subscription } from "./Subscription"
+import { RestClient } from "./RestClient"
+import { log4js } from "./Constants"
 
-const VERSION = '1.0';
-const SUBSCRIPTION_PATH = '/spokenAbc/subscriptions/v' + VERSION + '/subscriptions';
-const SLASH = '/';
-const SUB_ACCOUNT_KEY = 'subAccountAppId=';
-const QUESTION_MARK = '?';
+const logger = log4js.getLogger('SubscriptionClient');
 
-class SubscriptionClient {
-    session:Session;
-
-    constructor(session: any) {
-        this.session = session
+export class SubscriptionClient {
+    subAccountAppId: string
+    restClient: RestClient
+    constructor(subAccountAppId: string, restClient: RestClient) {
+        this.subAccountAppId = subAccountAppId
+        this.restClient = restClient
     }
 
-    async createSubscription(createSubscriptionRequest:Subscription) {
-        await this.session.login();
-
-        let subAccountAppId = await this.getSubAccountAppId();
-        createSubscriptionRequest.subAccountAppId = subAccountAppId;
-        let returnedSubscription = await this.session.post(
-            SUBSCRIPTION_PATH + QUESTION_MARK + SUB_ACCOUNT_KEY + subAccountAppId,
+    public async createSubscription(createSubscriptionRequest: Subscription) {
+        createSubscriptionRequest.subAccountAppId = this.subAccountAppId;
+        let returnedSubscription = await this.restClient.createDataSubscription(
+            this.subAccountAppId,
             createSubscriptionRequest)
-            .then(result => result.data);
+            .then((result: any) => result);
 
         return returnedSubscription
     }
 
-    async getAllSubscriptions() {
-        await this.session.login();
-        let subAccountAppId = await this.getSubAccountAppId();
-        return this.session.get(SUBSCRIPTION_PATH + QUESTION_MARK + SUB_ACCOUNT_KEY + subAccountAppId)
-            .then(result => result.data)
+    public async getAllSubscriptions() {
+        return await this.restClient.getAllSubscriptions(this.subAccountAppId)
     }
 
-    async getSubAccountAppId() {
-        return this.session.getSubAccount()
-            .then(response => {
-                return response.appId
-            })
-    }
-
-    async updateSubscription(updateSubscriptionRequest:Subscription) {
-        await this.session.login();
-
-        let subAccountAppId = await this.getSubAccountAppId();
-        updateSubscriptionRequest.subAccountAppId = subAccountAppId;
-        let returnedSubscription = await this.session.put(
-            SUBSCRIPTION_PATH + SLASH + updateSubscriptionRequest.subscriptionId
-            + QUESTION_MARK + SUB_ACCOUNT_KEY + subAccountAppId,
+    public async updateSubscription(updateSubscriptionRequest: Subscription) {
+        updateSubscriptionRequest.subAccountAppId = this.subAccountAppId;
+        let returnedSubscription = await this.restClient.updateDataSubscription(this.subAccountAppId,
+            updateSubscriptionRequest.subscriptionId,
             updateSubscriptionRequest)
-            .then(result => result.data);
+            .then((result: any) => result.data);
 
         return returnedSubscription
     }
 
-    async deleteSubscription(subscriptionId:string) {
-        await this.session.login();
-
-        let subAccountAppId = await this.getSubAccountAppId();
-
-        return await this.session.delete(SUBSCRIPTION_PATH + SLASH + subscriptionId
-            + QUESTION_MARK + SUB_ACCOUNT_KEY + subAccountAppId)
+    public async deleteSubscription(subscriptionId: string) {
+        return await this.restClient.deleteDataSubscription(this.subAccountAppId, subscriptionId)
     }
 
-    async getSubscription(subscriptionId:string) {
-        await this.session.login();
-
-        let subAccountAppId = await this.getSubAccountAppId();
-
-        return this.session.get(SUBSCRIPTION_PATH + SLASH + subscriptionId
-            + QUESTION_MARK + SUB_ACCOUNT_KEY + subAccountAppId)
+    public async getSubscription(subscriptionId: string) {
+        return this.restClient.getDataSubscription(this.subAccountAppId, subscriptionId)
     }
 }
 
-export function createSubscriptionClient(session:Session){
-    return new SubscriptionClient(session);
+export async function createSubscriptionClient(restClient: RestClient) {
+    let subAccountAppId = await restClient.getSubAccountAppId()
+    return new SubscriptionClient(subAccountAppId, restClient);
+}
+
+export async function createInstance(endpoint: string, apiKey: string) {
+    let restClient = new RestClient(endpoint, apiKey)
+    return await createSubscriptionClient(restClient);
 }

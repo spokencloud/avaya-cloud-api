@@ -1,0 +1,12 @@
+{
+    "extends": ["tslint:recommended"],
+    "linterOptions": {
+        "format": "verbose"
+    },
+    "rules": {
+        "eofline": false,
+        "no-console": false,
+        "no-debugger": false,
+        "prefer-const": true
+    }
+}
