@@ -5,3 +5,4 @@ lib/*
 node_modules
 # Ignore coverage folder
 coverage
+*.tgz
