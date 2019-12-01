@@ -1,6 +1,8 @@
 # Ignore build directory
-dist
+lib/*
+!lib/.npmignore
 # Ignore node_modules folder
 node_modules
 # Ignore coverage folder
 coverage
+*.tgz

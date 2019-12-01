@@ -1,10 +1,13 @@
 {
   "name": "avaya-cloud-api",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "client library for interacting with avaya cloud api",
-  "main": "dist/src/index.js",
-  "typings": "dist/src/index.d.ts",
+  "main": "lib/src/index.js",
+  "typings": "lib/src/index.d.ts",
   "license": "SEE LICENSE IN session.js",
+  "files": [
+    "/lib"
+  ],
   "scripts": {
     "compile": "tsc --declaration",
     "start": "tsc-watch --onsuccess \"node dist/src/index.js\"",

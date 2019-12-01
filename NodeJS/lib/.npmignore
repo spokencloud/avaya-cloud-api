@@ -1,0 +1,7 @@
+# blacklist all
+**
+# include whitelist
+!src/**.d.ts
+!src/**.js
+
+
