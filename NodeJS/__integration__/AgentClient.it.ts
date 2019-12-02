@@ -55,4 +55,8 @@ describe("AgentClient", () => {
          let result = await agentClient.createStationIfNotExists("ddksgy3dnr", "2")
          expect(result).toBeTruthy()
      })
+     test("getUserToken should return token", async () => {
+        let result = await agentClient.getUserToken("yangadmin1")
+        expect(result).toEqual(token)
+     })
 })
