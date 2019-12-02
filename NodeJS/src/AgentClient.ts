@@ -301,6 +301,9 @@ export class AgentClient {
         }
         return false
     }
+    async getUserToken(username: string){
+        return await this.restClient.getUserToken(username)
+    }
 }
 async function createInstance(restClient: RestClient){
     let subAccountId = await restClient.getSubAccountId()
