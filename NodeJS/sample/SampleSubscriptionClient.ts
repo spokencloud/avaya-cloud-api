@@ -1,29 +1,20 @@
-import * as Constants from "./Constants";
-import { createSession } from "./session"
-import { createSubscriptionClient } from "./SubscriptionClient";
-import {Subscription} from "./Subscription";
-import isValidParameter from "./Utils";
+import * as Constants from "../src/Constants";
+import { createSubscriptionClient, SubscriptionClient } from "../src/SubscriptionClient";
+import { Subscription } from "../src/Subscription";
+import { getValue } from "../src/Utils";
 
 const args = require('minimist')(process.argv.slice(2));
 
-let endpoint = args[Constants.ENDPOINT_KEY].replace(Constants.REPLACE_REGEX, Constants.EMPTY_STRING);
-let adminUsername = args[Constants.ADMIN_USERNAME_KEY].replace(Constants.REPLACE_REGEX, Constants.EMPTY_STRING);
-let adminPassword = args[Constants.ADMIN_PASSWORD_KEY].replace(Constants.REPLACE_REGEX, Constants.EMPTY_STRING);
-
-let isEndpointValid = isValidParameter(Constants.ENDPOINT_KEY, endpoint);
-let isAdminUsernameValid = isValidParameter(Constants.ADMIN_USERNAME_KEY, adminUsername);
-let isAdminPasswordValid = isValidParameter(Constants.ADMIN_PASSWORD_KEY, adminPassword);
-
-if (!isEndpointValid ||
-    !isAdminUsernameValid ||
-    !isAdminPasswordValid
-) {
-    process.exit()
+let endpoint, apiKey
+try {
+    endpoint = getValue(Constants.ENDPOINT_KEY, args)
+    apiKey = getValue(Constants.API_KEY, args)
+    main(endpoint, apiKey);
+} catch (error) {
+    process.exit(-1)
 }
-let session = createSession(endpoint, adminUsername, adminPassword);
-let subscriptionClient = createSubscriptionClient(session);
 
-async function createSubscription() {
+async function createSubscription(subscriptionClient: SubscriptionClient) {
     try {
         let createSubscriptionRequest = {
             "dataSourceType": "HAGENT",
@@ -36,7 +27,7 @@ async function createSubscription() {
             "maxPostSize": 0,
             "startTime": "2019-11-04T21:55:24.421Z",
             "disableTLSVerify": true,
-            "subAccountAppId":"ALL"
+            "subAccountAppId": "ALL"
         };
         let returnedSubscriptionRequest = await subscriptionClient.createSubscription(createSubscriptionRequest);
         console.log('subscriptionObject from createSubscription');
@@ -47,7 +38,7 @@ async function createSubscription() {
     }
 }
 
-async function deleteSubscription(subscriptionId: string) {
+async function deleteSubscription(subscriptionClient: SubscriptionClient, subscriptionId: string) {
     try {
         await subscriptionClient.deleteSubscription(subscriptionId);
         console.log('subscription with ' + subscriptionId + ' deleted');
@@ -56,7 +47,7 @@ async function deleteSubscription(subscriptionId: string) {
     }
 }
 
-async function getAllSubscriptions() {
+async function getAllSubscriptions(subscriptionClient: SubscriptionClient) {
     try {
         let allSubscriptions = await subscriptionClient.getAllSubscriptions();
         console.log('all subscriptions:');
@@ -66,7 +57,7 @@ async function getAllSubscriptions() {
     }
 }
 
-async function getSubscription(subscriptionId: string) {
+async function getSubscription(subscriptionClient: SubscriptionClient, subscriptionId: string) {
     try {
         let subscriptionObject = await subscriptionClient.getSubscription(subscriptionId)
             .then((result: { data: any }) => result.data);
@@ -77,7 +68,7 @@ async function getSubscription(subscriptionId: string) {
     }
 }
 
-async function updateSubscription(subscription:Subscription) {
+async function updateSubscription(subscriptionClient: SubscriptionClient, subscription: Subscription) {
     try {
         subscription.dataDeliveryFormat = 'JSON'
         let returnedSubscriptionRequest = await subscriptionClient.updateSubscription(subscription);
@@ -89,13 +80,14 @@ async function updateSubscription(subscription:Subscription) {
     }
 }
 
-async function main() {
-    await getAllSubscriptions();
+async function main(endpoint: string, apiKey: string) {
+    let subscriptionClient = await createSubscriptionClient(endpoint, apiKey);
+
+    await getAllSubscriptions(subscriptionClient);
     //let subscription = await createSubscription();
     //await updateSubscription(subscription);
-   // await getSubscription(subscription.subscriptionId);
-   // await deleteSubscription(subscription.subscriptionId);
+    // await getSubscription(subscription.subscriptionId);
+    // await deleteSubscription(subscription.subscriptionId);
 }
 
-main();
 

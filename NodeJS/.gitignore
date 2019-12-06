@@ -1,0 +1,8 @@
+# Ignore build directory
+lib/*
+!lib/.npmignore
+# Ignore node_modules folder
+node_modules
+# Ignore coverage folder
+coverage
+*.tgz

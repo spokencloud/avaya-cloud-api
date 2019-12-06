@@ -1,10 +1,24 @@
 {
   "name": "avaya-cloud-api",
-  "version": "0.0.1",
+  "version": "0.0.6",
   "description": "client library for interacting with avaya cloud api",
+  "main": "lib/src/index.js",
+  "typings": "lib/src/index.d.ts",
   "license": "SEE LICENSE IN session.js",
+  "files": [
+    "/lib"
+  ],
+  "scripts": {
+    "compile": "tsc --declaration",
+    "start": "tsc-watch --onsuccess \"node dist/src/index.js\"",
+    "test-comment": "echo 'if jest command ends with test, files must have test in the name to be run; remove test, jest will run all files.'",
+    "test": "jest --env=node --colors --coverage test",
+    "unit": "jest -c=jest.unit.config.js --env=node --colors --coverage __unit__",
+    "integration": "jest -c=jest.integration.config.js --env=node --colors --coverage  __integration__"
+  },
   "dependencies": {
     "@3846masa/axios-cookiejar-support": "^0.4.2",
+    "@log4js-node/log4js-api": "^1.0.2",
     "axios": "^0.18.0",
     "axios-cookiejar-support": "^0.4.2",
     "lodash": "^4.17.11",
@@ -15,6 +29,11 @@
   },
   "devDependencies": {
     "@types/node": "^12.12.7",
+    "@types/jest": "^24.0.13",
+    "jest": "^24.7.1",
+    "ts-jest": "^24.0.2",
+    "tsc-watch": "^2.1.2",
+    "tslint": "^5.16.0",
     "typescript": "^3.7.2"
   }
 }
