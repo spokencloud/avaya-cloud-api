@@ -1,6 +1,6 @@
 import isValidParameter, { skillDecoder, randomString, isValidSkillsWithPriorities, sleep } from "../src/Utils"
 import { Ok } from "ts.data.json";
-import SkillPriority from "../src/AgentClient";
+import { SkillPriority } from "../src/models";
 describe("Utils.ts", () => {
 
     test("isValidParameter should return false when param is undefined", () => {
