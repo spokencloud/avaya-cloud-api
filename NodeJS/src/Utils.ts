@@ -1,5 +1,5 @@
 import { Err, JsonDecoder } from "ts.data.json";
-import { SkillPriority } from "./definitions";
+import { SkillPriority } from "./models";
 import { log4js, REPLACE_REGEX, EMPTY_STRING } from "./Constants"
 
 const logger = log4js.getLogger('Utils');

@@ -1,6 +1,6 @@
 import * as Constants from "../src/Constants";
 import { createSubscriptionClient, SubscriptionClient } from "../src/SubscriptionClient";
-import { DataDeliveryFormat, DataSourceType, RetryPolicy, Subscription } from "../src/definitions";
+import { DataDeliveryFormat, DataSourceType, RetryPolicy, Subscription } from "../src/models";
 import { getValue } from "../src/Utils";
 
 const args = require('minimist')(process.argv.slice(2));

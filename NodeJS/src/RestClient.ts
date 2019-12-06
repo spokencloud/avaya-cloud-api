@@ -1,6 +1,6 @@
 import { CookieJar } from "tough-cookie";
 import { log4js, STATION_JOB_PATH, STATION_GROUP_PATH, FETCH_SKILL_ID_PATH, EXTENSION_PATH, USER_PATH, REMOVE_AGENT_PATH, AGENT_JOB_PATH, FETCH_AGENT_BY_USERNAME_PATH, FETCH_AGENT_ID_PATH, DELETE_STATION_PATH, STATION_ONLY_PATH, SUBSCRIPTION_PATH, VERSION, SUB_ACCOUNT_KEY, lodash } from "./Constants";
-import { Subscription } from './definitions';
+import { Subscription } from './models';
 export const STATION_GROUP_ID_NOT_EXISTS = -1
 
 const axios = require('axios').default;

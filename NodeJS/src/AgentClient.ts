@@ -1,7 +1,7 @@
 import * as Constants from "./Constants";
 import { RestClient } from "./RestClient";
 import { sleep } from "./Utils";
-import { SkillPriority } from "./definitions";
+import { SkillPriority } from "./models";
 
 const logger = Constants.log4js.getLogger('AgentClient');
 

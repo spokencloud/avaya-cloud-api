@@ -1,4 +1,4 @@
-import { CreateSubscriptionData, Subscription } from "./definitions"
+import { CreateSubscriptionData, Subscription } from "./models"
 import { RestClient } from "./RestClient"
 import { log4js } from "./Constants"
 

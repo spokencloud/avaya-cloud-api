@@ -1,6 +1,6 @@
 import * as Constants from "../src/Constants"
 import { createAgentClient, AgentClient } from "../src/AgentClient"
-import { SkillPriority } from "../src/definitions"
+import { SkillPriority } from "../src/models"
 import { isValidSkillsWithPriorities } from "../src/Utils"
 import { getValue } from "../src/Utils"
 
