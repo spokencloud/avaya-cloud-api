@@ -1,6 +1,6 @@
 import * as Constants from "../src/Constants";
 import { createSubscriptionClient, SubscriptionClient } from "../src/SubscriptionClient";
-import { Subscription } from "../src/Subscription";
+import { DataDeliveryFormat, DataSourceType, RetryPolicy, Subscription } from "../src/definitions";
 import { getValue } from "../src/Utils";
 
 const args = require('minimist')(process.argv.slice(2));
@@ -17,10 +17,10 @@ try {
 async function createSubscription(subscriptionClient: SubscriptionClient) {
     try {
         let createSubscriptionRequest = {
-            "dataSourceType": "HAGENT",
-            "dataDeliveryFormat": "CSV",
+            "dataSourceType": DataSourceType.HAgent,
+            "dataDeliveryFormat": DataDeliveryFormat.Csv,
             "endpoint": "https://example.com",
-            "retryPolicy": "DEFAULT",
+            "retryPolicy": RetryPolicy.Default,
             "basicAuthUsername": "avaya",
             "basicAuthPassword": "password",
             "frequencyInMinutes": 0,
@@ -70,7 +70,7 @@ async function getSubscription(subscriptionClient: SubscriptionClient, subscript
 
 async function updateSubscription(subscriptionClient: SubscriptionClient, subscription: Subscription) {
     try {
-        subscription.dataDeliveryFormat = 'JSON'
+        subscription.dataDeliveryFormat = DataDeliveryFormat.Json;
         let returnedSubscriptionRequest = await subscriptionClient.updateSubscription(subscription);
         console.log('subscriptionObject from updateSubscription');
         console.log(returnedSubscriptionRequest);

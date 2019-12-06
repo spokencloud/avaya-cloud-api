@@ -1,5 +1,6 @@
 import * as Constants from "../src/Constants"
-import SkillPriority, { createAgentClient, AgentClient } from "../src/AgentClient"
+import { createAgentClient, AgentClient } from "../src/AgentClient"
+import { SkillPriority } from "../src/definitions"
 import { isValidSkillsWithPriorities } from "../src/Utils"
 import { getValue } from "../src/Utils"
 
@@ -9,7 +10,7 @@ let endpoint: string
 let apiKey: string
 let agentUsername: string
 let agentPassword: string
-let skillWithPriorities: [SkillPriority]
+let skillWithPriorities: SkillPriority[]
 try {
     endpoint = getValue(Constants.ENDPOINT_KEY, args)
     apiKey = getValue(Constants.API_KEY, args)

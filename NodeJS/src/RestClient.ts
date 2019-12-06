@@ -1,5 +1,6 @@
 import { CookieJar } from "tough-cookie";
 import { log4js, STATION_JOB_PATH, STATION_GROUP_PATH, FETCH_SKILL_ID_PATH, EXTENSION_PATH, USER_PATH, REMOVE_AGENT_PATH, AGENT_JOB_PATH, FETCH_AGENT_BY_USERNAME_PATH, FETCH_AGENT_ID_PATH, DELETE_STATION_PATH, STATION_ONLY_PATH, SUBSCRIPTION_PATH, VERSION, SUB_ACCOUNT_KEY, lodash } from "./Constants";
+import { Subscription } from './definitions';
 export const STATION_GROUP_ID_NOT_EXISTS = -1
 
 const axios = require('axios').default;
@@ -54,7 +55,7 @@ export class RestClient {
      * Caller should await the method to finish. When call is successful, a number greater than 0 will be returned.
      * When subAccountId has no station group defined, -1 will be returned;
      * For other errors, a negative value of http status code will be returned;
-     * @param subAccountId 
+     * @param subAccountId
      */
     public getAgentStationGroupId(subAccountId: string) {
         let url = `${this.baseUrl}/${STATION_GROUP_PATH}/${subAccountId}`
@@ -117,8 +118,8 @@ export class RestClient {
     /**
      * return true if agent deletion is requested successfully
      * return fasle otherwise
-     * @param agentUsername 
-     * @param agentLoginId 
+     * @param agentUsername
+     * @param agentLoginId
      */
     public requestAgentDeletion(agentUsername: string, agentLoginId: any) {
         let url = `${this.baseUrl}/${REMOVE_AGENT_PATH}`
@@ -172,7 +173,7 @@ export class RestClient {
     /**
      * return station or undefined
      * @param subAccountId
-     * @param agentUsername 
+     * @param agentUsername
      */
     public getStationForAgent(subAccountId: string, agentUsername: string) {
         let url = `${this.baseUrl}/${STATION_ONLY_PATH}${subAccountId}`
@@ -188,7 +189,7 @@ export class RestClient {
     }
     /**
      * return agent or undefined
-     * @param loginId 
+     * @param loginId
      */
     public getAgentByLoginId(loginId: number): Promise<any> {
         let url = `${this.baseUrl}/${FETCH_AGENT_ID_PATH}/${loginId}`
@@ -209,8 +210,8 @@ export class RestClient {
     }
     /**
      * return extension number if successful.otherwise a negative status code
-     * @param subAccountId 
-     * @param type 
+     * @param subAccountId
+     * @param type
      */
     public getNextAvailableExtension(subAccountId: string, type: string): Promise<number> {
         let url = `${this.baseUrl}/${EXTENSION_PATH}/${subAccountId}/type/${type}`
@@ -256,7 +257,7 @@ export class RestClient {
         logger.debug(`createDataSubscription url = ${url}`)
         let options = this.prepareBaseOptions()
         return axios.post(url, createSubscriptionRequest, options)
-            .then((response: any) => response.data)
+            .then((response: any) => response.data as Subscription)
             .catch((error: any) => {
                 logger.debug(error.response.status);
                 return {}
@@ -267,7 +268,7 @@ export class RestClient {
         let url = this.makeSubAccountSubscriptionUrl(subAccountAppId)
         let options = this.prepareGetOptions(url)
         return axios(options)
-            .then((response: any) => response.data)
+            .then((response: any) => response.data as Subscription[])
     }
     public updateDataSubscription(subAccountAppId: string, subscriptionId: any, updateSubscriptionRequest: any) {
         let url = this.makeSubscriptionUrl(subAccountAppId, subscriptionId)
@@ -290,7 +291,7 @@ export class RestClient {
         logger.debug(url)
         let options = this.prepareGetOptions(url)
         return axios(options)
-            .then((response: any) => response.data)
+            .then((response: any) => response.data as Subscription)
             .catch((error: any) => {
                 logger.debug(error.response.status);
                 return {}

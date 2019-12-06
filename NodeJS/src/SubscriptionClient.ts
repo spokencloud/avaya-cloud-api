@@ -1,4 +1,4 @@
-import { Subscription } from "./Subscription"
+import { CreateSubscriptionData, Subscription } from "./definitions"
 import { RestClient } from "./RestClient"
 import { log4js } from "./Constants"
 
@@ -12,12 +12,11 @@ export class SubscriptionClient {
         this.restClient = restClient
     }
 
-    public async createSubscription(createSubscriptionRequest: Subscription) {
-        createSubscriptionRequest.subAccountAppId = this.subAccountAppId;
+    public async createSubscription(createSubscriptionRequest: CreateSubscriptionData) {
         let returnedSubscription = await this.restClient.createDataSubscription(
             this.subAccountAppId,
-            createSubscriptionRequest)
-            .then((result: any) => result);
+            Object.assign({}, createSubscriptionRequest, { subAccountAppId: this.subAccountAppId }))
+            .then((result: Subscription) => result);
 
         return returnedSubscription
     }
