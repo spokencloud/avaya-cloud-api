@@ -1,6 +1,6 @@
 import { Err, JsonDecoder } from "ts.data.json";
-import SkillPriority from "./AgentClient";
-import {log4js, REPLACE_REGEX, EMPTY_STRING} from "./Constants"
+import { SkillPriority } from "./models";
+import { log4js, REPLACE_REGEX, EMPTY_STRING } from "./Constants"
 
 const logger = log4js.getLogger('Utils');
 
@@ -34,7 +34,7 @@ export function randomString(length: number): string {
 
 
 export function isValidSkillsWithPriorities(key: string, skillPriorities: string): boolean {
-    let obj: [SkillPriority] = JSON.parse(skillPriorities);
+    let obj: SkillPriority[] = JSON.parse(skillPriorities);
     for (let skill of obj) {
         if (skillDecoder.decode(skill) instanceof Err) {
             return false;
@@ -44,7 +44,7 @@ export function isValidSkillsWithPriorities(key: string, skillPriorities: string
 }
 /**
  * sleep for millis seconds must be called with await
- * @param ms 
+ * @param ms
  */
 export async function sleep(ms: number) {
     await new Promise(resolve => setTimeout(resolve, ms));

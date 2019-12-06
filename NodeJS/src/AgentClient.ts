@@ -1,13 +1,9 @@
 import * as Constants from "./Constants";
 import { RestClient } from "./RestClient";
 import { sleep } from "./Utils";
+import { SkillPriority } from "./models";
 
 const logger = Constants.log4js.getLogger('AgentClient');
-
-export default interface SkillPriority {
-    skillNumber: number,
-    skillPriority: number
-}
 
 export class AgentClient {
 
@@ -20,11 +16,11 @@ export class AgentClient {
     }
     /**
      * TODO: verify input
-     * @param agentUsername 
-     * @param agentPassword 
-     * @param skillsWithPriority 
+     * @param agentUsername
+     * @param agentPassword
+     * @param skillsWithPriority
      */
-    public async createAgentAndStation(agentUsername: string, agentPassword: string, skillsWithPriority: [SkillPriority]) {
+    public async createAgentAndStation(agentUsername: string, agentPassword: string, skillsWithPriority: SkillPriority[]) {
         // todo: pass it in to reuse
         let agentStationGroupId = await this.restClient.getAgentStationGroupId(this.subAccountId);
         if (agentStationGroupId < 0) {
@@ -55,7 +51,7 @@ export class AgentClient {
         return await this.waitForStationCreation(agentUsername);
     }
 
-    public async createUserIfNotExists(agentUsername: string, agentPassword: string, skillsWithPriority: [SkillPriority], agentStationGroupId: string) {
+    public async createUserIfNotExists(agentUsername: string, agentPassword: string, skillsWithPriority: SkillPriority[], agentStationGroupId: string) {
         let userExists = await this.existsAgentByUsername(agentUsername)
         if (userExists) {
             return Promise.resolve(true)
@@ -85,7 +81,7 @@ export class AgentClient {
         agentPassword: string,
         agentStationGroupId: any,
         agentLoginId: any,
-        skillIds: any, skillsWithPriority: [SkillPriority]) {
+        skillIds: any, skillsWithPriority: SkillPriority[]) {
 
         let securityCode = this.generateSecurityCode(agentLoginId);
         let avayaPassword = this.generateAvayaPassword(agentLoginId);
@@ -115,14 +111,14 @@ export class AgentClient {
     generateAvayaPassword(agentLoginId: { toString: () => any }) {
         let agentLoginIdString = agentLoginId.toString();
         let length = agentLoginIdString.length;
-        // substring(starting_index, ending_index), negative starting_index is treated as 0 
+        // substring(starting_index, ending_index), negative starting_index is treated as 0
         return agentLoginIdString.substring(length - 6, length);
     }
 
     generateSecurityCode(agentLoginId: { toString: () => any }) {
         let agentLoginIdString = agentLoginId.toString();
         let length = agentLoginIdString.length;
-        // substring(starting_index, ending_index), negative starting_index is treated as 0 
+        // substring(starting_index, ending_index), negative starting_index is treated as 0
         return agentLoginIdString.substring(length - 4, length);
     }
 
