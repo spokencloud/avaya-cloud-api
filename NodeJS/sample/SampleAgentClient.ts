@@ -74,5 +74,7 @@ async function main() {
     await createAgent(agentClient);
     await getAgent(agentClient);
     await deleteAgent(agentClient);
+    let agentToken = await agentClient.getUserToken('yangadmin1')
+    console.log(agentToken)
 }
 
