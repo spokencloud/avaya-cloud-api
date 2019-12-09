@@ -1,6 +1,6 @@
 {
   "name": "avaya-cloud-api",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "client library for interacting with avaya cloud api",
   "main": "lib/src/index.js",
   "typings": "lib/src/index.d.ts",
