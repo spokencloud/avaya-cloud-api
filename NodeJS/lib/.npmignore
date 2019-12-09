@@ -3,5 +3,7 @@
 # include whitelist
 !src/**.d.ts
 !src/**.js
+!src/models/**.js
+!src/models/**.d.ts
 
 
