@@ -37,3 +37,9 @@ a data subscription object to pass to the server.
 This sample client creates a subscription, reads it back, and deletes it.
 
 node lib/sample/SampleSubscriptionClient.js --endpoint='http://localhost:8081' --api_key=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ5YW5nYWRtaW4xIiwiaXNzIjoiQUJDX1NFQ1VSSVRZX0dBVEVXQVkifQ.4kf1hrPV6C30PZu3tx48dgsaev9UowvG7pVszXKhghY
+
+
+### Run sample AUX Code client
+he API provides AUXCodeClient class to fetch the list of configured aux codes and their labels
+
+node lib/sample/SampleAUXCodeClient.js --endpoint='http://localhost:8081' --api_key=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJTaGVybG9jayIsImlzcyI6IkFCQ19TRUNVUklUWV9HQVRFV0FZIn0.rBbxKSScgqI6tJy-vdehBqdncMIVjMzoNFKsb8Zzuyc
