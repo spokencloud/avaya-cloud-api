@@ -5,7 +5,7 @@ export const STATION_GROUP_ID_NOT_EXISTS = -1
 
 const axios = require('axios').default;
 const axiosCookieJarSupport = require('@3846masa/axios-cookiejar-support').default;
-const logger = log4js.getLogger('AgentClient');
+const logger = log4js.getLogger('RestClient');
 
 axiosCookieJarSupport(axios);
 
@@ -252,6 +252,13 @@ export class RestClient {
     makeSubAccountSubscriptionUrl(subAccountAppId: string) {
         return `${this.baseUrl}/${SUBSCRIPTION_PATH}?${SUB_ACCOUNT_KEY}=${subAccountAppId}`
     }
+    /**
+     * create data subscription given a valid subAccountAppId and request.  Returns a subscription response on success
+     * or empty object on error
+     * 
+     * @param subAccountAppId 
+     * @param createSubscriptionRequest 
+     */
     public createDataSubscription(subAccountAppId: string, createSubscriptionRequest: any) {
         let url = this.makeSubAccountSubscriptionUrl(subAccountAppId)
         logger.debug(`createDataSubscription url = ${url}`)
@@ -266,26 +273,48 @@ export class RestClient {
 
     public getAllSubscriptions(subAccountAppId: string) {
         let url = this.makeSubAccountSubscriptionUrl(subAccountAppId)
+        logger.debug(`getAllSubscriptions url = ${url}`)
         let options = this.prepareGetOptions(url)
         return axios(options)
             .then((response: any) => response.data as Subscription[])
     }
+    /**
+     * 
+     * @param subAccountAppId 
+     * @param subscriptionId 
+     * @param updateSubscriptionRequest 
+     */
     public updateDataSubscription(subAccountAppId: string, subscriptionId: any, updateSubscriptionRequest: any) {
         let url = this.makeSubscriptionUrl(subAccountAppId, subscriptionId)
         let options = this.prepareBaseOptions()
         return axios.put(url, updateSubscriptionRequest, options)
+            .then((response: any) => response.data as Subscription)
             .catch((error: any) => error.response.status)
     }
-
-    public deleteDataSubscription(subAccountAppId: string, subscriptionId: string) {
+    /**
+     * return status code when success or negative status code in error
+     * @param subAccountAppId 
+     * @param subscriptionId usually it is a uuid
+     */
+    public deleteDataSubscription(subAccountAppId: string, subscriptionId: string): number {
         let url = this.makeSubscriptionUrl(subAccountAppId, subscriptionId)
+        logger.debug(`deleteDataSubscription url = ${url}`)
         let options = this.prepareDeleteOptions(url)
         return axios(options)
-            .then((response: any) => response.data)
+            .then((response: any) => response.status)
+            .catch((error: any) => {
+                logger.error(error);
+                return -error.response.status
+            })
     }
     makeSubscriptionUrl(subAccountAppId: string, subscriptionId: string) {
         return `${this.baseUrl}/${SUBSCRIPTION_PATH}/${subscriptionId}?${SUB_ACCOUNT_KEY}=${subAccountAppId}`
     }
+    /**
+     * get Subscription by id
+     * @param subAccountAppId 
+     * @param subscriptionId 
+     */
     public getDataSubscription(subAccountAppId: string, subscriptionId: string) {
         let url = this.makeSubscriptionUrl(subAccountAppId, subscriptionId)
         logger.debug(url)
