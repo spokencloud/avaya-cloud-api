@@ -22,6 +22,11 @@ export enum RetryPolicy {
     Drop = 'DROP',
 }
 
+export enum EventType {
+    Historical = "HISTORICAL",
+    Realtime = "REALTIME",
+}
+
 export interface Subscription {
     // The ID of this subscription. Leave blank for new subscriptions.
     subscriptionId: string;
@@ -122,6 +127,8 @@ export interface Subscription {
     //   DEFAULT: Use the default exponential backoff policy.
     //   DROP: Drop data on the first error and set OldestError without any retries.
     retryPolicy: RetryPolicy;
+
+    eventType: EventType;
 }
 
 export type CreateSubscriptionData = Omit<Subscription, 'subscriptionId' | 'subAccountAppId' | 'oldestError' | 'LostPostRequests' | 'LostRecords' | 'lastDataSent'>

@@ -10,7 +10,7 @@
   ],
   "scripts": {
     "compile": "tsc --declaration",
-    "start": "tsc-watch --onsuccess \"node dist/src/index.js\"",
+    "start": "tsc --watch --onsuccess \"node lib/src/index.js\"",
     "test-comment": "echo 'if jest command ends with test, files must have test in the name to be run; remove test, jest will run all files.'",
     "test": "jest --env=node --colors --coverage test",
     "unit": "jest -c=jest.unit.config.js --env=node --colors --coverage __unit__",
@@ -28,9 +28,10 @@
     "typescript-validator": "latest"
   },
   "devDependencies": {
-    "@types/node": "^12.12.7",
     "@types/jest": "^24.0.13",
+    "@types/node": "^12.12.7",
     "jest": "^24.7.1",
+    "log4js": "^6.1.0",
     "ts-jest": "^24.0.2",
     "tsc-watch": "^2.1.2",
     "tslint": "^5.16.0",
