@@ -1,5 +1,12 @@
 # The Node.js API for the Avaya Public Cloud
-The API provides AgentClient class that could be used to create and delete agents in Avaya system. AgentClient also has method to retrieve a user token for an agent.  With this token, the agent could login to Avaya Webphone. The API also provides SubscriptionClient to subscribe to sub-account data.  Please see sample source code for examples on how to use the API.
+The API provides AgentClient class that could be used to create and delete agents in Avaya system. AgentClient also has method to retrieve a user token for an agent.
+
+    let agentClient = await createAgentClient(endpoint, apiKey);
+    agentClient.getUserToken(agentUsername)
+
+With this token, the agent could login to Avaya Webphone. 
+
+The API also provides SubscriptionClient to subscribe to sub-account data.  Please see sample source code for examples on how to use the API.
 
 Before using the API, please contact Avaya for api key and endpoint information.
 
