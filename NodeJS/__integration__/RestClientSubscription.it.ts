@@ -1,9 +1,9 @@
 import { RestClient } from "../src/RestClient";
 import { log4js } from "../src/Constants"
-// get root/default logger
-const logger = log4js.getLogger();
-logger.level = 'debug';
-logger.debug("Some debug messages"); // logged by default logger
+
+const rootLogger = log4js.getLogger();
+rootLogger.level = 'debug';
+rootLogger.debug("Starting RestClient Subscription Integration Test");
 
 describe("RestClient Subscription Integration Test", () => {
 
@@ -30,12 +30,13 @@ describe("RestClient Subscription Integration Test", () => {
         subscriptionId = ""
     });
 
-    xtest("getDataSubscription should retreive empty data", async () => {
-        let subscriptionId = "1" // "27bd115d-3805-4019-ad30-e73c671af752"
-        let subscriptions = await restClient.getDataSubscription(subAccountAppId, subscriptionId)
+    test("getDataSubscription should retreive empty data", async () => {
+        let invalidSubscriptionId = "1" // subscription should be a UUID
+        let subscriptions = await restClient.getDataSubscription(subAccountAppId, invalidSubscriptionId)
         expect(subscriptions).toEqual({})
     })
-    xtest("createDataSubscription should create a new subscription", async () =>{
+
+    test("createDataSubscription, updateDataSubscription, and deleteDataSubscription should work as expected.", async () =>{
         let createSubscriptionRequest = {
             "dataSourceType": "HAGENT",
             "dataDeliveryFormat": "CSV",
@@ -51,17 +52,20 @@ describe("RestClient Subscription Integration Test", () => {
             "eventType": "HISTORICAL"
         };
         let subscription = await restClient.createDataSubscription(subAccountAppId, createSubscriptionRequest)
-        console.log(subscription)
         subscriptionId = subscription.subscriptionId
+        console.log("subscription created with id=", subscriptionId)
         expect(subscription.subAccountAppId).toEqual(subAccountAppId)
 
-        /*
+        console.log("updating subscription ", subscriptionId)
+        updateDateSubscripitonTest()
+
+        console.log("deleting subscription ", subscription.subscriptionId)
         let status = await restClient.deleteDataSubscription(subAccountAppId, subscriptionId)
         expect(status).toEqual(200)
-        */
-    }, 50000)
+        
+    }, 200000)
 
-    xtest("updateDataSubscription on nonexist subscription should fail", async () => {
+    test("updateDataSubscription on nonexist subscription should fail", async () => {
         let subAccountAppId = "MYA_MYARec"
         let subscriptionId = "6b9296f0-d43a-4fc7-89e6-b4bd9b4a8ff7"
         let updateSubscriptionRequest = {
@@ -74,7 +78,10 @@ describe("RestClient Subscription Integration Test", () => {
         let subscriptions = await restClient.updateDataSubscription(subAccountAppId, subscriptionId, updateSubscriptionRequest)
         expect(subscriptions).toEqual(500)
     })
-    test("updateDataSubscription on exist subscription should succeed", async () => {
+
+    xtest("updateDataSubscription on exist subscription should succeed", updateDateSubscripitonTest)
+
+    async function updateDateSubscripitonTest () {
         let subAccountAppId = "MYA_MYARec"
         let subscriptionId = "6b9296f0-d43a-4fc7-89e6-b4bd9b4a8ff7"
         let updateSubscriptionRequest = {
@@ -93,9 +100,9 @@ describe("RestClient Subscription Integration Test", () => {
         }
         let subscriptions = await restClient.updateDataSubscription(subAccountAppId, subscriptionId, updateSubscriptionRequest)
         expect(subscriptions.subscriptionId).toEqual(subscriptionId)
-    })
+    }
 
-    xtest("deleteDataSubscription should return 403 when subAccountAppId does not exists.", async () => {
+    test("deleteDataSubscription should return 403 when subAccountAppId does not exists.", async () => {
         let subscriptionId = "200c216a-2178-44af-9927-ef28cb4307a7"
         let subscription = await restClient.deleteDataSubscription("subaccount", subscriptionId)
         expect(subscription).toEqual(-403)
@@ -106,7 +113,8 @@ describe("RestClient Subscription Integration Test", () => {
         let subscription = await restClient.deleteDataSubscription(subAccountAppId, subscriptionId)
         expect(subscription).toEqual(200)
     })
-    xtest("getAllSubscriptions should return subscriptions", async () => {
+    
+    test("getAllSubscriptions should return subscriptions", async () => {
         let subscriptions = await restClient.getAllSubscriptions(subAccountAppId)
         console.log(subscriptions)
         expect(subscriptions.length).toBeGreaterThan(0)
