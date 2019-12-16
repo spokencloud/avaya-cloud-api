@@ -10,7 +10,9 @@ let apiKey: string
 try {
     endpoint = getValue(Constants.ENDPOINT_KEY, args)
     apiKey = getValue(Constants.API_KEY, args)
-    main();
+    main()
+    .catch(error => console.error(error))
+    .finally(() => process.exit(-1))
 } catch (error) {
     console.log(error)
     process.exit(-1)
@@ -18,30 +20,30 @@ try {
 
 async function getAUXCodes(auxCodeClient: AUXCodeClient) {
     try {
-        console.log("getAUXCode calling");
+        console.log("getAUXCodes calling");
         return await auxCodeClient.getAuxCodes();
     } catch (e) {
-        console.log("getAUXCode error ");
+        console.log("getAUXCodes error ");
         console.error(e)
     }
 }
 
 async function getEffectiveAUXCodes(auxCodeClient: AUXCodeClient) {
     try {
-        console.log("getEffectiveAUXCode calling");
+        console.log("getEffectiveAUXCodes calling");
         return await auxCodeClient.getEffectiveAuxCodes();
     } catch (e) {
-        console.log("getEffectiveAUXCode error ");
+        console.log("getEffectiveAUXCodes error ");
         console.error(e)
     }
 }
 
-async function getAUXCodeForEffectiveAppId(auxCodeClient: AUXCodeClient){
+async function getAUXCodesForEffectiveAppId(auxCodeClient: AUXCodeClient){
     try {
-        console.log("getEffectiveAUXCode calling");
+        console.log("getEffectiveAUXCodes calling");
         return await auxCodeClient.getAUXCodesForEffectiveAppId();
     } catch (e) {
-        console.log("getEffectiveAUXCode error ");
+        console.log("getEffectiveAUXCodes error ");
         console.error(e)
     }
 }
@@ -49,10 +51,10 @@ async function getAUXCodeForEffectiveAppId(auxCodeClient: AUXCodeClient){
 async function main() {
     console.log("AUXCodeClient creation");
     let auxCodeClient = await createAUXCodeClient(endpoint, apiKey);
-    let auxCode = await getAUXCodes(auxCodeClient);
-    console.log("Aux Code is : %j",auxCode);
-    let effectiveAUXCode = await getEffectiveAUXCodes(auxCodeClient);
-    console.log("Effective Aux Code is : %j",effectiveAUXCode);
-    let appIdAuxCode = await getAUXCodeForEffectiveAppId(auxCodeClient);
-    console.log("AppId Aux Code is : %j",appIdAuxCode);
+    let auxCodes = await getAUXCodes(auxCodeClient);
+    console.log("Aux Code is : %j",auxCodes);
+    let effectiveAUXCodes = await getEffectiveAUXCodes(auxCodeClient);
+    console.log("Effective Aux Code is : %j",effectiveAUXCodes);
+    let appIdAuxCodes = await getAUXCodesForEffectiveAppId(auxCodeClient);
+    console.log("AppId Aux Code is : %j",appIdAuxCodes);
 }

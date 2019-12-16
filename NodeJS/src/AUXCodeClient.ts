@@ -1,9 +1,7 @@
-import * as Constants from "./Constants";
 import { RestClient } from "./RestClient";
 import { sleep } from "./Utils";
 import { SkillPriority } from "./models";
 
-const logger = Constants.log4js.getLogger('AgentClient');
 
 export class AUXCodeClient {
     private restClient: RestClient
@@ -30,12 +28,11 @@ export class AUXCodeClient {
 
 async function createInstance(restClient: RestClient){
     let subAccountId = await restClient.getSubAccountId()
-    console.log("subAccountId :"+subAccountId);
     return new AUXCodeClient(subAccountId, restClient);
 }
 
 export async function createAUXCodeClient(endpoint: string, apiKey: string): Promise<AUXCodeClient> {
-    console.log("Inside createAUXCodeClient");
+    
     let restClient = new RestClient(endpoint, apiKey)
     return await createInstance(restClient)
 }

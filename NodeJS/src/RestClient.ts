@@ -1,7 +1,7 @@
 import { CookieJar } from "tough-cookie";
 import { log4js, STATION_JOB_PATH, STATION_GROUP_PATH, FETCH_SKILL_ID_PATH, EXTENSION_PATH, USER_PATH, REMOVE_AGENT_PATH,
     AGENT_JOB_PATH, FETCH_AGENT_BY_USERNAME_PATH, FETCH_AGENT_ID_PATH, DELETE_STATION_PATH, STATION_ONLY_PATH,
-    SUBSCRIPTION_PATH, VERSION, SUB_ACCOUNT_KEY, lodash ,FETACH_AUXCODE_BASE,FETCH_AUX_CODES,
+    SUBSCRIPTION_PATH, VERSION, SUB_ACCOUNT_KEY, lodash ,FETCH_AUXCODE_BASE,FETCH_AUX_CODES,
     FETCH_EFFECTIVE_AUX_CODES,FETCH_AUX_CODE_WITH_SUBACCOUNT_APP_ID} from "./Constants";
 import { Subscription } from './models';
 export const STATION_GROUP_ID_NOT_EXISTS = -1
@@ -308,7 +308,7 @@ export class RestClient {
 
 
     public getAuxCodesBySubaccountId(subAccountId: string): Promise<any> {
-        let url = `${this.baseUrl}/${FETACH_AUXCODE_BASE}/${subAccountId}/${FETCH_AUX_CODES}`
+        let url = `${this.baseUrl}/${FETCH_AUXCODE_BASE}/${subAccountId}/${FETCH_AUX_CODES}`
         const options = this.prepareGetOptions(url)
         return axios(options)
             .then((response: { data: any }) => {
@@ -317,7 +317,7 @@ export class RestClient {
     }
 
     public getEffectiveAuxCodesBySubaccountId(subAccountId: string): Promise<any> {
-        let url = `${this.baseUrl}/${FETACH_AUXCODE_BASE}/${subAccountId}/${FETCH_EFFECTIVE_AUX_CODES}`
+        let url = `${this.baseUrl}/${FETCH_AUXCODE_BASE}/${subAccountId}/${FETCH_EFFECTIVE_AUX_CODES}`
         const options = this.prepareGetOptions(url)
         return axios(options)
             .then((response: { data: any }) => {
@@ -327,7 +327,7 @@ export class RestClient {
 
     public async getAUXCodeForEffectiveAppId(){
         let subAccountAppId = await this.getSubAccountAppId();
-        let url = `${this.baseUrl}/${FETACH_AUXCODE_BASE}/${subAccountAppId}/${FETCH_AUX_CODE_WITH_SUBACCOUNT_APP_ID}`
+        let url = `${this.baseUrl}/${FETCH_AUXCODE_BASE}/${subAccountAppId}/${FETCH_AUX_CODE_WITH_SUBACCOUNT_APP_ID}`
         const options = this.prepareGetOptions(url)
         return axios(options)
             .then((response: { data: any }) => {

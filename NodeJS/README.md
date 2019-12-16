@@ -40,6 +40,7 @@ node lib/sample/SampleSubscriptionClient.js --endpoint='http://localhost:8081' -
 
 
 ### Run sample AUX Code client
-he API provides AUXCodeClient class to fetch the list of configured aux codes and their labels
+AUX Codes (or Auxiliary Codes) are used to track the time an agent has deliberately chosen to not accept calls. This sample client fetches the list of configured AUX Codes.
+
 
 node lib/sample/SampleAUXCodeClient.js --endpoint='http://localhost:8081' --api_key=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJTaGVybG9jayIsImlzcyI6IkFCQ19TRUNVUklUWV9HQVRFV0FZIn0.rBbxKSScgqI6tJy-vdehBqdncMIVjMzoNFKsb8Zzuyc
