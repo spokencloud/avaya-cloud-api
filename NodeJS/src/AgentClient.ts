@@ -16,9 +16,9 @@ export class AgentClient {
     }
     /**
      * Create Agent and Station. Upon success, returns agent object and station object
-     * @param agentUsername, min length 2, max length 25, must pass ^[-.@\w]+$
-     * @param agentPassword, min length 8, max length 32, must have a uppercase character, must have at least one lowercase char, no whitespace, must contains a number, must contain one of ~!@?#$%^&*_
-     * @param skillsWithPriority
+     * @param agentUsername min length 2, max length 25, must pass ^[-.@\w]+$
+     * @param agentPassword min length 8, max length 32, must have a uppercase character, must have at least one lowercase char, no whitespace, must contains a number, must contain one of ~!@?#$%^&*_
+     * @param skillsWithPriority this could retrieved via #getSkillNumbers()
      */
     public async createAgentAndStation(agentUsername: string, agentPassword: string, skillsWithPriority: SkillPriority[]) {
         if (!isValidPassword(agentPassword)) {
@@ -144,7 +144,10 @@ export class AgentClient {
 
     }
 
-    getSkillNumbers() {
+    /**
+     * retrieve agent skills in SkillPriority[]
+     */
+    getSkillNumbers():SkillPriority[] {
         return this.restClient.getSubAccountAgentSkills(this.subAccountId)
             .then((response: { data: { [x: string]: { [x: string]: any } } }) => {
                 let skillResponses = response.data['skillResponses'][this.subAccountId];
