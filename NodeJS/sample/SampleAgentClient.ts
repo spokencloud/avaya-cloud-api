@@ -36,9 +36,9 @@ function getAgentSkill() {
 
 async function createAgent(agentClient: AgentClient) {
     try {
-        let agentObject = await agentClient.createAgentAndStation(agentUsername, agentPassword, skillWithPriorities);
+        let response = await agentClient.createAgentAndStation(agentUsername, agentPassword, skillWithPriorities);
         console.log('agentObject from createAgent');
-        console.log(agentObject)
+        console.log(response)
     } catch (e) {
         console.error(e)
     }

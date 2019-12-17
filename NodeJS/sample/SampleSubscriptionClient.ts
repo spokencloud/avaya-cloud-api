@@ -31,10 +31,10 @@ async function createSubscription(subscriptionClient: SubscriptionClient) {
             "subAccountAppId": "ALL",
             "eventType": EventType.Historical
         };
-        let returnedSubscriptionRequest = await subscriptionClient.createSubscription(createSubscriptionRequest);
+        let response = await subscriptionClient.createSubscription(createSubscriptionRequest);
         console.log('subscriptionObject from createSubscription');
-        console.log(returnedSubscriptionRequest);
-        return returnedSubscriptionRequest;
+        console.log(response);
+        return response;
     } catch (e) {
         console.error(e)
     }
