@@ -94,7 +94,6 @@ export class RestClient {
     public async getSubAccountId() {
         let id = await this.getSubAccount()
             .then((response: { id: any }) => {
-                console.log(`response is ${response} `);
                 return response.id
             })
         console.log(`id is ${id}`)

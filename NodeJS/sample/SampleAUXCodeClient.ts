@@ -20,7 +20,6 @@ try {
 
 async function getAUXCodes(auxCodeClient: AUXCodeClient) {
     try {
-        console.log("getAUXCodes calling");
         return await auxCodeClient.getAuxCodes();
     } catch (e) {
         console.log("getAUXCodes error ");
@@ -40,7 +39,6 @@ async function getEffectiveAUXCodes(auxCodeClient: AUXCodeClient) {
 
 async function getAUXCodesForEffectiveAppId(auxCodeClient: AUXCodeClient){
     try {
-        console.log("getEffectiveAUXCodes calling");
         return await auxCodeClient.getAUXCodesForEffectiveAppId();
     } catch (e) {
         console.log("getEffectiveAUXCodes error ");
@@ -49,12 +47,8 @@ async function getAUXCodesForEffectiveAppId(auxCodeClient: AUXCodeClient){
 }
 
 async function main() {
-    console.log("AUXCodeClient creation");
     let auxCodeClient = await createAUXCodeClient(endpoint, apiKey);
     let auxCodes = await getAUXCodes(auxCodeClient);
-    console.log("Aux Code is : %j",auxCodes);
     let effectiveAUXCodes = await getEffectiveAUXCodes(auxCodeClient);
-    console.log("Effective Aux Code is : %j",effectiveAUXCodes);
     let appIdAuxCodes = await getAUXCodesForEffectiveAppId(auxCodeClient);
-    console.log("AppId Aux Code is : %j",appIdAuxCodes);
 }
