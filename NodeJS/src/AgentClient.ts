@@ -1,6 +1,6 @@
 import * as Constants from "./Constants";
 import { RestClient } from "./RestClient";
-import { sleep } from "./Utils";
+import { sleep, isValidPassword, isValidUsername } from "./Utils";
 import { SkillPriority } from "./models";
 
 const logger = Constants.log4js.getLogger('AgentClient');
@@ -21,7 +21,15 @@ export class AgentClient {
      * @param skillsWithPriority
      */
     public async createAgentAndStation(agentUsername: string, agentPassword: string, skillsWithPriority: SkillPriority[]) {
-        // todo: pass it in to reuse
+        if(!isValidPassword(agentPassword)){
+            throw new Error("Invalid password")
+        }
+        if(!isValidUsername(agentUsername)){
+            throw new Error("Invalid username")
+        }
+        if(skillsWithPriority.length == 0){
+            throw new Error("Skills must not be empty")
+        }
         let agentStationGroupId = await this.restClient.getAgentStationGroupId(this.subAccountId);
         if (agentStationGroupId < 0) {
             throw new Error(`subAccount ${this.subAccountId} has no agent station group defined`)

@@ -1,4 +1,4 @@
-import isValidParameter, { skillDecoder, randomString, isValidSkillsWithPriorities, sleep, hasAllowableCharacters, hasWhiteSpace, hasSpecialCharacter, hasLowerCase, hasUpperCase, isValidPassword } from "../src/Utils"
+import isValidParameter, { skillDecoder, randomString, isValidSkillsWithPriorities, sleep, hasAllowableCharacters, hasWhiteSpace, hasSpecialCharacter, hasLowerCase, hasUpperCase, isValidPassword, isValidUsername } from "../src/Utils"
 import { Ok } from "ts.data.json";
 import { SkillPriority } from "../src/models";
 describe("Utils.ts", () => {
@@ -105,5 +105,16 @@ describe("Utils.ts", () => {
     test("hasAllowableCharacters should return false", () => {
         expect(hasAllowableCharacters(";")).toBeFalsy()
         expect(hasAllowableCharacters(",")).toBeFalsy()
+    })
+    test("isValidUsername should return true", () => {
+        expect(isValidUsername("johnsmith")).toBeTruthy()
+        expect(isValidUsername("john-smith")).toBeTruthy()
+        expect(isValidUsername("john_smith")).toBeTruthy()
+        expect(isValidUsername("john-smith")).toBeTruthy()
+        expect(isValidUsername("john.smith")).toBeTruthy()
+    })
+    test("isValidUsername should return false", () => {
+        expect(isValidUsername("j")).toBeFalsy()
+        expect(isValidUsername("12345678901234567890abcdef")).toBeFalsy()
     })
 })
