@@ -26,11 +26,11 @@ export function randomString(length: number): string {
     let outString: string = inOptions.charAt(Math.floor(Math.random() * 26));
 
     for (let i = 1; i < length; i++) {
-      outString += inOptions.charAt(Math.floor(Math.random() * inOptions.length));
+        outString += inOptions.charAt(Math.floor(Math.random() * inOptions.length));
     }
 
     return outString;
-  }
+}
 
 
 export function isValidSkillsWithPriorities(key: string, skillPriorities: string): boolean {
@@ -51,15 +51,56 @@ export async function sleep(ms: number) {
 }
 
 
-export function removeSingleQuote(s:string){
+export function removeSingleQuote(s: string) {
     return s.replace(REPLACE_REGEX, EMPTY_STRING);
 }
 
-export function getValue(key: string, args: any){
+export function getValue(key: string, args: any) {
     let value = args[key]
-    if(isValidParameter(key, value)){
+    if (isValidParameter(key, value)) {
         return removeSingleQuote(value)
-    }else {
+    } else {
         throw new Error(`${key} needs to be specified`)
     }
+}
+
+/**
+ * check if password is valid
+ * @param password, min length 8, max length 32, must have a uppercase character, must have at least one lowercase char, no whitespace, must contains a number, must contain one of ~!@?#$%^&*_
+ */
+export function isValidPassword(password: string): boolean {
+    if (password === null || password === undefined) {
+        return false
+    }
+    if (password.length < 8 || password.length > 32) {
+        return false
+    }
+    if (!hasLowerCase(password)) {
+        return false
+    }
+    if (!hasUpperCase(password)) {
+        return false
+    }
+    if (!hasSpecialCharacter(password)) {
+        return false
+    }
+    if (hasWhiteSpace(password)) {
+        return false
+    }
+    return true
+}
+export function hasLowerCase(str: string) {
+    return (/[a-z]/.test(str));
+}
+export function hasUpperCase(str: string) {
+    return (/[A-Z]/.test(str));
+}
+export function hasSpecialCharacter(str: string) {
+    return (/[~!@?#$%^&*_]/.test(str));
+}
+export function hasWhiteSpace(str: string) {
+    return /\s/g.test(str);
+}
+export function hasAllowableCharacters(str: string) {
+    return /[a-zA-Z0-9~!@?#$%^&*_]/g.test(str);
 }
