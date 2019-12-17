@@ -15,20 +15,20 @@ export class AgentClient {
         this.subAccountId = subAccountId
     }
     /**
-     * Create Agent and Station
+     * Create Agent and Station. Upon success, returns agent object and station object
      * @param agentUsername, min length 2, max length 25, must pass ^[-.@\w]+$
      * @param agentPassword, min length 8, max length 32, must have a uppercase character, must have at least one lowercase char, no whitespace, must contains a number, must contain one of ~!@?#$%^&*_
      * @param skillsWithPriority
      */
     public async createAgentAndStation(agentUsername: string, agentPassword: string, skillsWithPriority: SkillPriority[]) {
-        if(!isValidPassword(agentPassword)){
-            throw new Error("Invalid password")
+        if (!isValidPassword(agentPassword)) {
+            return Promise.reject("invalid password")
         }
-        if(!isValidUsername(agentUsername)){
-            throw new Error("Invalid username")
+        if (!isValidUsername(agentUsername)) {
+            return Promise.reject("invalid username")
         }
-        if(skillsWithPriority.length == 0){
-            throw new Error("Skills must not be empty")
+        if (skillsWithPriority.length == 0) {
+            return Promise.reject("invalid skills")
         }
         let agentStationGroupId = await this.restClient.getAgentStationGroupId(this.subAccountId);
         if (agentStationGroupId < 0) {
@@ -305,11 +305,11 @@ export class AgentClient {
         }
         return false
     }
-    async getUserToken(username: string){
+    async getUserToken(username: string) {
         return await this.restClient.getUserToken(username)
     }
 }
-async function createInstance(restClient: RestClient){
+async function createInstance(restClient: RestClient) {
     let subAccountId = await restClient.getSubAccountId()
     return new AgentClient(subAccountId, restClient);
 }
