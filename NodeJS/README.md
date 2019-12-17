@@ -57,7 +57,8 @@ The API also provides SubscriptionClient to subscribe to sub-account data.  Plea
     await subscriptionClient.deleteSubscription(subscriptionId);
 
 ## AUXCodeClient
-The AUXCodeClient retrieves sub account aux codes, effective aux code given sub account app id
+The AUXCodeClient retrieves sub account aux codes, effective aux code given sub account app id.
+
     // create an instance of AUXCodeClient
     let auxCodeClient = await createAUXCodeClient(endpoint, apiKey);
     // get subaccount aux codes
@@ -80,11 +81,11 @@ An agent can receive or make a phone call.
 This sample client creates an agent, reads it back, and deletes it.
 The sample will also retrieve a token for an agent and print it out in the console.
 
-node lib/sample/SampleAgentClient.js 
+`node lib/sample/SampleAgentClient.js 
 --endpoint='http://localhost:8081' --api_key=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ5YW5nYWRtaW4xIiwiaXNzIjoiQUJDX1NFQ1VSSVRZX0dBVEVXQVkifQ.4kf1hrPV6C30PZu3tx48dgsaev9UowvG7pVszXKhghY 
 --agent_username=tenfoldagent1 
 --agent_password=Passw0rd@1 
---agent_skill='[{"skillNumber":100, "skillPriority":5}]'
+--agent_skill='[{"skillNumber":100, "skillPriority":5}]'`
 
 Sample Agent Skills: --agent_skill='[{"skillNumber":359,"skillPriority":1}]'
 skillPriority ranges from 1-16
@@ -95,7 +96,7 @@ Please look in sampleSubscriptionClient.js for how to create
 a data subscription object to pass to the server.
 This sample client creates a subscription, reads it back, and deletes it.
 
-node lib/sample/SampleSubscriptionClient.js --endpoint='http://localhost:8081' --api_key=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ5YW5nYWRtaW4xIiwiaXNzIjoiQUJDX1NFQ1VSSVRZX0dBVEVXQVkifQ.4kf1hrPV6C30PZu3tx48dgsaev9UowvG7pVszXKhghY
+`node lib/sample/SampleSubscriptionClient.js --endpoint='http://localhost:8081' --api_key=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ5YW5nYWRtaW4xIiwiaXNzIjoiQUJDX1NFQ1VSSVRZX0dBVEVXQVkifQ.4kf1hrPV6C30PZu3tx48dgsaev9UowvG7pVszXKhghY`
 
 
 ## Run SampleAUXCodeClient
