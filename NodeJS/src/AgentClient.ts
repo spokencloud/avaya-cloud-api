@@ -147,12 +147,12 @@ export class AgentClient {
     /**
      * retrieve agent skills in SkillPriority[]
      */
-    getSkillNumbers():SkillPriority[] {
+    getSkillNumbers(): Promise<SkillPriority[]> {
         return this.restClient.getSubAccountAgentSkills(this.subAccountId)
             .then((response: { data: { [x: string]: { [x: string]: any } } }) => {
                 let skillResponses = response.data['skillResponses'][this.subAccountId];
                 if (skillResponses === undefined) {
-                    return []
+                    return [];
                 }
                 const availableSkills = [];
                 for (let skill of skillResponses) {
