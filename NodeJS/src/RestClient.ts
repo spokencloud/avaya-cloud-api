@@ -1,11 +1,14 @@
 import { CookieJar } from "tough-cookie";
-import { log4js, STATION_JOB_PATH, STATION_GROUP_PATH, FETCH_SKILL_ID_PATH, EXTENSION_PATH, USER_PATH, REMOVE_AGENT_PATH, AGENT_JOB_PATH, FETCH_AGENT_BY_USERNAME_PATH, FETCH_AGENT_ID_PATH, DELETE_STATION_PATH, STATION_ONLY_PATH, SUBSCRIPTION_PATH, VERSION, SUB_ACCOUNT_KEY, lodash } from "./Constants";
+import { log4js, STATION_JOB_PATH, STATION_GROUP_PATH, FETCH_SKILL_ID_PATH, EXTENSION_PATH, USER_PATH, REMOVE_AGENT_PATH,
+    AGENT_JOB_PATH, FETCH_AGENT_BY_USERNAME_PATH, FETCH_AGENT_ID_PATH, DELETE_STATION_PATH, STATION_ONLY_PATH,
+    SUBSCRIPTION_PATH, VERSION, SUB_ACCOUNT_KEY, lodash ,FETCH_AUXCODE_BASE,FETCH_AUX_CODES,
+    FETCH_EFFECTIVE_AUX_CODES,FETCH_AUX_CODE_WITH_SUBACCOUNT_APP_ID} from "./Constants";
 import { Subscription } from './models';
 export const STATION_GROUP_ID_NOT_EXISTS = -1
 
 const axios = require('axios').default;
 const axiosCookieJarSupport = require('@3846masa/axios-cookiejar-support').default;
-const logger = log4js.getLogger('AgentClient');
+const logger = log4js.getLogger('RestClient');
 
 axiosCookieJarSupport(axios);
 
@@ -78,12 +81,11 @@ export class RestClient {
     public getSubAccount() {
         let url = `${this.baseUrl}/${USER_PATH}`
         logger.debug(`getSubAccount url is ${url}`)
+        console.log(`getSubAccount url is ${url}`)
         const options = this.prepareGetOptions(url)
         return axios(options)
             .then((response: { data: { [x: string]: any; }; }) => {
-                //logger.debug(response);
                 let accessibleSubAccounts = response.data['accessibleClients'];
-                // logger.debug(accessibleSubAccounts);
                 accessibleSubAccounts = lodash.sortBy(accessibleSubAccounts, ['id'])
                 let subAccount = accessibleSubAccounts[0]
                 return subAccount
@@ -94,6 +96,7 @@ export class RestClient {
             .then((response: { id: any }) => {
                 return response.id
             })
+        console.log(`id is ${id}`)
         return id
     }
 
@@ -252,6 +255,13 @@ export class RestClient {
     makeSubAccountSubscriptionUrl(subAccountAppId: string) {
         return `${this.baseUrl}/${SUBSCRIPTION_PATH}?${SUB_ACCOUNT_KEY}=${subAccountAppId}`
     }
+    /**
+     * create data subscription given a valid subAccountAppId and request.  Returns a subscription response on success
+     * or empty object on error
+     * 
+     * @param subAccountAppId 
+     * @param createSubscriptionRequest 
+     */
     public createDataSubscription(subAccountAppId: string, createSubscriptionRequest: any) {
         let url = this.makeSubAccountSubscriptionUrl(subAccountAppId)
         logger.debug(`createDataSubscription url = ${url}`)
@@ -266,26 +276,48 @@ export class RestClient {
 
     public getAllSubscriptions(subAccountAppId: string) {
         let url = this.makeSubAccountSubscriptionUrl(subAccountAppId)
+        logger.debug(`getAllSubscriptions url = ${url}`)
         let options = this.prepareGetOptions(url)
         return axios(options)
             .then((response: any) => response.data as Subscription[])
     }
+    /**
+     * 
+     * @param subAccountAppId 
+     * @param subscriptionId 
+     * @param updateSubscriptionRequest 
+     */
     public updateDataSubscription(subAccountAppId: string, subscriptionId: any, updateSubscriptionRequest: any) {
         let url = this.makeSubscriptionUrl(subAccountAppId, subscriptionId)
         let options = this.prepareBaseOptions()
         return axios.put(url, updateSubscriptionRequest, options)
+            .then((response: any) => response.data as Subscription)
             .catch((error: any) => error.response.status)
     }
-
-    public deleteDataSubscription(subAccountAppId: string, subscriptionId: string) {
+    /**
+     * return status code when success or negative status code in error
+     * @param subAccountAppId 
+     * @param subscriptionId usually it is a uuid
+     */
+    public deleteDataSubscription(subAccountAppId: string, subscriptionId: string): number {
         let url = this.makeSubscriptionUrl(subAccountAppId, subscriptionId)
+        logger.debug(`deleteDataSubscription url = ${url}`)
         let options = this.prepareDeleteOptions(url)
         return axios(options)
-            .then((response: any) => response.data)
+            .then((response: any) => response.status)
+            .catch((error: any) => {
+                logger.error(error);
+                return -error.response.status
+            })
     }
     makeSubscriptionUrl(subAccountAppId: string, subscriptionId: string) {
         return `${this.baseUrl}/${SUBSCRIPTION_PATH}/${subscriptionId}?${SUB_ACCOUNT_KEY}=${subAccountAppId}`
     }
+    /**
+     * get Subscription by id
+     * @param subAccountAppId 
+     * @param subscriptionId 
+     */
     public getDataSubscription(subAccountAppId: string, subscriptionId: string) {
         let url = this.makeSubscriptionUrl(subAccountAppId, subscriptionId)
         logger.debug(url)
@@ -300,6 +332,35 @@ export class RestClient {
 
     public printMasterCookieJar(): string {
         return JSON.stringify(this.masterCredential.cookieJar)
+    }
+
+
+    public getAuxCodesBySubaccountId(subAccountId: string): Promise<any> {
+        let url = `${this.baseUrl}/${FETCH_AUXCODE_BASE}/${subAccountId}/${FETCH_AUX_CODES}`
+        const options = this.prepareGetOptions(url)
+        return axios(options)
+            .then((response: { data: any }) => {
+                return response.data
+            })
+    }
+
+    public getEffectiveAuxCodesBySubaccountId(subAccountId: string): Promise<any> {
+        let url = `${this.baseUrl}/${FETCH_AUXCODE_BASE}/${subAccountId}/${FETCH_EFFECTIVE_AUX_CODES}`
+        const options = this.prepareGetOptions(url)
+        return axios(options)
+            .then((response: { data: any }) => {
+                return response.data
+            })
+    }
+
+    public async getAUXCodeForEffectiveAppId(){
+        let subAccountAppId = await this.getSubAccountAppId();
+        let url = `${this.baseUrl}/${FETCH_AUXCODE_BASE}/${subAccountAppId}/${FETCH_AUX_CODE_WITH_SUBACCOUNT_APP_ID}`
+        const options = this.prepareGetOptions(url)
+        return axios(options)
+            .then((response: { data: any }) => {
+                return response.data
+            })
     }
 
 }

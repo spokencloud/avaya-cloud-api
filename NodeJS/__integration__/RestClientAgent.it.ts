@@ -42,8 +42,9 @@ describe("RestClient", () => {
     test("getAgentByUsername should return agent", async () => {
         let username = "super1"
         let agent = await restClient.getAgentByUsername(username)
+        console.log(agent)
         expect(agent["username"]).toEqual(username)
-    })
+    }, 10000)
     test("requestAgentDeletion should return false if agent1 can not be deleted", async () => {
         let username = "agent1"
         let submitted = await restClient.requestAgentDeletion(username, "7300001102")

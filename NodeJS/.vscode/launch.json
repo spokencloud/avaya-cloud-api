@@ -40,7 +40,12 @@
               "${fileBasenameNoExtension}",
               "--detectOpenHandles",
               "--config",
-              "jest.config.js"
+              "jest.config.js",
+              "--collectCoverage", 
+              "false"
+            ],
+            "runtimeArgs": [
+              "--inspect-brk",
             ],
             "console": "integratedTerminal",
             "internalConsoleOptions": "neverOpen",

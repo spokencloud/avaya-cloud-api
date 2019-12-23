@@ -36,9 +36,9 @@ function getAgentSkill() {
 
 async function createAgent(agentClient: AgentClient) {
     try {
-        let agentObject = await agentClient.createAgentAndStation(agentUsername, agentPassword, skillWithPriorities);
+        let response = await agentClient.createAgentAndStation(agentUsername, agentPassword, skillWithPriorities);
         console.log('agentObject from createAgent');
-        console.log(agentObject)
+        console.log(response)
     } catch (e) {
         console.error(e)
     }
@@ -74,5 +74,7 @@ async function main() {
     await createAgent(agentClient);
     await getAgent(agentClient);
     await deleteAgent(agentClient);
+    let agentToken = await agentClient.getUserToken('yangadmin1')
+    console.log(agentToken)
 }
 

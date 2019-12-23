@@ -1,5 +1,8 @@
 import { AgentClient } from "../src/AgentClient";
 import { RestClient } from "../src/RestClient";
+import { isValidSkillsWithPriorities } from "../src/Utils";
+import { doesNotReject } from "assert";
+import { SkillPriority } from "../src";
 
 describe("AgentClient.ts", () => {
     let client: AgentClient;
@@ -8,7 +11,21 @@ describe("AgentClient.ts", () => {
         let restClient: any = RestClient as jest.Mock
         client = new AgentClient("1", restClient)
     });
-
+    test("createAgentAndStation throws an error given an invalid password", async () => {
+        expect.assertions(1);
+        let skillsWithPriorities = [{ "skillNumber": 100, "skillPriority": 5 }]
+        await expect( client.createAgentAndStation("agent1", "badpassword", skillsWithPriorities)).rejects.toEqual("invalid password")
+    })
+    test("createAgentAndStation throws an error given an invalid username", async () => {
+        expect.assertions(1);
+        let skillsWithPriorities = [{ "skillNumber": 100, "skillPriority": 5 }]
+        expect(client.createAgentAndStation("a", "Passw0rd@", skillsWithPriorities)).rejects.toEqual("invalid username")
+    })
+    test("createAgentAndStation throws an error given an invalid skills", async () => {
+        expect.assertions(1);
+        let skillsWithPriorities = [] as SkillPriority[]
+        expect(client.createAgentAndStation("agent1", "Passw0rd@", skillsWithPriorities)).rejects.toEqual("invalid skills")
+    })    
     test("generateAvayaPassword should return last 6 characters", () => {
         let actual = client.generateAvayaPassword("agentLoginId")
         expect(actual).toEqual("oginId")
@@ -30,26 +47,24 @@ describe("AgentClient.ts", () => {
         expect(stationExtension.toString()).toEqual("hello world")
     })
     test("redo less than max retries should return true", async () => {
-        let retries = 7
-        let millis = 5
+        const retries = 7
+        const millis = 5
         let count = 0
-        let callback = () => {
+        const callback = () => {
             count++
             if (count < 3) {
                 return Promise.resolve(false)
             }
             return Promise.resolve(true)
-
         }
         let result = await client.redo(callback, retries, millis)
         expect(result).toBeTruthy()
-    })
+    }, 10000)
     test("redo greater than max retries should return false", async () => {
-        let retries = 3
-        let millis = 5
+        const retries = 3
+        const millis = 5
         let count = 0
-        let callback = () => {
-    
+        const callback = () => {
             count++
             console.log(`callback count=${count}`)
             if (count < 10) {
@@ -63,11 +78,11 @@ describe("AgentClient.ts", () => {
         expect(result).toBeFalsy()
     })
     test("checkAgentPromise should return false", async () => {
-       let result = await client.existsAgent(Promise.reject(true))
-       expect(result).toBeFalsy()
+        let result = await client.existsAgent(Promise.reject(true))
+        expect(result).toBeFalsy()
     })
     test("checkAgentPromise should return true", async () => {
         let result = await client.existsAgent(Promise.resolve(true))
         expect(result).toBeTruthy()
-     })
+    })
 })

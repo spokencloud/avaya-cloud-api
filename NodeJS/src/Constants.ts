@@ -35,3 +35,9 @@ export const EMPTY_STRING = "";
 // ten seconds
 export const INTERVAL_IN_MILLIS = 10000;
 export const MAX_RETRY = 5;
+
+//aux code
+export const FETCH_AUXCODE_BASE = 'spokenAbc/clients';
+export const FETCH_AUX_CODES = 'auxCodes';
+export const FETCH_EFFECTIVE_AUX_CODES = 'auxCodes';
+export const FETCH_AUX_CODE_WITH_SUBACCOUNT_APP_ID = 'auxCodes/effective-appId'

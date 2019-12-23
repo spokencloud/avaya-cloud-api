@@ -1,6 +1,6 @@
 import * as Constants from "../src/Constants";
 import { createSubscriptionClient, SubscriptionClient } from "../src/SubscriptionClient";
-import { DataDeliveryFormat, DataSourceType, RetryPolicy, Subscription } from "../src/models";
+import { DataDeliveryFormat, DataSourceType, RetryPolicy, Subscription, EventType } from "../src/models";
 import { getValue } from "../src/Utils";
 
 const args = require('minimist')(process.argv.slice(2));
@@ -11,6 +11,7 @@ try {
     apiKey = getValue(Constants.API_KEY, args)
     main(endpoint, apiKey);
 } catch (error) {
+    console.log(error)
     process.exit(-1)
 }
 
@@ -27,12 +28,13 @@ async function createSubscription(subscriptionClient: SubscriptionClient) {
             "maxPostSize": 0,
             "startTime": "2019-11-04T21:55:24.421Z",
             "disableTLSVerify": true,
-            "subAccountAppId": "ALL"
+            "subAccountAppId": "ALL",
+            "eventType": EventType.Historical
         };
-        let returnedSubscriptionRequest = await subscriptionClient.createSubscription(createSubscriptionRequest);
+        let response = await subscriptionClient.createSubscription(createSubscriptionRequest);
         console.log('subscriptionObject from createSubscription');
-        console.log(returnedSubscriptionRequest);
-        return returnedSubscriptionRequest;
+        console.log(response);
+        return response;
     } catch (e) {
         console.error(e)
     }
@@ -50,8 +52,7 @@ async function deleteSubscription(subscriptionClient: SubscriptionClient, subscr
 async function getAllSubscriptions(subscriptionClient: SubscriptionClient) {
     try {
         let allSubscriptions = await subscriptionClient.getAllSubscriptions();
-        console.log('all subscriptions:');
-        console.log(allSubscriptions);
+        console.log('total subscriptions:', allSubscriptions.length);
     } catch (e) {
         console.error(e)
     }
@@ -60,7 +61,6 @@ async function getAllSubscriptions(subscriptionClient: SubscriptionClient) {
 async function getSubscription(subscriptionClient: SubscriptionClient, subscriptionId: string) {
     try {
         let subscriptionObject = await subscriptionClient.getSubscription(subscriptionId)
-            .then((result: { data: any }) => result.data);
         console.log('subscriptionObject from getSubscription');
         console.log(subscriptionObject)
     } catch (e) {
@@ -83,11 +83,16 @@ async function updateSubscription(subscriptionClient: SubscriptionClient, subscr
 async function main(endpoint: string, apiKey: string) {
     let subscriptionClient = await createSubscriptionClient(endpoint, apiKey);
 
-    await getAllSubscriptions(subscriptionClient);
-    //let subscription = await createSubscription();
+    let subscription = await createSubscription(subscriptionClient);
     //await updateSubscription(subscription);
-    // await getSubscription(subscription.subscriptionId);
-    // await deleteSubscription(subscription.subscriptionId);
+    if(!subscription){
+        console.error("create failed")
+        return -1
+    }
+    console.log("subscription id is ", subscription.subscriptionId)
+    await getSubscription(subscriptionClient, subscription.subscriptionId);
+    await deleteSubscription(subscriptionClient, subscription.subscriptionId);
+    return 0
 }
 
 

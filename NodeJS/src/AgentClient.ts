@@ -1,6 +1,6 @@
 import * as Constants from "./Constants";
 import { RestClient } from "./RestClient";
-import { sleep } from "./Utils";
+import { sleep, isValidPassword, isValidUsername } from "./Utils";
 import { SkillPriority } from "./models";
 
 const logger = Constants.log4js.getLogger('AgentClient');
@@ -15,13 +15,21 @@ export class AgentClient {
         this.subAccountId = subAccountId
     }
     /**
-     * TODO: verify input
-     * @param agentUsername
-     * @param agentPassword
-     * @param skillsWithPriority
+     * Create Agent and Station. Upon success, returns agent object and station object
+     * @param agentUsername min length 2, max length 25, must pass ^[-.@\w]+$
+     * @param agentPassword min length 8, max length 32, must have a uppercase character, must have at least one lowercase char, no whitespace, must contains a number, must contain one of ~!@?#$%^&*_
+     * @param skillsWithPriority this could retrieved via #getSkillNumbers()
      */
     public async createAgentAndStation(agentUsername: string, agentPassword: string, skillsWithPriority: SkillPriority[]) {
-        // todo: pass it in to reuse
+        if (!isValidPassword(agentPassword)) {
+            return Promise.reject("invalid password")
+        }
+        if (!isValidUsername(agentUsername)) {
+            return Promise.reject("invalid username")
+        }
+        if (skillsWithPriority.length == 0) {
+            return Promise.reject("invalid skills")
+        }
         let agentStationGroupId = await this.restClient.getAgentStationGroupId(this.subAccountId);
         if (agentStationGroupId < 0) {
             throw new Error(`subAccount ${this.subAccountId} has no agent station group defined`)
@@ -136,7 +144,10 @@ export class AgentClient {
 
     }
 
-    getSkillNumbers() {
+    /**
+     * retrieve agent skills in SkillPriority[]
+     */
+    getSkillNumbers():SkillPriority[] {
         return this.restClient.getSubAccountAgentSkills(this.subAccountId)
             .then((response: { data: { [x: string]: { [x: string]: any } } }) => {
                 let skillResponses = response.data['skillResponses'][this.subAccountId];
@@ -297,11 +308,11 @@ export class AgentClient {
         }
         return false
     }
-    async getUserToken(username: string){
+    async getUserToken(username: string) {
         return await this.restClient.getUserToken(username)
     }
 }
-async function createInstance(restClient: RestClient){
+async function createInstance(restClient: RestClient) {
     let subAccountId = await restClient.getSubAccountId()
     return new AgentClient(subAccountId, restClient);
 }
