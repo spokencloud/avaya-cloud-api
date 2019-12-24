@@ -12,6 +12,7 @@ export default function isValidParameter(key: string, parameter: any): boolean {
     return true;
 }
 
+const MAX_USERNAME_LENGTH = 20; // constraint from station username field
 
 export const skillDecoder = JsonDecoder.object<SkillPriority>(
     {
@@ -103,10 +104,10 @@ export function hasAllowableCharacters(str: string) {
 }
 /**
  * check if a username is valid
- * @param username min length 2, max length 25, must pass ^[-.@\w]+$
+ * @param username min length 2, max length 20, must pass ^[-.@\w]+$
  */
-export function isValidUsername(username: string):boolean{
-    if (username.length < 2 || username.length > 25) {
+export function isValidUsername(username: string): boolean {
+    if (username.length < 2 || username.length > MAX_USERNAME_LENGTH) {
         return false
     }
     return hasAllowableCharacters(username)

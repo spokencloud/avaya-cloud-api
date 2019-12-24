@@ -112,9 +112,11 @@ describe("Utils.ts", () => {
         expect(isValidUsername("john_smith")).toBeTruthy()
         expect(isValidUsername("john-smith")).toBeTruthy()
         expect(isValidUsername("john.smith")).toBeTruthy()
+        expect(isValidUsername("12345678901234567890")).toBeTruthy()
+
     })
     test("isValidUsername should return false", () => {
         expect(isValidUsername("j")).toBeFalsy()
-        expect(isValidUsername("12345678901234567890abcdef")).toBeFalsy()
+        expect(isValidUsername("123456789012345678901")).toBeFalsy()
     })
 })
