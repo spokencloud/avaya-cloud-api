@@ -10,6 +10,7 @@ export enum DataSourceType {
     RtDidState = 'RT_DID_STATE',
     RtSkillState = 'RT_SKILL_STATE',
     RtVdnState = 'RT_VDN_STATE',
+    RealTimeFeed = 'REAL_TIME_FEED',
 }
 
 export enum DataDeliveryFormat {
