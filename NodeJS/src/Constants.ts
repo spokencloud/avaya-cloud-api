@@ -41,3 +41,7 @@ export const FETCH_AUXCODE_BASE = 'spokenAbc/clients';
 export const FETCH_AUX_CODES = 'auxCodes';
 export const FETCH_EFFECTIVE_AUX_CODES = 'auxCodes';
 export const FETCH_AUX_CODE_WITH_SUBACCOUNT_APP_ID = 'auxCodes/effective-appId'
+
+// default skill name
+export const DEFAULT_SKILL_NAME = 'DEFAULT_SKILL'
+export const DEFAULT_SKILL_PRIORITY = 3

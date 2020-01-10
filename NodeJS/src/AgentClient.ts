@@ -144,11 +144,25 @@ export class AgentClient {
 
     }
 
+    async getDefaultSkillId(): Promise<number> {
+        return await this.restClient.getSubAccountAgentSkills(this.subAccountId)        
+            .then((response: { data: { [x: string]: { [x: string]: any } } }) => {
+                logger.debug(response.data)
+                // data has a key of skillResponse, which is a map of subaccountId, and array of skillResponse
+                // skillResponses is SkillResponse[]
+                let skillResponses = response.data['skillResponses'][this.subAccountId];
+                if (skillResponses) {
+                    let defaultSkill = skillResponses.find((skillResponse: { id: number, name: string }) => skillResponse.name === Constants.DEFAULT_SKILL_NAME);
+                    return !!defaultSkill ? defaultSkill.id : undefined
+                }
+            }) 
+    }
+
     /**
-     * retrieve agent skills in SkillPriority[]
+     * retrieve agent skills in {skillName:string, skillNumber:number}[]
      */
-    getSkillNumbers(): Promise<SkillPriority[]> {
-        return this.restClient.getSubAccountAgentSkills(this.subAccountId)
+    async getSkillNumbers(): Promise<{ skillName: string, skillNumber: number }[]> {
+        return await this.restClient.getSubAccountAgentSkills(this.subAccountId)
             .then((response: { data: { [x: string]: { [x: string]: any } } }) => {
                 let skillResponses = response.data['skillResponses'][this.subAccountId];
                 if (skillResponses === undefined) {
