@@ -30,6 +30,15 @@ export class AgentClient {
         if (skillsWithPriority.length == 0) {
             return Promise.reject("invalid skills")
         }
+
+        if (this.getDefaultSkillNumber() === undefined) {
+            logger.debug("tring to create default skill")
+            let created = await this.createDefaultSkill()
+            if (!created) {
+                return Promise.reject("Can not create default skill for agent creation.")
+            }
+        }
+
         let agentStationGroupId = await this.restClient.getAgentStationGroupId(this.subAccountId);
         if (agentStationGroupId < 0) {
             throw new Error(`subAccount ${this.subAccountId} has no agent station group defined`)
@@ -144,18 +153,40 @@ export class AgentClient {
 
     }
 
-    protected async getDefaultSkillId(): Promise<number> {
-        return await this.restClient.getSubAccountAgentSkills(this.subAccountId)        
+    public getDefaultSkillNumber(): Promise<number> {
+        return this.restClient.getSubAccountAgentSkills(this.subAccountId)
             .then((response: { data: { [x: string]: { [x: string]: any } } }) => {
                 logger.debug(response.data)
                 // data has a key of skillResponse, which is a map of subaccountId, and array of skillResponse
                 // skillResponses is SkillResponse[]
                 let skillResponses = response.data['skillResponses'][this.subAccountId];
                 if (skillResponses) {
-                    let defaultSkill = skillResponses.find((skillResponse: { id: number, name: string }) => skillResponse.name === Constants.DEFAULT_SKILL_NAME);
-                    return !!defaultSkill ? defaultSkill.id : undefined
+                    let defaultSkill = skillResponses.find((skillResponse: { number: number, name: string }) => skillResponse.name === Constants.DEFAULT_SKILL_NAME);
+                    return !!defaultSkill ? defaultSkill.number : undefined
                 }
-            }) 
+            })
+    }
+
+    async createDefaultSkill(): Promise<boolean> {
+        let skillExtensionNumber = await this.restClient.getNextAvailableNumber(this.subAccountId, "SKILL")
+        if (skillExtensionNumber < 0) {
+            return Promise.reject(false)
+        }
+        let skillRequest = {
+            name: Constants.DEFAULT_SKILL_NAME,
+            number: skillExtensionNumber,
+            clientId: parseInt(this.subAccountId),
+            skillType: Constants.SKILL_TYPE_AGENT,
+            acwInterval: null,
+            slaInSeconds: null,
+            slaPercentage: null,
+            announcementExtension: null
+        }
+        logger.debug(`creating default skill with payload ${JSON.stringify(skillRequest)}`)
+        return this.restClient.createSkillJob(skillRequest)
+            .then(status => {
+                return status === 200
+            })
     }
 
     /**

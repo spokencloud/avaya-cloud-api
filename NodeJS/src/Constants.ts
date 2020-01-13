@@ -11,7 +11,9 @@ export const STATION_GROUP_PATH = 'spokenAbc/agentStationGroups/client';
 export const AGENT_JOB_PATH = 'spokenAbc/jobs/agents';
 export const FETCH_SKILL_ID_PATH = 'spokenAbc/skills/multiClientSkills?clientIds=';
 export const STATION_JOB_PATH = 'spokenAbc/jobs/stations';
+export const SKILL_JOB_PATH = 'spokenAbc/jobs/skills';
 export const EXTENSION_PATH = 'spokenAbc/extensions/next';
+export const NUMBER_PATH = 'spokenAbc/numbers/next';
 export const STATION_ONLY_PATH = 'spokenAbc/stations?clientId=';
 export const REMOVE_AGENT_PATH = 'spokenAbc/agents/removeAgent';
 export const DELETE_STATION_PATH = 'spokenAbc/jobs/stations';
@@ -45,3 +47,5 @@ export const FETCH_AUX_CODE_WITH_SUBACCOUNT_APP_ID = 'auxCodes/effective-appId'
 // default skill name
 export const DEFAULT_SKILL_NAME = 'DEFAULT_SKILL'
 export const DEFAULT_SKILL_PRIORITY = 3
+export const SKILL_TYPE_AGENT = 'AGENT'
+

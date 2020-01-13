@@ -64,4 +64,13 @@ describe("AgentClient", () => {
       let result = await agentClient.getUserToken("yangadmin1")
       expect(result).toEqual(token)
    })
+   test("createDefaultSkill should return true.", async () => {
+      let result = await agentClient.createDefaultSkill()
+      expect(result).toBeTruthy()
+   })
+   test.only("getDefaultSkill should return skillId", async () => {
+      let result = await agentClient.getDefaultSkillNumber()
+      console.log(`skillNumber of default skill = ${result}`)
+      expect(result).toBeGreaterThan(100)
+   })
 })

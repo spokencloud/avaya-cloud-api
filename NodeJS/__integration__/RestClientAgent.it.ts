@@ -1,4 +1,6 @@
 import { RestClient, STATION_GROUP_ID_NOT_EXISTS } from "../src/RestClient";
+import { SkillCreateRequest } from "../src";
+import { constants } from "buffer";
 
 describe("RestClient", () => {
 
@@ -79,6 +81,11 @@ describe("RestClient", () => {
         console.log(submitted)
         expect(submitted).toBeDefined()
     })
+    test("getNextAvailableExtension for skill", async () => {
+        let submitted = await restClient.getNextAvailableNumber("1", "SKILL")
+        console.log(submitted)
+        expect(submitted).toBeDefined()
+    })
     test("getSubAccountAgentSkills should return skills", async () => {
         // make sure client has some skills defined
         let skills = await restClient.getSubAccountAgentSkills("2")
@@ -94,4 +101,36 @@ describe("RestClient", () => {
         let submitted = await restClient.requestAgentDeletion(username, "7300000100")
         expect(submitted).toBeTruthy()
      })
+
+     test("createSkillJob with unavailable extension number should fail", async () => {
+         let jobRequest:SkillCreateRequest = {
+             name: 'survey',
+             number: 1030,
+             clientId: 1,
+             skillType: 'AGENT',
+             acwInterval: null,
+             slaInSeconds: null,
+             slaPercentage: null,
+             announcementExtension: null
+         }
+         let submitted = await restClient.createSkillJob(jobRequest)
+         expect(submitted).toEqual(-500)
+     })
+     /*
+     number needs to be in reserved state for this to work.
+     */
+     test("createSkillJob with reserved extension should work.", async () => {
+        let jobRequest:SkillCreateRequest = {
+            name: 'survey',
+            number: 103,
+            clientId: 1,
+            skillType: 'AGENT',
+            acwInterval: null,
+            slaInSeconds: null,
+            slaPercentage: null,
+            announcementExtension: null
+        }
+        let submitted = await restClient.createSkillJob(jobRequest)
+        expect(submitted).toEqual(200)
+    })
 })

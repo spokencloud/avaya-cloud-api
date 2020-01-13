@@ -1,7 +1,5 @@
 import { AgentClient } from "../src/AgentClient";
 import { RestClient } from "../src/RestClient";
-import { isValidSkillsWithPriorities } from "../src/Utils";
-import { doesNotReject } from "assert";
 import { SkillPriority } from "../src";
 
 describe("AgentClient.ts", () => {

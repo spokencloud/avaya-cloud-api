@@ -1,11 +1,11 @@
 import { CookieJar } from "tough-cookie";
 import {
-    log4js, STATION_JOB_PATH, STATION_GROUP_PATH, FETCH_SKILL_ID_PATH, EXTENSION_PATH, USER_PATH, REMOVE_AGENT_PATH,
+    log4js, STATION_JOB_PATH, STATION_GROUP_PATH, FETCH_SKILL_ID_PATH, EXTENSION_PATH, NUMBER_PATH, USER_PATH, REMOVE_AGENT_PATH,
     AGENT_JOB_PATH, FETCH_AGENT_BY_USERNAME_PATH, FETCH_AGENT_ID_PATH, DELETE_STATION_PATH, STATION_ONLY_PATH,
-    SUBSCRIPTION_PATH, VERSION, SUB_ACCOUNT_KEY, lodash, FETCH_AUXCODE_BASE, FETCH_AUX_CODES,
+    SUBSCRIPTION_PATH, SKILL_JOB_PATH, SUB_ACCOUNT_KEY, lodash, FETCH_AUXCODE_BASE, FETCH_AUX_CODES,
     FETCH_EFFECTIVE_AUX_CODES, FETCH_AUX_CODE_WITH_SUBACCOUNT_APP_ID
 } from "./Constants";
-import { Subscription } from './models';
+import { Subscription, SkillCreateRequest } from './models';
 export const STATION_GROUP_ID_NOT_EXISTS = -1
 
 const axios = require('axios').default;
@@ -220,6 +220,10 @@ export class RestClient {
      */
     public getNextAvailableExtension(subAccountId: string, type: string): Promise<number> {
         let url = `${this.baseUrl}/${EXTENSION_PATH}/${subAccountId}/type/${type}`
+        return this.getByUrl(url)
+    }
+    protected getByUrl(url: string): Promise<number> {
+        logger.debug(`url=${url}`)
         let options = this.preparePostOptions(url)
         return axios(options)
             .then((response: { data: any }) => {
@@ -229,6 +233,10 @@ export class RestClient {
                 logger.debug(error.response.status)
                 return - error.response.status
             })
+    }
+    public getNextAvailableNumber(subAccountId: string, type: string): Promise<number> {
+        let url = `${this.baseUrl}/${NUMBER_PATH}/${subAccountId}/type/${type}`
+        return this.getByUrl(url)
     }
     public createStationJob(station: object): Promise<number> {
         let url = `${this.baseUrl}/${STATION_JOB_PATH}`
@@ -243,8 +251,21 @@ export class RestClient {
                 return - error.response.status
             })
     }
-
-    public async getSubAccountAgentSkills(subAccountId: string): Promise<any> {
+    public createSkillJob(skill: SkillCreateRequest): Promise<number> {
+        let url = `${this.baseUrl}/${SKILL_JOB_PATH}`
+        logger.debug(`createSkillJob url = ${url}`)
+        let options = this.prepareBaseOptions()
+        return axios.post(url, skill, options)
+            .then((result: any) => {
+                // logger.debug(result.data)
+                return result.status
+            })
+            .catch((error: any) => {
+                logger.debug(error.response.status)
+                return - error.response.status
+            })
+    }
+    public getSubAccountAgentSkills(subAccountId: string): Promise<any> {
         let url = `${this.baseUrl}/${FETCH_SKILL_ID_PATH}${subAccountId}&skillType=AGENT`
         logger.debug(url)
         let options = this.prepareGetOptions(url)
