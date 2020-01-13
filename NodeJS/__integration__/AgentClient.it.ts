@@ -27,10 +27,6 @@ describe("AgentClient", () => {
       let skillIds = await agentClient.getSkillIds()
       expect(skillIds.length).toBeGreaterThan(0)
    })
-   test.only("getDefaultSkillId should return undefined when default skill is not defined", async () => {
-      let skillId = await agentClient.getDefaultSkillId()
-      expect(skillId).toBeUndefined()
-   })
    test("getSkillNumbers should return skillNumbers", async () => {
       let skillNumbers = await agentClient.getSkillNumbers()
       expect(skillNumbers.length).toBeGreaterThan(0)

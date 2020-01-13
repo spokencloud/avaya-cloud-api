@@ -144,7 +144,7 @@ export class AgentClient {
 
     }
 
-    async getDefaultSkillId(): Promise<number> {
+    protected async getDefaultSkillId(): Promise<number> {
         return await this.restClient.getSubAccountAgentSkills(this.subAccountId)        
             .then((response: { data: { [x: string]: { [x: string]: any } } }) => {
                 logger.debug(response.data)
