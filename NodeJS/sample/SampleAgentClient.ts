@@ -10,15 +10,13 @@ let endpoint: string
 let apiKey: string
 let agentUsername: string
 let agentPassword: string
-let skillWithPriorities: SkillPriority[]
 try {
     endpoint = getValue(Constants.ENDPOINT_KEY, args)
     apiKey = getValue(Constants.API_KEY, args)
 
     agentUsername = getValue(Constants.AGENT_USERNAME_KEY, args)
     agentPassword = getValue(Constants.AGENT_PASSWORD_KEY, args)
-    skillWithPriorities = getAgentSkill()
-    console.log(skillWithPriorities)
+
     main();
 } catch (error) {
     console.log(error)
@@ -36,7 +34,7 @@ function getAgentSkill() {
 
 async function createAgent(agentClient: AgentClient) {
     try {
-        let response = await agentClient.createAgentAndStation(agentUsername, agentPassword, skillWithPriorities);
+        let response = await agentClient.createAgentAndStation(agentUsername, agentPassword);
         console.log('agentObject from createAgent');
         console.log(response)
     } catch (e) {

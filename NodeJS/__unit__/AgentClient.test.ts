@@ -11,19 +11,12 @@ describe("AgentClient.ts", () => {
     });
     test("createAgentAndStation throws an error given an invalid password", async () => {
         expect.assertions(1);
-        let skillsWithPriorities = [{ "skillNumber": 100, "skillPriority": 5 }]
-        await expect( client.createAgentAndStation("agent1", "badpassword", skillsWithPriorities)).rejects.toEqual("invalid password")
+        await expect( client.createAgentAndStation("agent1", "badpassword")).rejects.toEqual("invalid password")
     })
     test("createAgentAndStation throws an error given an invalid username", async () => {
         expect.assertions(1);
-        let skillsWithPriorities = [{ "skillNumber": 100, "skillPriority": 5 }]
-        expect(client.createAgentAndStation("a", "Passw0rd@", skillsWithPriorities)).rejects.toEqual("invalid username")
-    })
-    test("createAgentAndStation throws an error given an invalid skills", async () => {
-        expect.assertions(1);
-        let skillsWithPriorities = [] as SkillPriority[]
-        expect(client.createAgentAndStation("agent1", "Passw0rd@", skillsWithPriorities)).rejects.toEqual("invalid skills")
-    })    
+        expect(client.createAgentAndStation("a", "Passw0rd@")).rejects.toEqual("invalid username")
+    })   
     test("generateAvayaPassword should return last 6 characters", () => {
         let actual = client.generateAvayaPassword("agentLoginId")
         expect(actual).toEqual("oginId")

@@ -18,27 +18,27 @@ export class AgentClient {
      * Create Agent and Station. Upon success, returns agent object and station object
      * @param agentUsername min length 2, max length 25, must pass ^[-.@\w]+$
      * @param agentPassword min length 8, max length 32, must have a uppercase character, must have at least one lowercase char, no whitespace, must contains a number, must contain one of ~!@?#$%^&*_
-     * @param skillsWithPriority this could retrieved via #getSkillNumbers()
      */
-    public async createAgentAndStation(agentUsername: string, agentPassword: string, skillsWithPriority: SkillPriority[]) {
+    public async createAgentAndStation(agentUsername: string, agentPassword: string) {
         if (!isValidPassword(agentPassword)) {
             return Promise.reject("invalid password")
         }
         if (!isValidUsername(agentUsername)) {
             return Promise.reject("invalid username")
         }
-        if (skillsWithPriority.length == 0) {
-            return Promise.reject("invalid skills")
-        }
 
-        if (this.getDefaultSkillNumber() === undefined) {
+        let defaultSkillNumber = await this.getDefaultSkillNumber()
+
+        if (defaultSkillNumber === undefined) {
             logger.debug("tring to create default skill")
-            let created = await this.createDefaultSkill()
+            let created = await this.waitForDefaultSkillCreation()
             if (!created) {
                 return Promise.reject("Can not create default skill for agent creation.")
+            } else {
+                defaultSkillNumber = await this.getDefaultSkillNumber()
             }
         }
-
+        let skillsWithPriority: SkillPriority[] = [{skillNumber: defaultSkillNumber, skillPriority: Constants.DEFAULT_SKILL_PRIORITY}]
         let agentStationGroupId = await this.restClient.getAgentStationGroupId(this.subAccountId);
         if (agentStationGroupId < 0) {
             throw new Error(`subAccount ${this.subAccountId} has no agent station group defined`)
@@ -78,18 +78,14 @@ export class AgentClient {
             throw new Error(`subAccount ${this.subAccountId} has no available agent extension`)
         }
 
-        // todo: pass it in to reuse
-        let skillIds = await this.getSkillIds();
-        if (skillIds.length == 0) {
-            throw new Error(`subAccount ${this.subAccountId} has no skills`)
-        }
+        
 
         await this.sendCreateAgentRequest(
             agentUsername,
             agentPassword,
             agentStationGroupId,
             agentLoginId,
-            skillIds, skillsWithPriority
+            skillsWithPriority
         );
         return await this.waitForAgentCreation(agentLoginId);
     }
@@ -98,7 +94,7 @@ export class AgentClient {
         agentPassword: string,
         agentStationGroupId: any,
         agentLoginId: any,
-        skillIds: any, skillsWithPriority: SkillPriority[]) {
+        skillsWithPriority: SkillPriority[]) {
 
         let securityCode = this.generateSecurityCode(agentLoginId);
         let avayaPassword = this.generateAvayaPassword(agentLoginId);
@@ -114,7 +110,6 @@ export class AgentClient {
             "endDate": "2038-01-01",
             "avayaPassword": avayaPassword,
             "clientId": this.subAccountId,
-            "skillIds": skillIds,
             "agentSkills": skillsWithPriority,
             // no supervisors
             "supervisorId": 0,
@@ -328,6 +323,16 @@ export class AgentClient {
             return this.restClient
                 .getStationForAgent(this.subAccountId, agentUsername)
                 .then((station: any) => station === undefined)
+        }
+        return this.repeat(callback)
+    }
+
+    async waitForDefaultSkillCreation() {
+        let callback = () => {
+            return this.getDefaultSkillNumber()
+            .then((skillNumber) => {
+                return !!skillNumber
+            })
         }
         return this.repeat(callback)
     }

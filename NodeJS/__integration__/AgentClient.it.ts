@@ -23,8 +23,9 @@ describe("AgentClient", () => {
       let result = await agentClient.waitForAgentDeletion("agentNotExists")
       expect(result).toBeTruthy()
    })
-   test("getSkillIds should return skillIds", async () => {
+   test.only("getSkillIds should return skillIds", async () => {
       let skillIds = await agentClient.getSkillIds()
+      console.log(skillIds)
       expect(skillIds.length).toBeGreaterThan(0)
    })
    test("getSkillNumbers should return skillNumbers", async () => {
@@ -68,7 +69,7 @@ describe("AgentClient", () => {
       let result = await agentClient.createDefaultSkill()
       expect(result).toBeTruthy()
    })
-   test.only("getDefaultSkill should return skillId", async () => {
+   test("getDefaultSkill should return skillId", async () => {
       let result = await agentClient.getDefaultSkillNumber()
       console.log(`skillNumber of default skill = ${result}`)
       expect(result).toBeGreaterThan(100)
