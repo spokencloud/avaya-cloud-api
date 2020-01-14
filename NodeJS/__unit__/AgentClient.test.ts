@@ -1,6 +1,6 @@
 import { AgentClient } from "../src/AgentClient";
 import { RestClient } from "../src/RestClient";
-import { SkillPriority } from "../src";
+import { mock, when, anyString, reset, instance, verify, spy } from "ts-mockito";
 
 describe("AgentClient.ts", () => {
     let client: AgentClient;
@@ -16,7 +16,16 @@ describe("AgentClient.ts", () => {
     test("createAgentAndStation throws an error given an invalid username", async () => {
         expect.assertions(1);
         expect(client.createAgentAndStation("a", "Passw0rd@")).rejects.toEqual("invalid username")
+    })  
+    test("createAgentAndStation throws an error when createDefaultSkill fails", async () => {
+        let agentClientSpy = spy(client)
+        // set up spy
+        when(agentClientSpy.setDefaultSkillNumberIfNotExists()).thenResolve(false)
+
+        expect.assertions(1);
+        expect(client.createAgentAndStation("testuser", "Passw0rd@")).rejects.toEqual("Can not create default skill for agent creation.")
     })   
+    
     test("generateAvayaPassword should return last 6 characters", () => {
         let actual = client.generateAvayaPassword("agentLoginId")
         expect(actual).toEqual("oginId")

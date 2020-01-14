@@ -1,5 +1,4 @@
 import { AgentClient, createAgentClient } from "../src/AgentClient"
-import { RestClient } from "../src/RestClient"
 
 import { log4js } from "../src/Constants"
 
@@ -23,7 +22,7 @@ describe("AgentClient", () => {
       let result = await agentClient.waitForAgentDeletion("agentNotExists")
       expect(result).toBeTruthy()
    })
-   test.only("getSkillIds should return skillIds", async () => {
+   test("getSkillIds should return skillIds", async () => {
       let skillIds = await agentClient.getSkillIds()
       console.log(skillIds)
       expect(skillIds.length).toBeGreaterThan(0)
@@ -39,6 +38,11 @@ describe("AgentClient", () => {
    xtest("waitForAgentCreation should return true when agent exists", async () => {
       let exists = await agentClient.waitForAgentCreation(7300000100)
       expect(exists).toBeTruthy()
+   })
+   test.only("waitForDefaultSkillCreation should return true", async () => {
+      let exists = await agentClient.waitForDefaultSkillCreation()
+      expect(exists).toBeTruthy()
+      expect(agentClient.getDefaultSkillNumber()).toBeGreaterThan(0)
    })
    xtest("waitForAgentCreation should return false when agent does not exists", async () => {
       let exists = await agentClient.waitForAgentCreation(3337300000100)
@@ -70,7 +74,7 @@ describe("AgentClient", () => {
       expect(result).toBeTruthy()
    })
    test("getDefaultSkill should return skillId", async () => {
-      let result = await agentClient.getDefaultSkillNumber()
+      let result = await agentClient.fetchDefaultSkillNumber()
       console.log(`skillNumber of default skill = ${result}`)
       expect(result).toBeGreaterThan(100)
    })

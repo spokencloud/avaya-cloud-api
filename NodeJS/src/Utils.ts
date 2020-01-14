@@ -93,12 +93,15 @@ export function hasLowerCase(str: string) {
 export function hasUpperCase(str: string) {
     return (/[A-Z]/.test(str));
 }
+
 export function hasSpecialCharacter(str: string) {
     return (/[~!@?#$%^&*_]/.test(str));
 }
+
 export function hasWhiteSpace(str: string) {
     return /\s/g.test(str);
 }
+
 export function hasAllowableCharacters(str: string) {
     return /^[-.@\w]+$/g.test(str);
 }

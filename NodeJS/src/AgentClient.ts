@@ -9,10 +9,16 @@ export class AgentClient {
 
     private restClient: RestClient
     private subAccountId: string
+    private defaultSkillNumber: number
 
     constructor(subAccountId: string, restClient: RestClient) {
         this.restClient = restClient
         this.subAccountId = subAccountId
+        this.defaultSkillNumber = -1
+    }
+
+    getDefaultSkillNumber(){
+        return this.defaultSkillNumber
     }
     /**
      * Create Agent and Station. Upon success, returns agent object and station object
@@ -23,22 +29,18 @@ export class AgentClient {
         if (!isValidPassword(agentPassword)) {
             return Promise.reject("invalid password")
         }
+
         if (!isValidUsername(agentUsername)) {
             return Promise.reject("invalid username")
         }
 
-        let defaultSkillNumber = await this.getDefaultSkillNumber()
-
-        if (defaultSkillNumber === undefined) {
-            logger.debug("tring to create default skill")
-            let created = await this.waitForDefaultSkillCreation()
-            if (!created) {
+        if (this.defaultSkillNumber === -1) {
+            let success = await this.setDefaultSkillNumberIfNotExists()
+            if (!success) {
                 return Promise.reject("Can not create default skill for agent creation.")
-            } else {
-                defaultSkillNumber = await this.getDefaultSkillNumber()
             }
         }
-        let skillsWithPriority: SkillPriority[] = [{skillNumber: defaultSkillNumber, skillPriority: Constants.DEFAULT_SKILL_PRIORITY}]
+        let skillsWithPriority: SkillPriority[] = [{ skillNumber: this.defaultSkillNumber, skillPriority: Constants.DEFAULT_SKILL_PRIORITY }]
         let agentStationGroupId = await this.restClient.getAgentStationGroupId(this.subAccountId);
         if (agentStationGroupId < 0) {
             throw new Error(`subAccount ${this.subAccountId} has no agent station group defined`)
@@ -49,7 +51,22 @@ export class AgentClient {
 
         return this.getAgentAndStation(agentUsername);
     }
+    async setDefaultSkillNumberIfNotExists() {
+        let defaultSkillNumber = await this.fetchDefaultSkillNumber()
 
+        if (!!defaultSkillNumber) {
+            this.defaultSkillNumber = defaultSkillNumber
+            return true
+        } else {
+            logger.debug("tring to create default skill")
+            let created = await this.createDefaultSkill()
+            if(!created){
+                logger.debug("failed to submit job to create default skill")
+                return false
+            }
+            return await this.waitForDefaultSkillCreation()  
+        }
+    }
     public async createStationIfNotExists(agentUsername: string, agentStationGroupId: string) {
         let stationExists = await this.existsStationForAgent(agentUsername)
         if (stationExists) {
@@ -78,7 +95,7 @@ export class AgentClient {
             throw new Error(`subAccount ${this.subAccountId} has no available agent extension`)
         }
 
-        
+
 
         await this.sendCreateAgentRequest(
             agentUsername,
@@ -148,7 +165,7 @@ export class AgentClient {
 
     }
 
-    public getDefaultSkillNumber(): Promise<number> {
+    public fetchDefaultSkillNumber(): Promise<number|undefined> {
         return this.restClient.getSubAccountAgentSkills(this.subAccountId)
             .then((response: { data: { [x: string]: { [x: string]: any } } }) => {
                 logger.debug(response.data)
@@ -329,10 +346,13 @@ export class AgentClient {
 
     async waitForDefaultSkillCreation() {
         let callback = () => {
-            return this.getDefaultSkillNumber()
-            .then((skillNumber) => {
-                return !!skillNumber
-            })
+            return this.fetchDefaultSkillNumber()
+                .then((skillNumber) => {
+                    if(!!skillNumber){
+                        this.defaultSkillNumber = skillNumber
+                    }
+                    return !!skillNumber
+                })
         }
         return this.repeat(callback)
     }

@@ -3,8 +3,8 @@ import { RestClient } from "../src/RestClient";
 import { mock, when, anyString, reset, instance, verify } from "ts-mockito";
 
 class AgentClientProtected extends AgentClient{
-    public getDefaultSkillNumber(){
-        return super.getDefaultSkillNumber()
+    public fetchDefaultSkillNumber(){
+        return super.fetchDefaultSkillNumber()
     }
 }
 
@@ -25,7 +25,7 @@ describe("AgentClient.ts tests with mocked RestClient", () => {
         when(restClientMock.getSubAccountAgentSkills(anyString())).thenResolve((response))
         // pass instance
         agentClient = new AgentClientProtected("1", restClientInstance)
-        let skillId = await agentClient.getDefaultSkillNumber()
+        let skillId = await agentClient.fetchDefaultSkillNumber()
         expect(skillId).toEqual(100)
     })
     test("getDefaultSkillId should return undefined when default skill is not returned", async () => {
@@ -35,7 +35,7 @@ describe("AgentClient.ts tests with mocked RestClient", () => {
         when(restClientMock.getSubAccountAgentSkills(anyString())).thenResolve((response))
         // pass instance
         agentClient = new AgentClientProtected("1", restClientInstance)
-        let skillId = await agentClient.getDefaultSkillNumber()
+        let skillId = await agentClient.fetchDefaultSkillNumber()
         expect(skillId).toBeUndefined()
         verify(restClientMock.getSubAccountAgentSkills('1')).once()
     })

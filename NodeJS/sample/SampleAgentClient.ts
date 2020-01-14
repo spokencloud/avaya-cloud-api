@@ -1,6 +1,5 @@
 import * as Constants from "../src/Constants"
 import { createAgentClient, AgentClient } from "../src/AgentClient"
-import { SkillPriority } from "../src/models"
 import { isValidSkillsWithPriorities } from "../src/Utils"
 import { getValue } from "../src/Utils"
 
@@ -23,19 +22,9 @@ try {
     process.exit(-1)
 }
 
-function getAgentSkill() {
-    let value = getValue(Constants.AGENT_SKILL_KEY, args)
-    if (isValidSkillsWithPriorities(Constants.AGENT_SKILL_KEY, value)) {
-        return JSON.parse(value)
-    } else {
-        throw new Error(`skill priorities have to be specified in json format`)
-    }
-}
-
 async function createAgent(agentClient: AgentClient) {
     try {
         let response = await agentClient.createAgentAndStation(agentUsername, agentPassword);
-        console.log('agentObject from createAgent');
         console.log(response)
     } catch (e) {
         console.error(e)
@@ -55,13 +44,6 @@ async function getAgent(agentClient: AgentClient) {
 async function deleteAgent(agentClient: AgentClient) {
     try {
         await agentClient.deleteAgentAndStation(agentUsername)
-    } catch (e) {
-        console.error(e)
-    }
-}
-async function agentSkillNumbers(agentClient: AgentClient) {
-    try {
-        return await agentClient.getSkillNumbers();
     } catch (e) {
         console.error(e)
     }
