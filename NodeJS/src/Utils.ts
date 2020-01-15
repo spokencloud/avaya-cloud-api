@@ -1,12 +1,12 @@
 import { Err, JsonDecoder } from "ts.data.json";
+import { EMPTY_STRING, log4js, REPLACE_REGEX } from "./Constants";
 import { SkillPriority } from "./models";
-import { log4js, REPLACE_REGEX, EMPTY_STRING } from "./Constants"
 
-const logger = log4js.getLogger('Utils');
+const logger = log4js.getLogger("Utils");
 
 export default function isValidParameter(key: string, parameter: any): boolean {
     if (parameter === undefined) {
-        logger.error(key + ' was undefined');
+        logger.error(key + " was undefined");
         return false;
     }
     return true;
@@ -17,13 +17,13 @@ const MAX_USERNAME_LENGTH = 20; // constraint from station username field
 export const skillDecoder = JsonDecoder.object<SkillPriority>(
     {
         skillNumber: JsonDecoder.number,
-        skillPriority: JsonDecoder.number
+        skillPriority: JsonDecoder.number,
     },
-    'SkillPriority'
+    "SkillPriority",
 );
 
 export function randomString(length: number): string {
-    let inOptions: string = 'abcdefghijklmnopqrstuvwxyz0123456789';
+    const inOptions: string = "abcdefghijklmnopqrstuvwxyz0123456789";
     let outString: string = inOptions.charAt(Math.floor(Math.random() * 26));
 
     for (let i = 1; i < length; i++) {
@@ -33,10 +33,9 @@ export function randomString(length: number): string {
     return outString;
 }
 
-
 export function isValidSkillsWithPriorities(key: string, skillPriorities: string): boolean {
-    let obj: SkillPriority[] = JSON.parse(skillPriorities);
-    for (let skill of obj) {
+    const obj: SkillPriority[] = JSON.parse(skillPriorities);
+    for (const skill of obj) {
         if (skillDecoder.decode(skill) instanceof Err) {
             return false;
         }
@@ -48,20 +47,19 @@ export function isValidSkillsWithPriorities(key: string, skillPriorities: string
  * @param ms
  */
 export async function sleep(ms: number) {
-    await new Promise(resolve => setTimeout(resolve, ms));
+    await new Promise((resolve) => setTimeout(resolve, ms));
 }
-
 
 export function removeSingleQuote(s: string) {
     return s.replace(REPLACE_REGEX, EMPTY_STRING);
 }
 
 export function getValue(key: string, args: any) {
-    let value = args[key]
+    const value = args[key];
     if (isValidParameter(key, value)) {
-        return removeSingleQuote(value)
+        return removeSingleQuote(value);
     } else {
-        throw new Error(`${key} needs to be specified`)
+        throw new Error(`${key} needs to be specified`);
     }
 }
 
@@ -71,21 +69,21 @@ export function getValue(key: string, args: any) {
  */
 export function isValidPassword(password: string): boolean {
     if (password.length < 8 || password.length > 32) {
-        return false
+        return false;
     }
     if (!hasLowerCase(password)) {
-        return false
+        return false;
     }
     if (!hasUpperCase(password)) {
-        return false
+        return false;
     }
     if (!hasSpecialCharacter(password)) {
-        return false
+        return false;
     }
     if (hasWhiteSpace(password)) {
-        return false
+        return false;
     }
-    return true
+    return true;
 }
 export function hasLowerCase(str: string) {
     return (/[a-z]/.test(str));
@@ -111,7 +109,7 @@ export function hasAllowableCharacters(str: string) {
  */
 export function isValidUsername(username: string): boolean {
     if (username.length < 2 || username.length > MAX_USERNAME_LENGTH) {
-        return false
+        return false;
     }
-    return hasAllowableCharacters(username)
+    return hasAllowableCharacters(username);
 }
