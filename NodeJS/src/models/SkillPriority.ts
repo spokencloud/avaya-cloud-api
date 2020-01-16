@@ -1,4 +1,4 @@
 export interface SkillPriority {
-    skillNumber: number;
-    skillPriority: number;
+    skillNumber: number
+    skillPriority: number
 }

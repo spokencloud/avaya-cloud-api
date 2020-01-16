@@ -10,6 +10,7 @@
   ],
   "scripts": {
     "compile": "tsc --declaration",
+    "lint": "tslint --project tsconfig.json",
     "start": "tsc --watch --onsuccess \"node lib/src/index.js\"",
     "test-comment": "echo 'if jest command ends with test, files must have test in the name to be run; remove test, jest will run all files.'",
     "test": "jest --env=node --colors --coverage test",
