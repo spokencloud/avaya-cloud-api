@@ -3,24 +3,24 @@
 // sub account identified in the session.
 //
 export enum DataSourceType {
-    ECH = 'ECH',
-    HAgLog = 'HAGLOG',
-    HAgent = 'HAGENT',
-    RtAgentState = 'RT_AGENT_STATE',
-    RtDidState = 'RT_DID_STATE',
-    RtSkillState = 'RT_SKILL_STATE',
-    RtVdnState = 'RT_VDN_STATE',
-    RealTimeFeed = 'REAL_TIME_FEED',
+    ECH = "ECH",
+    HAgLog = "HAGLOG",
+    HAgent = "HAGENT",
+    RtAgentState = "RT_AGENT_STATE",
+    RtDidState = "RT_DID_STATE",
+    RtSkillState = "RT_SKILL_STATE",
+    RtVdnState = "RT_VDN_STATE",
+    RealTimeFeed = "REAL_TIME_FEED",
 }
 
 export enum DataDeliveryFormat {
-    Csv = 'CSV',
-    Json = 'JSON',
+    Csv = "CSV",
+    Json = "JSON",
 }
 
 export enum RetryPolicy {
-    Default = 'DEFAULT',
-    Drop = 'DROP',
+    Default = "DEFAULT",
+    Drop = "DROP",
 }
 
 export enum EventType {
@@ -132,4 +132,4 @@ export interface Subscription {
     eventType: EventType;
 }
 
-export type CreateSubscriptionData = Omit<Subscription, 'subscriptionId' | 'subAccountAppId' | 'oldestError' | 'LostPostRequests' | 'LostRecords' | 'lastDataSent'>
+export type CreateSubscriptionData = Omit<Subscription, "subscriptionId" | "subAccountAppId" | "oldestError" | "LostPostRequests" | "LostRecords" | "lastDataSent">;

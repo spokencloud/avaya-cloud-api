@@ -22,10 +22,10 @@ The API provides AgentClient class that could be used to create and delete agent
 
     // create an instance of AgentClient
     let agentClient = await createAgentClient(endpoint, apiKey);
-    // retrieve agent skills
-    let skillWithPriorities = await agentClient.getSkillNumbers();
+
     // create Agent and Station
-    let response = await agentClient.createAgentAndStation(agentUsername, agentPassword, skillWithPriorities);
+    let response = await agentClient.createAgentAndStation(agentUsername, agentPassword);
+
     // retrieve token for agent
     let token = agentClient.getUserToken(agentUsername)
 
@@ -67,16 +67,7 @@ The AUXCodeClient retrieves sub account aux codes, effective aux code given sub 
     let appIdAuxCodes = await auxCodeClient.getAUXCodesForEffectiveAppId();
 
 #  Samples
-## Run SampleAgentclient to get Skill Information
-Before creating an agent we need to know the available skills.
-
-node lib/sample/SampleAgentSkill.js 
---endpoint='http://localhost:8081' --api_key=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ5YW5nYWRtaW4xIiwiaXNzIjoiQUJDX1NFQ1VSSVRZX0dBVEVXQVkifQ.4kf1hrPV6C30PZu3tx48dgsaev9UowvG7pVszXKhghY 
-
-Sample Result : [ { skillNumber: 359, skillName: 'SkillOne' },
-                  { skillNumber: 361, skillName: 'SkillTwo' } ]
-
-## Run SampleAgentclient to create and/or delete Agent and Station
+## Run SampleAgentclient to create Agent and Station
 An agent can receive or make a phone call.
 This sample client creates an agent, reads it back, and deletes it.
 The sample will also retrieve a token for an agent and print it out in the console.
@@ -84,11 +75,7 @@ The sample will also retrieve a token for an agent and print it out in the conso
 `node lib/sample/SampleAgentClient.js 
 --endpoint='http://localhost:8081' --api_key=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ5YW5nYWRtaW4xIiwiaXNzIjoiQUJDX1NFQ1VSSVRZX0dBVEVXQVkifQ.4kf1hrPV6C30PZu3tx48dgsaev9UowvG7pVszXKhghY 
 --agent_username=tenfoldagent1 
---agent_password=Passw0rd@1 
---agent_skill='[{"skillNumber":100, "skillPriority":5}]'`
-
-Sample Agent Skills: --agent_skill='[{"skillNumber":359,"skillPriority":1}]'
-skillPriority ranges from 1-16
+--agent_password=Passw0rd@1`
 
 ## Run SampleSubscriptionClient
 Data subscription allows a user to receive call data on their chosen endpoint.
@@ -103,3 +90,6 @@ This sample client creates a subscription, reads it back, and deletes it.
 AUX Codes (or Auxiliary Codes) are used to track the time an agent has deliberately chosen to not accept calls. This sample client fetches the list of configured AUX Codes.
 
 `node lib/sample/SampleAUXCodeClient.js --endpoint='http://localhost:8081' --api_key=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJTaGVybG9jayIsImlzcyI6IkFCQ19TRUNVUklUWV9HQVRFV0FZIn0.rBbxKSScgqI6tJy-vdehBqdncMIVjMzoNFKsb8Zzuyc`
+
+## Notable Changes:
+### Starting at version 0.1.0, Agent will be created with default skill.  If default skill is not present, it will be created first.
