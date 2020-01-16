@@ -1,65 +1,65 @@
-import { Err, JsonDecoder } from "ts.data.json";
-import { EMPTY_STRING, log4js, REPLACE_REGEX } from "./Constants";
-import { SkillPriority } from "./models";
+import { Err, JsonDecoder } from 'ts.data.json'
+import { EMPTY_STRING, log4js, REPLACE_REGEX } from './Constants'
+import { SkillPriority } from './models'
 
-const logger = log4js.getLogger("Utils");
+const logger = log4js.getLogger('Utils')
 
 export default function isValidParameter(key: string, parameter: any): boolean {
     if (parameter === undefined) {
-        logger.error(key + " was undefined");
-        return false;
+        logger.error(key + ' was undefined')
+        return false
     }
-    return true;
+    return true
 }
 
-const MAX_USERNAME_LENGTH = 20; // constraint from station username field
+const MAX_USERNAME_LENGTH = 20 // constraint from station username field
 
 export const skillDecoder = JsonDecoder.object<SkillPriority>(
     {
         skillNumber: JsonDecoder.number,
         skillPriority: JsonDecoder.number,
     },
-    "SkillPriority",
-);
+    'SkillPriority',
+)
 
 export function randomString(length: number): string {
-    const inOptions: string = "abcdefghijklmnopqrstuvwxyz0123456789";
-    let outString: string = inOptions.charAt(Math.floor(Math.random() * 26));
+    const inOptions: string = 'abcdefghijklmnopqrstuvwxyz0123456789'
+    let outString: string = inOptions.charAt(Math.floor(Math.random() * 26))
 
     for (let i = 1; i < length; i++) {
-        outString += inOptions.charAt(Math.floor(Math.random() * inOptions.length));
+        outString += inOptions.charAt(Math.floor(Math.random() * inOptions.length))
     }
 
-    return outString;
+    return outString
 }
 
 export function isValidSkillsWithPriorities(key: string, skillPriorities: string): boolean {
-    const obj: SkillPriority[] = JSON.parse(skillPriorities);
+    const obj: SkillPriority[] = JSON.parse(skillPriorities)
     for (const skill of obj) {
         if (skillDecoder.decode(skill) instanceof Err) {
-            return false;
+            return false
         }
     }
-    return true;
+    return true
 }
 /**
  * sleep for millis seconds must be called with await
  * @param ms
  */
 export async function sleep(ms: number) {
-    await new Promise((resolve) => setTimeout(resolve, ms));
+    await new Promise((resolve) => setTimeout(resolve, ms))
 }
 
 export function removeSingleQuote(s: string) {
-    return s.replace(REPLACE_REGEX, EMPTY_STRING);
+    return s.replace(REPLACE_REGEX, EMPTY_STRING)
 }
 
 export function getValue(key: string, args: any) {
-    const value = args[key];
+    const value = args[key]
     if (isValidParameter(key, value)) {
-        return removeSingleQuote(value);
+        return removeSingleQuote(value)
     } else {
-        throw new Error(`${key} needs to be specified`);
+        throw new Error(`${key} needs to be specified`)
     }
 }
 
@@ -69,39 +69,39 @@ export function getValue(key: string, args: any) {
  */
 export function isValidPassword(password: string): boolean {
     if (password.length < 8 || password.length > 32) {
-        return false;
+        return false
     }
     if (!hasLowerCase(password)) {
-        return false;
+        return false
     }
     if (!hasUpperCase(password)) {
-        return false;
+        return false
     }
     if (!hasSpecialCharacter(password)) {
-        return false;
+        return false
     }
     if (hasWhiteSpace(password)) {
-        return false;
+        return false
     }
-    return true;
+    return true
 }
 export function hasLowerCase(str: string) {
-    return (/[a-z]/.test(str));
+    return (/[a-z]/.test(str))
 }
 export function hasUpperCase(str: string) {
-    return (/[A-Z]/.test(str));
+    return (/[A-Z]/.test(str))
 }
 
 export function hasSpecialCharacter(str: string) {
-    return (/[~!@?#$%^&*_]/.test(str));
+    return (/[~!@?#$%^&*_]/.test(str))
 }
 
 export function hasWhiteSpace(str: string) {
-    return /\s/g.test(str);
+    return /\s/g.test(str)
 }
 
 export function hasAllowableCharacters(str: string) {
-    return /^[-.@\w]+$/g.test(str);
+    return /^[-.@\w]+$/g.test(str)
 }
 /**
  * check if a username is valid
@@ -109,7 +109,7 @@ export function hasAllowableCharacters(str: string) {
  */
 export function isValidUsername(username: string): boolean {
     if (username.length < 2 || username.length > MAX_USERNAME_LENGTH) {
-        return false;
+        return false
     }
-    return hasAllowableCharacters(username);
+    return hasAllowableCharacters(username)
 }
