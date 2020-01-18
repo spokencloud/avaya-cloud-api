@@ -1,15 +1,15 @@
 {
-    "extends": ["tslint:recommended"],
-    "linterOptions": {
-        "format": "verbose"
-    },
-    "rules": {
-        "eofline": false,
-        "no-console": false,
-        "no-debugger": false,
-        "object-literal-sort-keys": false,
-        "quotemark": [true, "single", "avoid-escape", "avoid-template"],
-        "semicolon": [true, "never"],
-        "prefer-const": true
-    }
+  "extends": ["tslint:recommended", "tslint-config-prettier"],
+  "linterOptions": {
+    "format": "verbose"
+  },
+  "rules": {
+    "eofline": false,
+    "no-console": false,
+    "no-debugger": false,
+    "object-literal-sort-keys": false,
+    "no-var-requires": false,
+    "interface-name": [true, "never-prefix"],
+    "prefer-const": true
+  }
 }
