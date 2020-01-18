@@ -1,5 +1,6 @@
 {
   "hooks": {
-    "pre-commit": "tsc && lint-staged"
+    "pre-commit": "tsc && lint-staged",
+    "pre-push": "npm run unit",
   }
 }
