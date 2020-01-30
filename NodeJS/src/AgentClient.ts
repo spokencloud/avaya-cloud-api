@@ -21,7 +21,7 @@ export class AgentClient {
   }
   /**
    * Create Agent and Station. Upon success, returns agent object and station object
-   * @param agentUsername min length 2, max length 25, must pass ^[-.@\w]+$
+   * @param agentUsername min length 2, max length 20, must pass ^[-.@\w]+$
    * @param agentPassword min length 8, max length 32, must have a uppercase character, must have at least one lowercase char, no whitespace, must contains a number, must contain one of ~!@?#$%^&*_
    */
   public async createAgentAndStation(
