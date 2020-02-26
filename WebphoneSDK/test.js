@@ -66,6 +66,9 @@ WARM_TRANSFER = "warmTransfer",
 TRANSFER_CALL = 'transferCall',
 END_CONSULTATION_CALL = 'endConsultationCall',
 HOLD_CONSULTATION_CALL = 'holdConsultationCall';
+GET_CALL_DETAILS = 'getCallDetails';
+MASK_RECORDING = 'maskRecording';
+UNMASK_RECORDING = 'unmaskRecording';
 
 let sesClient,
 sesHeartbeatInterval;
@@ -346,11 +349,15 @@ async function commandToWebPhone(command, value) {
    }
     state.pending.initializeWebphone = false;
     refreshControls();
-  }
-  else if (command === CHANGE_STATE_TO_READY) {
+  } else if (command === CHANGE_STATE_TO_READY) {
     sesClient.setVoiceChannelAgentState('READY')
-  }
-  else if (command === END_CALL) {
+  } else if (command === CHANGE_STATE_TO_OFFLINE) {
+    sesClient.setVoiceChannelAgentState('OFFLINE')
+  } else if (command === CHANGE_STATE_TO_NOT_READY_EGAIN_DIGITAL) {
+    sesClient.setVoiceChannelAgentState('NOT_READY', value)
+  } else if (command === CHANGE_STATE_TO_AFTER_CALL_WORK) {
+    sesClient.setVoiceChannelAgentState('AFTER_CALL_WORK')
+  } else if (command === END_CALL) {
     endCall();
   } else if (command === MUTE_CALL) {
     toggleMute();
@@ -370,6 +377,12 @@ async function commandToWebPhone(command, value) {
     disconnectConsultationCall();
   } else if (command === HOLD_CONSULTATION_CALL) {
     holdConsultationCall();
+  } else if (command === GET_CALL_DETAILS) {
+    return callDetails;
+  } else if (command == MASK_RECORDING) {
+    sesClient.maskRecording(callDetails.connectionUid);
+  } else if (command == UNMASK_RECORDING) {
+    sesClient.unmaskRecording(callDetails.connectionUid);
   }
 };
 function startCall(callDetails) {
