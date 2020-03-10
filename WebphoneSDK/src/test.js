@@ -93,16 +93,15 @@ async function commandToWebPhone(command, value) {
         if (sesClient && sesClient.isConnected()) {
           await sesClient.disconnect();
         }
-        console.log('credentials: ');
-        console.log(value);
         const username = value.username
-        console.log('username: ' + username);
         const password = value.password
-        console.log('password: ' + password);
         const url = value.url
-        console.log('url: ' + url);
-        sesClient = new SesClient(url, null, null, username, password)
-        // sesClient = new SesClient(url, useAuthToken: true, v.authToken, null, null)
+        const authToken = value.authToken;
+        if (typeof authToken === 'undefined') {
+          sesClient = new SesClient(url, null, null, username, password)
+        } else {
+          sesClient = new SesClient(url, true, authToken, null, null)
+        }
         await sesClient.connectAndSubscribeToAll();
         const bootstrapData = await sesClient.fetchBootstrapData();
 
