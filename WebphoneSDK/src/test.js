@@ -2,15 +2,13 @@ import SesClient from "./services/ses/SesClient.js"
 import Serializer from "./services/ses/Serializer.js"
 import sipService from "./services/sip/sip-service"
 import screenRecorder from "./utils/screen-recorder.js"
-import * as agentService from "./services/http/agent-service"
-// import JsSIP from "jssip/dist/jssip.min"
+import { fetchAgentssBySubAccountId } from "./services/http/agent-service"
+import JsSIP from "./services/sip/jssip.min.js"
 import SipSessionClient from "./services/sip/SipSessionClient"
 
 import * as Stomp from './stomp.js'
 import { addEventHandler } from './services/common'
 import AudioManager from "./services/AudioManager.js"
-
-
 
 const SES_HEARTBEAT_INTERVAL_MS = 3000;
 
@@ -95,9 +93,14 @@ async function commandToWebPhone(command, value) {
         if (sesClient && sesClient.isConnected()) {
           await sesClient.disconnect();
         }
-        username = value.username
-        password = value.password
-        url = value.url
+        console.log('credentials: ');
+        console.log(value);
+        const username = value.username
+        console.log('username: ' + username);
+        const password = value.password
+        console.log('password: ' + password);
+        const url = value.url
+        console.log('url: ' + url);
         sesClient = new SesClient(url, null, null, username, password)
         // sesClient = new SesClient(url, useAuthToken: true, v.authToken, null, null)
         await sesClient.connectAndSubscribeToAll();
@@ -106,20 +109,21 @@ async function commandToWebPhone(command, value) {
         const sipConnectionDetails = bootstrapData.sipConnectionDetails;
         Object.assign(sipConnectionDetails, { username });
 
-        fetchAgentssBySubAccountId('434019')
-          .then(skills => {
-          console.log(JSON.stringify(skills))
-          skills = skills.sort(function (a, b) {
-            if (a['username'] > b['username']) { return 1 }
-            if (a['username'] < b['username']) { return -1 }
-            return 0
-          })
-          var index = skills.findIndex(x => x.loginId === bootstrapData.agentId)
-          if (index >= 0 && index < skills.length) {
-            skills.splice(index, 1)
-          }
-          state.skills = skills;
-        })
+        // fetchAgentssBySubAccountId('434019')
+        // .then(skills => {
+        //   console.log(JSON.stringify(skills))
+        //   skills = skills.sort(function (a, b) {
+        //     if (a['username'] > b['username']) { return 1 }
+        //     if (a['username'] < b['username']) { return -1 }
+        //     return 0
+        //   })
+        //   var index = skills.findIndex(x => x.loginId === bootstrapData.agentId)
+        //   if (index >= 0 && index < skills.length) {
+        //     skills.splice(index, 1)
+        //   }
+        //   state.skills = skills;
+        //   console.log('HERE');
+        // })
 
         const agentState = bootstrapData.agentState;
         state.agentStates.currentValue = agentState.state;
@@ -330,16 +334,16 @@ async function commandToWebPhone(command, value) {
           console.error('onUnmaskRecordingError')
         }
       });
-      await sipInitialize(sipConnectionDetails);
-      sipAddEventHandlers({
-         onIncomingCall: () => sipAnswer(),
+      await sipService.sipInitialize(sipConnectionDetails);
+      sipService.sipAddEventHandlers({
+         onIncomingCall: () => sipService.sipAnswer(),
          onMute: () => { state.options.mute = true;
          refreshControls();},
          onUnmute: () => { state.options.mute = false;
          refreshControls();}
        });
 
-     if (sesHeartbeatInterval) {
+      if (sesHeartbeatInterval) {
         clearInterval(sesHeartbeatInterval)
         sesHeartbeatInterval = null
       }
@@ -360,11 +364,9 @@ async function commandToWebPhone(command, value) {
    }
     state.pending.initializeWebphone = false;
     refreshControls();
-  }
-  else if (command === CHANGE_STATE_TO_READY) {
+  } else if (command === CHANGE_STATE_TO_READY) {
     sesClient.setVoiceChannelAgentState('READY')
-  }
-  else if (command === END_CALL) {
+  } else if (command === END_CALL) {
     endCall();
   } else if (command === MUTE_CALL) {
     toggleMute();
@@ -377,7 +379,7 @@ async function commandToWebPhone(command, value) {
   } else if (command === MERGE_CALL) {
     makeMergeCalls();
   } else if (command === WARM_TRANSFER) {
-	makeWarmTransferCall();
+	  makeWarmTransferCall();
   } else if (command === TRANSFER_CALL) {
     makeTransferCall(value);
   } else if (command === END_CONSULTATION_CALL) {
@@ -386,6 +388,7 @@ async function commandToWebPhone(command, value) {
     holdConsultationCall();
   }
 };
+
 function startCall(callDetails) {
   console.log('actions.startCall')
   var config = {
@@ -527,3 +530,5 @@ function holdConsultationCall () {
     sesClient.unholdByCallId(state.callDetails.consultationCallId)
   }
 }
+
+export { state, commandToWebPhone };

@@ -1,23 +1,7 @@
 <html>
 <head>
     <title>MainPage</title>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/0.3.4/sockjs.min.js"></script>
-    <script src="stomp.js" type="text/javascript"> </script>
-    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-    <script src="services/common.js" type="text/javascript"> </script>
-    <script src="assets/require.min.js" type="text/javascript"> </script>
-    <script src="services/AudioManager.js" type="text/javascript"> </script>
-    <script src="services/sip/sip-service.js" type="text/javascript"> </script>
-    <script src="services/sip/SipClient.js" type="text/javascript"> </script>
-    <script src="services/sip/jssip.min.js" type="text/javascript"> </script>
-    <script src="services/sip/SipSessionClient.js" type="text/javascript"> </script>
-    <script src="services/http/agent-service.js" type="text/javascript"> </script>
-    <script src="services/ses/Serializer.js" type="text/javascript"> </script>
-    <script src="services/ses/SesClient.js" type="text/javascript"> </script>
-    <script src="test.js" type="text/javascript"> </script>
-    <script src="https://cdn.jsdelivr.net/npm/melanke-watchjs@1.5.0/src/watch.min.js"></script>
-
+    <script src="./dist/bundle.js"></script>
     <script type="text/javascript">
       function enableAgentState() {
         document.getElementById("changeAgentState").disabled = false;
@@ -89,6 +73,7 @@
         document.getElementById("btnEndCall").disabled = true;
       }
       function refreshControls() {
+        const state = actions.state;
         document.getElementById("isWebphoneInitialized").value = state.webphoneInitialized;
         document.getElementById("pendingInitializeApplication").value = state.pending.initializeWebphone;
         document.getElementById("errorInitializeWebphone").value = state.errors.initializeWebphone ;
@@ -156,16 +141,19 @@
           document.getElementById("muteButton").value = "Mute";
         }
       }
+
       function refreshCallDuration() {
-          document.getElementById("callDuration").value = state.callDetails.duration.seconds;
+          document.getElementById("callDuration").value = actions.state.callDetails.duration.seconds;
       }
 
       function initialize() {
         var url = document.getElementById("eurl").value;
-        parent.commandToWebPhone(INITIALIZED, { url: url, username: document.getElementById("user").value, password: document.getElementById("password").value });
+        console.log('actions: ');
+        console.log(actions);
+        actions.commandToWebPhone('initialize', { url: url, username: document.getElementById("user").value, password: document.getElementById("password").value });
       }
-      function changeAgentState()
-      {
+
+      function changeAgentState() {
         agentState = document.getElementById("changeAgentState").value;
         if (agentState === 'ready') {
           getReady();
@@ -180,52 +168,53 @@
           offLine();
         }
       }
+
       function getReady() {
-        parent.commandToWebPhone(CHANGE_STATE_TO_READY);
+        actions.commandToWebPhone('changeStateToReady');
       }
+
       function afterCallWork() {
-        parent.commandToWebPhone(CHANGE_STATE_TO_AFTER_CALL_WORK);
+        actions.commandToWebPhone('changeStateToAfterCallWork');
       }
       function notReady() {
-        parent.commandToWebPhone(CHANGE_STATE_TO_NOT_READY_EGAIN_DIGITAL);
+        actions.commandToWebPhone('changeStateToNotReadyEgainDigital');
       }
       function offLine() {
-        parent.commandToWebPhone(CHANGE_STATE_TO_OFFLINE);
+        actions.commandToWebPhone('changeStateToOffline');
       }
       function muteCall() {
-        parent.commandToWebPhone(MUTE_CALL);
+        actions.commandToWebPhone('muteCall');
       }
       function holdCall() {
-        parent.commandToWebPhone(HOLD_CALL);
+        actions.commandToWebPhone('holdCall');
       }
       function getEndCall() {
-        parent.commandToWebPhone(END_CALL);
+        actions.commandToWebPhone('endCall');
       }
       function getConsultationEndCall() {
-        parent.commandToWebPhone(END_CONSULTATION_CALL);
+        actions.commandToWebPhone('endConsultationCall');
       }
       function transferCall() {
         var phNo = document.getElementById("phno").value;
-        parent.commandToWebPhone(TRANSFER_CALL,phNo);
+        actions.commandToWebPhone('transferCall', phNo);
       }
       function outboundCall() {
         var phNo = document.getElementById("phno").value;
-        parent.commandToWebPhone(OUTBOUND_CALL,phNo);
+        actions.commandToWebPhone('outboundCall', phNo);
       }
       function consultCall() {
         var phNo = document.getElementById("phno").value;
-        parent.commandToWebPhone(CONSULT_CALL,phNo);
+        actions.commandToWebPhone('consultCall', phNo);
       }
       function mergeCall() {
-        parent.commandToWebPhone(MERGE_CALL);
+        actions.commandToWebPhone('mergeCall');
       }
       function getHoldConsultationCall() {
-        parent.commandToWebPhone(HOLD_CONSULTATION_CALL);
+        actions.commandToWebPhone('holdConsultationCall');
       }
       function warmTransfer() {
-        parent.commandToWebPhone(WARM_TRANSFER);
+        actions.commandToWebPhone('warmTransfer');
       }
-      
     </script>
 </head>
   <body>
