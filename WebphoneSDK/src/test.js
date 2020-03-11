@@ -66,7 +66,7 @@ const state = {
 INITIALIZED = 'initialize',
 CHANGE_STATE_TO_READY = 'changeStateToReady',
 CHANGE_STATE_TO_AFTER_CALL_WORK = 'changeStateToAfterCallWork',
-CHANGE_STATE_TO_NOT_READY_EGAIN_DIGITAL = 'changeStateToNotReadyEgainDigital',
+CHANGE_STATE_TO_NOT_READY = 'changeStateToNotReady',
 CHANGE_STATE_TO_OFFLINE = 'changeStateToOffline',
 END_CALL = 'endCall',
 MUTE_CALL = 'muteCall',
@@ -83,57 +83,57 @@ let sesClient,
 sesHeartbeatInterval;
 
 async function commandToWebPhone(command, value) {
-    if (command === INITIALIZED) {
-      state.pending.initializeWebphone = true;
-      state.errors.initializeWebphone = false;
-      state.webphoneInitialized = false;
+  if (command === INITIALIZED) {
+    state.pending.initializeWebphone = true;
+    state.errors.initializeWebphone = false;
+    state.webphoneInitialized = false;
+    refreshControls();
+    state.errorMessages = [];
+    try {
+      if (sesClient && sesClient.isConnected()) {
+        await sesClient.disconnect();
+      }
+      const username = value.username
+      const password = value.password
+      const url = value.url
+      const authToken = value.authToken;
+      if (typeof authToken === 'undefined') {
+        sesClient = new SesClient(url, null, null, username, password)
+      } else {
+        sesClient = new SesClient(url, true, authToken, null, null)
+      }
+      await sesClient.connectAndSubscribeToAll();
+      const bootstrapData = await sesClient.fetchBootstrapData();
+
+      const sipConnectionDetails = bootstrapData.sipConnectionDetails;
+      Object.assign(sipConnectionDetails, { username });
+
+      // fetchAgentssBySubAccountId('434019')
+      // .then(skills => {
+      //   console.log(JSON.stringify(skills))
+      //   skills = skills.sort(function (a, b) {
+      //     if (a['username'] > b['username']) { return 1 }
+      //     if (a['username'] < b['username']) { return -1 }
+      //     return 0
+      //   })
+      //   var index = skills.findIndex(x => x.loginId === bootstrapData.agentId)
+      //   if (index >= 0 && index < skills.length) {
+      //     skills.splice(index, 1)
+      //   }
+      //   state.skills = skills;
+      //   console.log('HERE');
+      // })
+
+      const agentState = bootstrapData.agentState;
+      state.agentStates.currentValue = agentState.state;
+      state.auxCodes.currentCode = agentState.auxCode;
+      state.auxCodes.available = bootstrapData.auxCodes;
+      state.agentId = bootstrapData.agentId;
+      state.stationId = bootstrapData.stationId;
       refreshControls();
-      state.errorMessages = [];
-      try {
-        if (sesClient && sesClient.isConnected()) {
-          await sesClient.disconnect();
-        }
-        const username = value.username
-        const password = value.password
-        const url = value.url
-        const authToken = value.authToken;
-        if (typeof authToken === 'undefined') {
-          sesClient = new SesClient(url, null, null, username, password)
-        } else {
-          sesClient = new SesClient(url, true, authToken, null, null)
-        }
-        await sesClient.connectAndSubscribeToAll();
-        const bootstrapData = await sesClient.fetchBootstrapData();
 
-        const sipConnectionDetails = bootstrapData.sipConnectionDetails;
-        Object.assign(sipConnectionDetails, { username });
-
-        // fetchAgentssBySubAccountId('434019')
-        // .then(skills => {
-        //   console.log(JSON.stringify(skills))
-        //   skills = skills.sort(function (a, b) {
-        //     if (a['username'] > b['username']) { return 1 }
-        //     if (a['username'] < b['username']) { return -1 }
-        //     return 0
-        //   })
-        //   var index = skills.findIndex(x => x.loginId === bootstrapData.agentId)
-        //   if (index >= 0 && index < skills.length) {
-        //     skills.splice(index, 1)
-        //   }
-        //   state.skills = skills;
-        //   console.log('HERE');
-        // })
-
-        const agentState = bootstrapData.agentState;
-        state.agentStates.currentValue = agentState.state;
-        state.auxCodes.currentCode = agentState.auxCode;
-        state.auxCodes.available = bootstrapData.auxCodes;
-        state.agentId = bootstrapData.agentId;
-        state.stationId = bootstrapData.stationId;
-        refreshControls();
-
-        sesClient.addEventHandlers({
-          onVoiceChannelAgentStateSuccess: agentState => {
+      sesClient.addEventHandlers({
+        onVoiceChannelAgentStateSuccess: agentState => {
           console.log('voiceChannelAgentStateSuccess', agentState)
           state.agentStates.currentValue = agentState.state;
           state.auxCodes.currentCode = agentState.auxCode;
@@ -160,8 +160,6 @@ async function commandToWebPhone(command, value) {
           // sesClient.hold();
           state.options.hold = true;
           state.options.mute = false;
-          isOnHold = true;
-          isOnMute = false;
           refreshControls();
         },
         onHoldError: error => {
@@ -208,16 +206,16 @@ async function commandToWebPhone(command, value) {
           }
 
           if (!state.onMergedCall && callId === state.callDetails.consultationCallId) {
-             state.callDetails.consultationCallId = null;
-             state.callDetails.consultationCallerId = '';
-             state.onConsultationCall = false;
-           } else {
-             state.onCall = false;
-             state.callDetails.callerId = '';
-             endCallTimer();
-             resetCallTimer();
-             state.options.hold = false;
-             state.options.mute = false;
+            state.callDetails.consultationCallId = null;
+            state.callDetails.consultationCallerId = '';
+            state.onConsultationCall = false;
+          } else {
+            state.onCall = false;
+            state.callDetails.callerId = '';
+            endCallTimer();
+            resetCallTimer();
+            state.options.hold = false;
+            state.options.mute = false;
           }
           state.callDetails.connectionUid = null;
           state.callDetails.sessionUid = null;
@@ -260,25 +258,25 @@ async function commandToWebPhone(command, value) {
           state.options.hold = false;
           state.options.mute = false;
           refreshControls();
-	    },
-	    onConfirmedWarmTransferError: error => {
-	      console.error('confirmedWarmTransferError', error)
-	      state.pending.warmTransfer = false;
-	      addErrorMessages(error);
-	      refreshControls();
-	    },
-	    onWarmTransferFailed: () => {
-	      console.error('warmTransferFailed', error)
-	      state.pending.warmTransfer = false;
-	      addErrorMessages(error);
-	      refreshControls();
-	    },
-	    onWarmTransferFailedError: error => {
-	      console.error('warmTransferFailedError', error)
-	      state.pending.warmTransfer = false;
-	      addErrorMessages(error);
-	      refreshControls();
-	    },
+        },
+        onConfirmedWarmTransferError: error => {
+          console.error('confirmedWarmTransferError', error)
+          state.pending.warmTransfer = false;
+          addErrorMessages(error);
+          refreshControls();
+        },
+        onWarmTransferFailed: error => {
+          console.error('warmTransferFailed', error)
+          state.pending.warmTransfer = false;
+          addErrorMessages(error);
+          refreshControls();
+        },
+        onWarmTransferFailedError: error => {
+          console.error('warmTransferFailedError', error)
+          state.pending.warmTransfer = false;
+          addErrorMessages(error);
+          refreshControls();
+        },
         onConsultationSuccess: callDetails => {
           console.log('onConsultationSuccess', callDetails)
           const { callerId = '' } = callDetails || {}
@@ -335,12 +333,12 @@ async function commandToWebPhone(command, value) {
       });
       await sipService.sipInitialize(sipConnectionDetails);
       sipService.sipAddEventHandlers({
-         onIncomingCall: () => sipService.sipAnswer(),
-         onMute: () => { state.options.mute = true;
-         refreshControls();},
-         onUnmute: () => { state.options.mute = false;
-         refreshControls();}
-       });
+        onIncomingCall: () => sipService.sipAnswer(),
+        onMute: () => { state.options.mute = true;
+        refreshControls();},
+        onUnmute: () => { state.options.mute = false;
+        refreshControls();}
+      });
 
       if (sesHeartbeatInterval) {
         clearInterval(sesHeartbeatInterval)
@@ -356,15 +354,21 @@ async function commandToWebPhone(command, value) {
         sesClient.sendHeartbeat()
       }, SES_HEARTBEAT_INTERVAL_MS)
 
-     state.webphoneInitialized = true;
-   } catch (error) {
-     console.error('Failed to initialize the Webphone', error);
-     state.errors.initializeWebphone = true;
-   }
+      state.webphoneInitialized = true;
+    } catch (error) {
+      console.error('Failed to initialize the Webphone', error);
+      state.errors.initializeWebphone = true;
+    }
     state.pending.initializeWebphone = false;
     refreshControls();
   } else if (command === CHANGE_STATE_TO_READY) {
-    sesClient.setVoiceChannelAgentState('READY')
+    sesClient.setVoiceChannelAgentState('READY');
+  } else if (command == CHANGE_STATE_TO_AFTER_CALL_WORK) {
+    sesClient.setVoiceChannelAgentState('AFTER_CALL_WORK');
+  } else if (command == CHANGE_STATE_TO_NOT_READY) {
+    sesClient.setVoiceChannelAgentState('NOT_READY', value);
+  } else if (command == CHANGE_STATE_TO_OFFLINE) {
+    sesClient.setVoiceChannelAgentState('OFFLINE');
   } else if (command === END_CALL) {
     endCall();
   } else if (command === MUTE_CALL) {
@@ -378,7 +382,7 @@ async function commandToWebPhone(command, value) {
   } else if (command === MERGE_CALL) {
     makeMergeCalls();
   } else if (command === WARM_TRANSFER) {
-	  makeWarmTransferCall();
+    makeWarmTransferCall();
   } else if (command === TRANSFER_CALL) {
     makeTransferCall(value);
   } else if (command === END_CONSULTATION_CALL) {
@@ -413,34 +417,36 @@ function startCall(callDetails) {
       console.error('While fetching screen pops configuration:', error)
     })
 
-    const { callerId = '' } = callDetails || {}
-    state.callDetails.callerId = callerId;
-    state.callDetails.connectionUid = callDetails.connectionUid;
-    state.callDetails.sessionUid = callDetails.sessionUid;
-    state.onCall = true;
+  const { callerId = '' } = callDetails || {}
+  state.callDetails.callerId = callerId;
+  state.callDetails.connectionUid = callDetails.connectionUid;
+  state.callDetails.sessionUid = callDetails.sessionUid;
+  state.onCall = true;
 
-    startCallTimer();
-    refreshCallDuration();
-    refreshControls();
+  startCallTimer();
+  refreshCallDuration();
+  refreshControls();
 }
+
 function endCall() {
   console.log('actions.endCall: ')
   sesClient.hangUp();
 }
+
 function toggleMute() {
   if (state.options.mute) {
     console.log('actions.toggleMicrophone > unmute()')
-    unmute();
+    sipService.unmute();
     state.options.mute = false;
   } else {
     console.log('actions.toggleMicrophone > mute()')
-    mute();
+    sipService.mute();
     state.options.mute = true;
   }
   refreshControls();
 }
+
 function toggleHold() {
-  console.log('isOnHold: ', isOnHold);
   if (state.options.hold) {
     console.log('actions.toggleHold > unhold()')
     sesClient.unhold();
@@ -452,41 +458,48 @@ function toggleHold() {
   }
   refreshControls();
 }
+
 function makeOutboundCall(phoneNo) {
   console.log('actions.makeOutboundCall');
   state.pending.outboundCall = true;
   refreshControls();
   sesClient.outboundCall(phoneNo);
 }
+
 function makeConsultCall(phoneNo) {
   console.log('actions.makeConsultationCall');
   state.pending.consultationCall = true;
   refreshControls();
   sesClient.consultationCall(phoneNo);
 }
+
 function makeMergeCalls() {
   console.log('actions.mergeCalls');
   state.pending.merge = true;
   refreshControls();
   sesClient.mergeCalls();
 }
+
 function makeWarmTransferCall() {
   console.log('actions.warmTransfer');
   state.pending.warmTransfer = true;
   refreshControls();
   sesClient.warmTransfer();
 }
+
 function makeTransferCall(phoneNo) {
   console.log('actions.transferCall');
   state.pending.transfer = true;
   refreshControls();
   sesClient.transfer(phoneNo);
 }
+
 function addErrorMessages(errorMessage) {
   if (!state.errorMessages.includes(errorMessage)) {
     state.errorMessages.push(errorMessage)
   }
 }
+
 function startCallTimer() {
   if (state.callDetails.duration.intervalId !== null) {
     console.log('null return')
@@ -501,10 +514,12 @@ function incrementCallTimer() {
   state.callDetails.duration.seconds++;
   refreshCallDuration();
 }
+
 function resetCallTimer() {
   state.callDetails.duration.seconds = 0;
   refreshCallDuration();
 }
+
 function endCallTimer() {
   if (state.callDetails.duration.intervalId === null) {
     return
@@ -513,10 +528,12 @@ function endCallTimer() {
   state.callDetails.duration.intervalId = null;
   refreshCallDuration();
 }
+
 function disconnectConsultationCall () {
   console.log('actions.disconnectConsultationCall')
   sesClient.hangUpByCallId(state.callDetails.consultationCallId);
 }
+
 function holdConsultationCall () {
   console.log('actions.holdConsultationCall')
   if (state.options.hold) {
