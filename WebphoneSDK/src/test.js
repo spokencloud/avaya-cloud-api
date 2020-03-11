@@ -77,7 +77,8 @@ MERGE_CALL = 'mergeCall',
 WARM_TRANSFER = "warmTransfer",
 TRANSFER_CALL = 'transferCall',
 END_CONSULTATION_CALL = 'endConsultationCall',
-HOLD_CONSULTATION_CALL = 'holdConsultationCall';
+HOLD_CONSULTATION_CALL = 'holdConsultationCall',
+MASK_CALL_RECORDING = 'maskCallRecording';
 
 let sesClient,
 sesHeartbeatInterval;
@@ -259,20 +260,36 @@ async function commandToWebPhone(command, value) {
           state.options.mute = false;
           refreshControls();
         },
-        onConfirmedWarmTransferError: error => {
-          console.error('confirmedWarmTransferError', error)
-          state.pending.warmTransfer = false;
-          addErrorMessages(error);
+        onWarmTransferSuccess: () => {
+          console.log('warmTransferSuccess')
+          try {
+            sipService.terminate()
+          } catch (error) {
+            console.warn('Attempted to terminate an already terminated call', error)
+          }
+          state.callDetails.consultationCallId = null;
+          state.callDetails.consultationCallerId = '';
+          state.onConsultationCall = false;
+          state.onCall = false;
+          state.callDetails.callerId = '';
+          endCallTimer();
+          resetCallTimer();
+          state.options.hold = false;
+          state.options.mute = false;
+
+          state.callDetails.connectionUid = null;
+          state.callDetails.sessionUid = null;
+          state.onMergedCall = false;
           refreshControls();
         },
-        onWarmTransferFailed: error => {
-          console.error('warmTransferFailed', error)
-          state.pending.warmTransfer = false;
-          addErrorMessages(error);
+        onWarmTransferInSuccess: callDetails => {
+          console.log('warmTransferInSuccess', callDetails)
+          startCall(callDetails);
+          state.pending.outboundCall = false;
           refreshControls();
         },
-        onWarmTransferFailedError: error => {
-          console.error('warmTransferFailedError', error)
+        onWarmTransferError: (error) => {
+          console.log('warmTransferError: ', error)
           state.pending.warmTransfer = false;
           addErrorMessages(error);
           refreshControls();
@@ -389,6 +406,8 @@ async function commandToWebPhone(command, value) {
     disconnectConsultationCall();
   } else if (command === HOLD_CONSULTATION_CALL) {
     holdConsultationCall();
+  } else if (command === MASK_CALL_RECORDING) {
+    toggleMaskRecording();
   }
 };
 
@@ -545,6 +564,20 @@ function holdConsultationCall () {
     sesClient.hold()
     sesClient.unholdByCallId(state.callDetails.consultationCallId)
   }
+}
+
+function toggleMaskRecording() {
+  console.log('actions.maskCallRecording')
+  if (state.options.mask) {
+    console.log('actions.toggleMask > unmask()')
+    sesClient.unmaskRecording(state.callDetails.connectionUid);
+    state.options.mask = false;
+  } else {
+    console.log('actions.toggleMask > mask()')
+    sesClient.maskRecording(state.callDetails.connectionUid);
+    state.options.mask = true;
+  }
+  refreshControls();
 }
 
 export { state, commandToWebPhone };
