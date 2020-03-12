@@ -1,5 +1,3 @@
-// import * as Stomp from '../../../stomp.js'
-
 import Serializer from './Serializer'
 import screenRecorder from '../../utils/screen-recorder.js'
 

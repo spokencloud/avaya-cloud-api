@@ -33,7 +33,6 @@ export default {
       password,
       secure
     } = config || {}
-    // var password1 = 'Spoken@1';
     _sipClient = new SipClient({ url, port, extension, username, password, secure })
     console.log('_sipClient: ', _sipClient)
 
