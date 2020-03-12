@@ -1,7 +1,10 @@
 *.txt
 .DS_Store
 *.gz
+*.sh
+*.json
 PARTNERS
+go/go.sum
 
 
 # IntelliJ

@@ -225,6 +225,26 @@
       function warmTransfer() {
         parent.commandToWebPhone(WARM_TRANSFER);
       }
+
+      window.onmessage = function(e) {
+        console.log('Received event from parent: ');
+        console.log(e);
+        if (e.data.action == CHANGE_STATE_TO_READY) {
+          parent.commandToWebPhone(CHANGE_STATE_TO_READY);
+        } else if (e.data.action == CHANGE_STATE_TO_NOT_READY_EGAIN_DIGITAL) {
+          parent.commandToWebPhone(CHANGE_STATE_TO_NOT_READY_EGAIN_DIGITAL, e.data.value);
+        } else if (e.data.action == CHANGE_STATE_TO_OFFLINE) {
+          parent.commandToWebPhone(CHANGE_STATE_TO_OFFLINE);
+        } else if (e.data.action == MASK_RECORDING) {
+          parent.commandToWebPhone(MASK_RECORDING);
+        } else if (e.data.action == UNMASK_RECORDING) {
+          parent.commandToWebPhone(UNMASK_RECORDING);
+        } else if (e.data.action == GET_CALL_DETAILS) {
+          window.top.postMessage(callDetails, '*');
+        } else {
+          console.error('Unrecognized command');
+        }
+      }
       
     </script>
 </head>
