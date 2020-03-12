@@ -122,7 +122,6 @@ async function commandToWebPhone(command, value) {
       //     skills.splice(index, 1)
       //   }
       //   state.skills = skills;
-      //   console.log('HERE');
       // })
 
       const agentState = bootstrapData.agentState;

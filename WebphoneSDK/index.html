@@ -1,285 +1,286 @@
 <html>
 <head>
-    <title>MainPage</title>
-    <script src="./dist/bundle.js"></script>
-    <script type="text/javascript">
-      function enableAgentState() {
-        document.getElementById("changeAgentState").disabled = false;
+  <title>MainPage</title>
+  <link rel="shortcut icon" href="#">
+  <script src="./dist/bundle.js"></script>
+  <script type="text/javascript">
+    function enableAgentState() {
+      document.getElementById("changeAgentState").disabled = false;
+    }
+    function enableMute() {
+      document.getElementById("muteButton").disabled = false;
+    }
+    function disableMute() {
+      document.getElementById("muteButton").disabled = true;
+    }
+    function enableHold() {
+      document.getElementById("holdButton").disabled = false;
+    }
+    function disableHold() {
+      document.getElementById("holdButton").disabled = true;
+    }
+    function enableMask() {
+      document.getElementById("maskButton").disabled = false;
+    }
+    function disableMask() {
+      document.getElementById("maskButton").disabled = true;
+    }
+    function enablePhno() {
+      document.getElementById("phno").disabled = false;
+    }
+    function disablePhno() {
+      document.getElementById("phno").disabled = true;
+    }
+    function enableTransferCall() {
+      document.getElementById("btnTransferCall").disabled = false;
+    }
+    function disableTransferCall() {
+      document.getElementById("btnTransferCall").disabled = true;
+    }
+    function enableEndConsultationCall() {
+      document.getElementById("btnEndConsultationCall").disabled = false;
+    }
+    function disableEndConsultationCall() {
+      document.getElementById("btnEndConsultationCall").disabled = true;
+    }
+    function enableHoldConsultationCall() {
+      document.getElementById("btnHoldConsultationCall").disabled = false;
+    }
+    function disableHoldConsultationCall() {
+      document.getElementById("btnHoldConsultationCall").disabled = true;
+    }
+    function enableMergeCall() {
+      document.getElementById("btnMergeCall").disabled = false;
+    }
+    function disableMergeCall() {
+      document.getElementById("btnMergeCall").disabled = true;
+    }
+    function enableWarmTransfer() {
+      document.getElementById("btnWarmTransfer").disabled = false;
+    }
+    function disableWarmTransfer() {
+      document.getElementById("btnWarmTransfer").disabled = true;
+    }
+    function enableConsultCall() {
+      document.getElementById("btnConsultCall").disabled = false;
+    }
+    function disableConsultCall() {
+      document.getElementById("btnConsultCall").disabled = true;
+    }
+    function enableOutboundCall() {
+      document.getElementById("btnOutboundCall").disabled = false;
+    }
+    function disableOutboundCall() {
+      document.getElementById("btnOutboundCall").disabled = true;
+    }
+    function enableEndCall() {
+      document.getElementById("btnEndCall").disabled = false;
+    }
+    function disableEndCall() {
+      document.getElementById("btnEndCall").disabled = true;
+    }
+    function refreshControls() {
+      const state = actions.state;
+      document.getElementById("isWebphoneInitialized").value = state.webphoneInitialized;
+      document.getElementById("pendingInitializeApplication").value = state.pending.initializeWebphone;
+      document.getElementById("errorInitializeWebphone").value = state.errors.initializeWebphone ;
+      document.getElementById("agentState").value = state.agentStates.currentValue;
+      document.getElementById("currentAuxCode").value = state.auxCodes.currentCode;
+      // document.getElementById("availableAuxCode").value = state.auxCodes.available;
+      document.getElementById("agentId").value = state.agentId;
+      document.getElementById("stationId").value = state.stationId;
+      document.getElementById("callerId").value = state.callDetails.callerId;
+      document.getElementById("callState").value = state.onCall;
+      document.getElementById("callDetailsConsultationCallerId").value = state.callDetails.consultationCallerId;
+      document.getElementById("isPendingOutboundCall").value = state.pending.outboundCall;
+      document.getElementById("isPendingMerge").value = state.pending.merge;
+      document.getElementById("isOnMergedCall").value = state.onMergedCall;
+      document.getElementById("isPendingTransferCall").value = state.pending.transfer;
+      document.getElementById("isPendingConsultationCall").value = state.pending.consultationCall;
+      document.getElementById("isOnConsultationCall").value = state.onConsultationCall;
+      document.getElementById("skills").value = state.skills;
+      document.getElementById("isOnHold").value = state.options.hold;
+      document.getElementById("isOnMute").value = state.options.mute;
+      if (state.webphoneInitialized === true) {
+        document.getElementById("login").value = "Logout"
+        enableAgentState();
       }
-      function enableMute() {
-        document.getElementById("muteButton").disabled = false;
+      if (state.agentStates.currentValue === 'READY') {
+        enablePhno();
+        enableOutboundCall();
+      } else {
+        disablePhno();
+        disableOutboundCall();
       }
-      function disableMute() {
-        document.getElementById("muteButton").disabled = true;
+      if (state.onCall) {
+        enableMute();
+        enableHold();
+        enableMask();
+        enableTransferCall();
+        enableConsultCall();
+        enableEndCall();
+        disableOutboundCall();
+      } else {
+        disableMute();
+        disableHold();
+        disableMask();
+        disableTransferCall();
+        disableConsultCall();
+        disableEndCall();
       }
-      function enableHold() {
-        document.getElementById("holdButton").disabled = false;
+      if (state.onConsultationCall) {
+        enableMergeCall();
+        enableWarmTransfer();
+        enableHoldConsultationCall();
+        enableEndConsultationCall();
+      } else {
+        disableMergeCall();
+        disableWarmTransfer();
+        disableHoldConsultationCall();
+        disableEndConsultationCall();
       }
-      function disableHold() {
-        document.getElementById("holdButton").disabled = true;
+      if (state.options.hold) {
+        document.getElementById("holdButton").value = "Unhold";
+      } else {
+        document.getElementById("holdButton").value = "Hold";
       }
-      function enableMask() {
-        document.getElementById("maskButton").disabled = false;
+      if (state.options.mute) {
+        document.getElementById("muteButton").value = "Unmute";
+      } else {
+        document.getElementById("muteButton").value = "Mute";
       }
-      function disableMask() {
-        document.getElementById("maskButton").disabled = true;
+      if (state.options.mask) {
+        document.getElementById("maskButton").value = "Unmask";
+      } else {
+        document.getElementById("maskButton").value = "Mask";
       }
-      function enablePhno() {
-        document.getElementById("phno").disabled = false;
-      }
-      function disablePhno() {
-        document.getElementById("phno").disabled = true;
-      }
-      function enableTransferCall() {
-        document.getElementById("btnTransferCall").disabled = false;
-      }
-      function disableTransferCall() {
-        document.getElementById("btnTransferCall").disabled = true;
-      }
-      function enableEndConsultationCall() {
-        document.getElementById("btnEndConsultationCall").disabled = false;
-      }
-      function disableEndConsultationCall() {
-        document.getElementById("btnEndConsultationCall").disabled = true;
-      }
-      function enableHoldConsultationCall() {
-        document.getElementById("btnHoldConsultationCall").disabled = false;
-      }
-      function disableHoldConsultationCall() {
-        document.getElementById("btnHoldConsultationCall").disabled = true;
-      }
-      function enableMergeCall() {
-        document.getElementById("btnMergeCall").disabled = false;
-      }
-      function disableMergeCall() {
-        document.getElementById("btnMergeCall").disabled = true;
-      }
-      function enableWarmTransfer() {
-        document.getElementById("btnWarmTransfer").disabled = false;
-      }
-      function disableWarmTransfer() {
-        document.getElementById("btnWarmTransfer").disabled = true;
-      }
-      function enableConsultCall() {
-        document.getElementById("btnConsultCall").disabled = false;
-      }
-      function disableConsultCall() {
-        document.getElementById("btnConsultCall").disabled = true;
-      }
-      function enableOutboundCall() {
-        document.getElementById("btnOutboundCall").disabled = false;
-      }
-      function disableOutboundCall() {
-        document.getElementById("btnOutboundCall").disabled = true;
-      }
-      function enableEndCall() {
-        document.getElementById("btnEndCall").disabled = false;
-      }
-      function disableEndCall() {
-        document.getElementById("btnEndCall").disabled = true;
-      }
-      function refreshControls() {
-        const state = actions.state;
-        document.getElementById("isWebphoneInitialized").value = state.webphoneInitialized;
-        document.getElementById("pendingInitializeApplication").value = state.pending.initializeWebphone;
-        document.getElementById("errorInitializeWebphone").value = state.errors.initializeWebphone ;
-        document.getElementById("agentState").value = state.agentStates.currentValue;
-        document.getElementById("currentAuxCode").value = state.auxCodes.currentCode;
-        // document.getElementById("availableAuxCode").value = state.auxCodes.available;
-        document.getElementById("agentId").value = state.agentId;
-        document.getElementById("stationId").value = state.stationId;
-        document.getElementById("callerId").value = state.callDetails.callerId;
-        document.getElementById("callState").value = state.onCall;
-        document.getElementById("callDetailsConsultationCallerId").value = state.callDetails.consultationCallerId;
-        document.getElementById("isPendingOutboundCall").value = state.pending.outboundCall;
-        document.getElementById("isPendingMerge").value = state.pending.merge;
-        document.getElementById("isOnMergedCall").value = state.onMergedCall;
-        document.getElementById("isPendingTransferCall").value = state.pending.transfer;
-        document.getElementById("isPendingConsultationCall").value = state.pending.consultationCall;
-        document.getElementById("isOnConsultationCall").value = state.onConsultationCall;
-        document.getElementById("skills").value = state.skills;
-        document.getElementById("isOnHold").value = state.options.hold;
-        document.getElementById("isOnMute").value = state.options.mute;
-        if (state.webphoneInitialized === true) {
-          document.getElementById("login").value = "Logout"
-          enableAgentState();
-        }
-        if (state.agentStates.currentValue === 'READY') {
-          enablePhno();
-          enableOutboundCall();
-        } else {
-          disablePhno();
-          disableOutboundCall();
-        }
-        if (state.onCall) {
-          enableMute();
-          enableHold();
-          enableMask();
-          enableTransferCall();
-          enableConsultCall();
-          enableEndCall();
-          disableOutboundCall();
-        } else {
-          disableMute();
-          disableHold();
-          disableMask();
-          disableTransferCall();
-          disableConsultCall();
-          disableEndCall();
-        }
-        if (state.onConsultationCall) {
-          enableMergeCall();
-          enableWarmTransfer();
-          enableHoldConsultationCall();
-          enableEndConsultationCall();
-        } else {
-          disableMergeCall();
-          disableWarmTransfer();
-          disableHoldConsultationCall();
-          disableEndConsultationCall();
-        }
-        if (state.options.hold) {
-          document.getElementById("holdButton").value = "Unhold";
-        } else {
-          document.getElementById("holdButton").value = "Hold";
-        }
-        if (state.options.mute) {
-          document.getElementById("muteButton").value = "Unmute";
-        } else {
-          document.getElementById("muteButton").value = "Mute";
-        }
-        if (state.options.mask) {
-          document.getElementById("maskButton").value = "Unmask";
-        } else {
-          document.getElementById("maskButton").value = "Mask";
-        }
-      }
+    }
 
-      function refreshCallDuration() {
-        document.getElementById("callDuration").value = actions.state.callDetails.duration.seconds;
+    function refreshCallDuration() {
+      document.getElementById("callDuration").value = actions.state.callDetails.duration.seconds;
+    }
+
+    async function initialize() {
+      var url = document.getElementById("eurl").value;
+      await actions.commandToWebPhone('initialize', {
+        url: url,
+        username: document.getElementById("user").value,
+        password: document.getElementById("password").value
+      });
+      populateAgentStates();
+    }
+
+    function changeAgentState() {
+      agentState = document.getElementById("changeAgentState").value;
+      if (agentState === 'ready') {
+        getReady();
+      } else if (agentState === 'after_call_work') {
+        afterCallWork();
+      } else if (agentState.startsWith('not_ready')) {
+        const items = agentState.split('-');
+        console.log('aux code: *' + items[1] + '*');
+        notReady(items[1]);
+      } else if (agentState === 'off_line') {
+        offLine();
       }
+    }
 
-      async function initialize() {
-        var url = document.getElementById("eurl").value;
-        await actions.commandToWebPhone('initialize', {
-          url: url,
-          username: document.getElementById("user").value,
-          password: document.getElementById("password").value
-        });
-        populateAgentStates();
-      }
+    function getReady() {
+      actions.commandToWebPhone('changeStateToReady');
+    }
 
-      function changeAgentState() {
-        agentState = document.getElementById("changeAgentState").value;
-        if (agentState === 'ready') {
-          getReady();
-        } else if (agentState === 'after_call_work') {
-          afterCallWork();
-        } else if (agentState.startsWith('not_ready')) {
-          const items = agentState.split('-');
-          console.log('aux code: *' + items[1] + '*');
-          notReady(items[1]);
-        } else if (agentState === 'off_line') {
-          offLine();
-        }
-      }
+    function afterCallWork() {
+      actions.commandToWebPhone('changeStateToAfterCallWork');
+    }
 
-      function getReady() {
-        actions.commandToWebPhone('changeStateToReady');
-      }
+    function notReady(auxCode) {
+      actions.commandToWebPhone('changeStateToNotReady', auxCode);
+    }
 
-      function afterCallWork() {
-        actions.commandToWebPhone('changeStateToAfterCallWork');
-      }
+    function offLine() {
+      actions.commandToWebPhone('changeStateToOffline');
+    }
 
-      function notReady(auxCode) {
-        actions.commandToWebPhone('changeStateToNotReady', auxCode);
-      }
+    function muteCall() {
+      actions.commandToWebPhone('muteCall');
+    }
 
-      function offLine() {
-        actions.commandToWebPhone('changeStateToOffline');
-      }
+    function holdCall() {
+      actions.commandToWebPhone('holdCall');
+    }
 
-      function muteCall() {
-        actions.commandToWebPhone('muteCall');
-      }
+    function maskCallRecording() {
+      actions.commandToWebPhone('maskCallRecording');
+    }
 
-      function holdCall() {
-        actions.commandToWebPhone('holdCall');
-      }
+    function getEndCall() {
+      actions.commandToWebPhone('endCall');
+    }
 
-      function maskCallRecording() {
-        actions.commandToWebPhone('maskCallRecording');
-      }
+    function getConsultationEndCall() {
+      actions.commandToWebPhone('endConsultationCall');
+    }
 
-      function getEndCall() {
-        actions.commandToWebPhone('endCall');
-      }
+    function transferCall() {
+      var phNo = document.getElementById("phno").value;
+      actions.commandToWebPhone('transferCall', phNo);
+    }
 
-      function getConsultationEndCall() {
-        actions.commandToWebPhone('endConsultationCall');
-      }
+    function outboundCall() {
+      var phNo = document.getElementById("phno").value;
+      actions.commandToWebPhone('outboundCall', phNo);
+    }
 
-      function transferCall() {
-        var phNo = document.getElementById("phno").value;
-        actions.commandToWebPhone('transferCall', phNo);
-      }
+    function consultCall() {
+      var phNo = document.getElementById("phno").value;
+      actions.commandToWebPhone('consultCall', phNo);
+    }
 
-      function outboundCall() {
-        var phNo = document.getElementById("phno").value;
-        actions.commandToWebPhone('outboundCall', phNo);
-      }
+    function mergeCall() {
+      actions.commandToWebPhone('mergeCall');
+    }
 
-      function consultCall() {
-        var phNo = document.getElementById("phno").value;
-        actions.commandToWebPhone('consultCall', phNo);
-      }
+    function getHoldConsultationCall() {
+      actions.commandToWebPhone('holdConsultationCall');
+    }
 
-      function mergeCall() {
-        actions.commandToWebPhone('mergeCall');
-      }
+    function warmTransfer() {
+      actions.commandToWebPhone('warmTransfer');
+    }
 
-      function getHoldConsultationCall() {
-        actions.commandToWebPhone('holdConsultationCall');
-      }
+    function populateAgentStates() {
+      const selectElement = document.getElementById('changeAgentState');
 
-      function warmTransfer() {
-        actions.commandToWebPhone('warmTransfer');
-      }
+      // Ready
+      let option = document.createElement('option');
+      option.text = 'Ready';
+      option.value = 'ready';
+      selectElement.add(option);
 
-      function populateAgentStates() {
-        const selectElement = document.getElementById('changeAgentState');
+      // After call work
+      option = document.createElement('option');
+      option.text = 'After Call Work';
+      option.value = 'after_call_work';
+      selectElement.add(option);
 
-        // Ready
-        let option = document.createElement('option');
-        option.text = 'Ready';
-        option.value = 'ready';
-        selectElement.add(option);
-
-        // After call work
+      // Not ready
+      console.log('auxcodes: ');
+      console.log(actions.state.auxCodes.available);
+      actions.state.auxCodes.available.forEach(entry => {
         option = document.createElement('option');
-        option.text = 'After Call Work';
-        option.value = 'after_call_work';
+        option.text = 'Not Ready (' + entry.reason + ')';
+        option.value = 'not_ready-' + entry.code;
         selectElement.add(option);
+      });
 
-        // Not ready
-        console.log('auxcodes: ');
-        console.log(actions.state.auxCodes.available);
-        actions.state.auxCodes.available.forEach(entry => {
-          option = document.createElement('option');
-          option.text = 'Not Ready (' + entry.reason + ')';
-          option.value = 'not_ready-' + entry.code;
-          selectElement.add(option);
-        });
-
-        // Offline
-        option = document.createElement('option');
-        option.text = 'Offline';
-        option.value = 'off_line';
-        selectElement.add(option);
-      }
+      // Offline
+      option = document.createElement('option');
+      option.text = 'Offline';
+      option.value = 'off_line';
+      selectElement.add(option);
+    }
     </script>
-</head>
+  </head>
   <body>
     <table style="text-align:left">
       <tr>
