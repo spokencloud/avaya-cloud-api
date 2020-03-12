@@ -1,6 +1,6 @@
 /* global chrome */
 // import InlineInstall from 'inline-install'
-import popupExtensionInstallation from 'src/utils/extension-install'
+import popupExtensionInstallation from './extension-install'
 
 function cmpVersions (a, b) {
   var i, diff

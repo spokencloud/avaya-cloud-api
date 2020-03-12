@@ -1,3 +1,6 @@
+import JsSIP from './jssip.min.js'
+import SipSessionClient from './SipSessionClient'
+import AudioManager from '../AudioManager'
 /**
  * All possible connection events in JsSIP 3.1.2
  * @readonly
@@ -15,7 +18,7 @@ const SipEvent = {
   NEW_MESSAGE: 'newMessage'
 }
 
-class SipClient {
+export default class SipClient {
   constructor (config, debug = true) {
     this._JsSIP = JsSIP
     this._userAgent = null

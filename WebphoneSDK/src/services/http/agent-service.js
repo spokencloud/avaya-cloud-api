@@ -1,9 +1,9 @@
 const apiPrefix = '/gateway'
 let url = '/gateway/'
 
-  url = `http://localhost:9001${apiPrefix}/`
+url = `http://localhost:9001${apiPrefix}/`
 
-
+const axios = require('axios').default
 const api = axios.create({
   baseURL: url,
   withCredentials: true
@@ -42,7 +42,7 @@ function normalizeAgentResponse (response) {
   })
 }
 
-function fetchAgentssBySubAccountId (subAccountId) {
+export function fetchAgentssBySubAccountId (subAccountId) {
   console.log('fetchAgentssBySubAccountId1: ')
   // return api.get(`spokenAbc/agents?clientId=${subAccountId}`)
   return api.get(`https://moon-admincenter.bpo.avaya.com/gateway/spokenAbc/agents?clientId=${subAccountId}`)

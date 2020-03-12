@@ -1,3 +1,5 @@
+import Serializer from './Serializer'
+import screenRecorder from '../../utils/screen-recorder.js'
 
 const Errors = {
   1000: 'Failed to associate event handler with your device!',
@@ -53,11 +55,11 @@ const Event = {
   // Transfer event for calee who receives the transfer call and answer it
   WARM_TRANSFER_IN: 'WARM_TRANSFER_IN',
   CONFIRMED_SWAP: 'CONFIRMED_SWAP',
- HEARTBEAT: 'HEARTBEAT',
+  HEARTBEAT: 'HEARTBEAT',
   DISCONNECT: 'DISCONNECT'
 }
 
-class SesClient {
+export default class SesClient {
   /**
    * If useAuthToken is set to true, the authToken will be used to
    * authenticate whether or not username and password are provided
@@ -82,7 +84,7 @@ class SesClient {
       this._stompClient = Stomp.over(ws);
       console.log('_stompClient ', this._stompClient)
 	}
-	
+
     this._eventHandlers = {}
 
     this._healthCheck = {
@@ -290,7 +292,7 @@ class SesClient {
         onSuccess: onConfirmedWarmTransferSuccess,
         onError: onConfirmedWarmTransferError,
         normalize: noop
-      },   
+      },
       [Event.WARM_TRANSFER]: {
         onSuccess: onWarmTransferSuccess,
         onError: onWarmTransferError,

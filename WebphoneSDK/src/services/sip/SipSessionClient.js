@@ -30,7 +30,7 @@ const SessionEvent = {
   PEER_CONNECTION_SET_REMOTE_DESCRIPTION_FAILED: 'peerconnection:setremotedescriptionfailed'
 }
 
-class SipSessionClient {
+export default class SipSessionClient {
   constructor (RTCSession, eventHandlers, debug = true) {
     this._RTCSession = RTCSession
     if (debug) {

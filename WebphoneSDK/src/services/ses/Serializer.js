@@ -8,7 +8,7 @@ function Message ({
     this.data = data
 };
 
-class Serializer {
+export default class Serializer {
   static normalizeMessage (data) {
     return new Message(data)
   }

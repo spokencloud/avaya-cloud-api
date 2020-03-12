@@ -4,7 +4,7 @@
  * @param {Object} context The "this" context for the event
  * @param {Function} handler The function to execute when the event is called
  */
-function addEventHandler (event, context, handler) {
+export function addEventHandler (event, context, handler) {
   console.log('common event: ', event)
   console.log('common handler: ', handler)
   if (handler && typeof handler === 'function') {

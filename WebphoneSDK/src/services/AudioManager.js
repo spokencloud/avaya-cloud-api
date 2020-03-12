@@ -1,4 +1,4 @@
-class AudioManager {
+export default class AudioManager {
   /**
    * Stops the given HTMLAudioElement
    * @param {HTMLAudioElement} audio The HTMLAudioElement to stop
@@ -89,8 +89,8 @@ class AudioManager {
      * @property {string} INBOUND_CALL The INBOUND_CALL tone
      */
     return {
-      DTMF: './assets/sounds/tone_dtmf.wav',
-      INBOUND_CALL: './assets/sounds/tone_inbound_call.wav'
+      DTMF: '../../assets/sounds/tone_dtmf.wav',
+      INBOUND_CALL: '../../assets/sounds/tone_inbound_call.wav'
     }
   }
 }
