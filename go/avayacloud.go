@@ -10,10 +10,35 @@ import (
 
 // Account An Avaya Cloud Account
 type Account struct {
-	ID          int
-	Name        string
-	Code        string
-	AccountSize string
+	ID              int          `json:"id"`
+	Name            string       `json:"name"`
+	Code            string       `json:"code"`
+	DefaultTimeZone string       `json:"defaultTimeZone"`
+	AccountSize     string       `json:"accountSize"`
+	Active          bool         `json:"active"`
+	SubAccounts     []SubAccount `json:"clients"`
+	RegionIDs       []int        `json:"regionIds"`
+}
+
+// Administrator An Avaya Cloud admin
+type Administrator struct {
+	ID                  int       `json:"id"`
+	Admin               bool      `json:"admin"`
+	AgentID             string    `json:"agentId"`
+	AgentStationGroupID int       `json:"agentStationGroupId"`
+	Username            string    `json:"username"`
+	Firstname           string    `json:"firstName"`
+	Lastname            string    `json:"lastName"`
+	Password            string    `json:"agentpwd"`
+	ClientID            int       `json:"clientId"` // Subaccount ID
+	Disabled            bool      `json:"disabled"`
+	EMail               string    `json:"email"`
+	EndDate             time.Time `json:"endDate"`
+	Enabled             bool      `json:"enabled"`
+	MaxSessionsAllowed  int       `json:"maxSessionsAllowed"`
+	StartDate           time.Time `json:"startDate"`
+	Supervisor          bool      `json:"supervisor"`
+	SvcPhone            string    `json:"svcPhone"`
 }
 
 // Agent An Avaya Cloud Agent
@@ -22,26 +47,21 @@ type Agent struct {
 	Firstname           string `json:"firstName"`
 	Lastname            string `json:"lastName"`
 	Password            string
-	AvayaPassword       string       `json:"avayaPassword"`
-	LoginID             string       `json:"loginId"`
-	ClientID            int          `json:"clientId"` // Subaccount ID
-	AgentStationGroupID int          `json:"agentStationGroupId"`
-	SvcPhone            string       `json:"svcPhone"`
-	SvcPhonePrefix      string       `json:"svcPhonePrefix"`
-	SecurityCode        string       `json:"securityCode"`
-	StartDate           time.Time    `json:"startDate"`
-	EndDate             time.Time    `json:"endDate"`
-	Enabled             bool         `json:"enabled"`
-	Supervisor          bool         `json:"supervisor"`
-	Skills              []Skill      `json:"skills"`
-	AgentSkills         []AgentSkill `json:"agentSkills"`
-	SupervisorID        interface{}  `json:"supervisorId"`
-	AutoAnswer          interface{}  `json:"autoAnswer"`
+	AvayaPassword       string      `json:"avayaPassword"`
+	LoginID             string      `json:"loginId"`
+	ClientID            int         `json:"clientId"` // Subaccount ID
+	AgentStationGroupID int         `json:"agentStationGroupId"`
+	SvcPhone            string      `json:"svcPhone"`
+	SvcPhonePrefix      string      `json:"svcPhonePrefix"`
+	SecurityCode        string      `json:"securityCode"`
+	StartDate           time.Time   `json:"startDate"`
+	EndDate             time.Time   `json:"endDate"`
+	Enabled             bool        `json:"enabled"`
+	Supervisor          bool        `json:"supervisor"`
+	Skills              []Skill     `json:"skills"`
+	SupervisorID        interface{} `json:"supervisorId"`
+	AutoAnswer          interface{} `json:"autoAnswer"`
 	//	ChannelIDs          []int // channel 1 is voice
-}
-
-// AgentSkill An Avaya Cloud Skill
-type AgentSkill struct {
 }
 
 // Handle A handle used for returning long results
@@ -54,8 +74,7 @@ type Handle struct {
 type Session struct {
 	log                 *logrus.Logger
 	endpoint            string
-	username            string
-	password            string
+	token               string
 	client              *http.Client
 	firstName           string
 	lastName            string
@@ -64,22 +83,34 @@ type Session struct {
 	user                map[string]interface{}
 	accounts            map[int]Account
 	subaccounts         map[int]SubAccount
+	defaultAccountID    int
 	defaultSubAccountID int
 }
 
-// Skill An Avaya Cloud Skill
+// Skill An Avaya Cloud Skill (these are all AGENT skills)
 type Skill struct {
+	SkillNumber   int
+	SkillPriority int
+	SkillName     string
 }
+
+// DefaultSkill is the name of the default skill that's created for each new account
+const DefaultSkill = "DEFAULT_SKILL"
+
+// DefaultStationGroup is the name of the default station group that's created for each new account
+const DefaultStationGroup = "DEFAULT"
 
 // SubAccount An Avaya Cloud SubAccount
 type SubAccount struct {
-	ID          int
-	Name        string
-	Code        string
-	AccountSize string
-	AccountID   int
-	AppID       string
-	Regions     []string
+	ID            int    `json:"id"`
+	Name          string `json:"name"`
+	Code          string `json:"code"`
+	AccountSize   string `json:"accountSize"`
+	AccountID     int    `json:"customerId"`
+	AppID         string `json:"appId"`
+	Active        bool   `json:"active"`
+	Transcription bool   `json:"transcriptionActive"`
+	Regions       []string
 }
 
 //
@@ -91,7 +122,8 @@ type Subscription struct {
 	ID string
 
 	// The name of the data source for the subscription. Valid values are:
-	//   ECH, HAGLOG, HAGENT, RT_AGENT_STATE, RT_DID_STATE, RT_SKILL_STATE, RT_VDN_STATE
+	//   ECH, HAGLOG, HAGENT, RT_AGENT_STATE, RT_DID_STATE, RT_SKILL_STATE, RT_VDN_STATE,
+	//   EMAIL_EVENT, CHAT_EVENT
 	//
 	// A subscription is for exactly one data source. You can create multiple subscriptions for
 	// multiple data sources.
@@ -198,12 +230,11 @@ type Subscription struct {
 //
 
 // NewSession Create a new station for communicating with the Avaya Cloud
-func NewSession(endpoint, username, password string) *Session {
+func NewSession(endpoint, token string) *Session {
 	discardLogger := logrus.New()
 	discardLogger.Out = ioutil.Discard
-	s := Session{endpoint: endpoint, username: username, password: password, log: discardLogger}
 
-	return &s
+	return MakeSession(endpoint, token, discardLogger)
 }
 
 // SetLogger Set's a logger to use for this package. If you don't manually set this, there
@@ -217,10 +248,19 @@ func (s *Session) Open() error {
 	return s.connectSession()
 }
 
+// SetAccount Most of the API's use an implied account taken from the session. If there is a
+// single account accessable by the logged in user that account is the one used.
+// If there are multiple accounts you can call this method and set the account to use.
+// Return value is the account ID.
+func (s *Session) SetAccount(name string) (Account, error) {
+	return s.setAccountByName(name)
+}
+
 // SetSubAccount Most of the API's use an implied sub account taken from the session. If there is a
 // single subaccount accessable by the logged in user that subaccount is the one used.
 // If there are multiple subaccounts you can call this method and set the subaccount to use.
-func (s *Session) SetSubAccount(name string) error {
+// Return value is the subaccount ID.
+func (s *Session) SetSubAccount(name string) (SubAccount, error) {
 	return s.setSubAccountByName(name)
 }
 
@@ -229,8 +269,8 @@ func (s *Session) SetSubAccount(name string) error {
 //
 
 // CreateAgent Creates a new agent in ABC
-func (s *Session) CreateAgent(username, password, firstName, lastName, email string) (Agent, error) {
-	agent, err := s.createAgent(username, password, firstName, lastName, email)
+func (s *Session) CreateAgent(username, password, firstName, lastName, email string, skills []string) (Agent, error) {
+	agent, err := s.createAgent(username, password, firstName, lastName, email, skills)
 	return agent, err
 }
 
@@ -262,22 +302,44 @@ func (h *Handle) GetMoreAgents() ([]Agent, error) {
 }
 
 //
+// Administrators
+//
+
+// CreateAdministrator Creates a new administrator in ABC
+// Administrators are always Customer Admin's
+func (s *Session) CreateAdministrator(username, password, firstName, lastName, email string) (Administrator, error) {
+	admin, err := s.createAdministrator(username, password, firstName, lastName, email)
+	return admin, err
+}
+
+// DeleteAdministrator Deletes an administrator in ABC
+func (s *Session) DeleteAdministrator(username string) error {
+	return s.deleteAdministrator(username)
+}
+
+// GetAdministrator Gets an administrator by username
+func (s *Session) GetAdministrator(username string) (Administrator, error) {
+	admin, err := s.getAdministrator(username)
+	return admin, err
+}
+
+//
 // Accounts
 //
 
 // CreateAccount Creates a new account in ABC
-func (s *Session) CreateAccount() (*Account, error) {
-	account, err := s.createAccount()
+func (s *Session) CreateAccount(name, timeZone string) (Account, error) {
+	account, err := s.createAccount(name, timeZone)
 	return account, err
 }
 
 // DeleteAccount Deletes an account in ABC
-func (s *Session) DeleteAccount(id string) error {
+func (s *Session) DeleteAccount(id int) error {
 	return s.deleteAccount(id)
 }
 
 // GetAccount Gets an account by id
-func (s *Session) GetAccount(id string) (*Account, error) {
+func (s *Session) GetAccount(id int) (Account, error) {
 	account, err := s.getAccount(id)
 	return account, err
 }
@@ -296,6 +358,21 @@ func (s *Session) GetMoreAccounts(h *Handle) ([]Account, error) {
 	ah := h.internalHandle.(*accountsHandle)
 	a, err := ah.getMoreAccounts()
 	return a, err
+}
+
+// GetSkills returns the set of skills known to the current sub account
+func (s *Session) GetSkills() ([]string, error) {
+	return s.getSkills()
+}
+
+// CreateSkill adds a new skill to the current sub account
+func (s *Session) CreateSkill(name string) error {
+	return s.createSkill(name)
+}
+
+// UpdateAgentSkills sets the skills on a named agent
+func (s *Session) UpdateAgentSkills(username string, skills []Skill) error {
+	return s.updateAgentSkills(username, skills)
 }
 
 //
