@@ -3,8 +3,6 @@ package avayacloud
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"net/http"
 	"sort"
 	"strconv"
 	"strings"
@@ -29,24 +27,15 @@ type stationType struct {
 }
 
 func (s *Session) generateExtension(subAccountID int, extensionType string) (string, error) {
-	url := s.endpoint + "/spokenAbc/extensions/next/" + strconv.Itoa(subAccountID) + "/type/" + extensionType
-	resp, err := s.client.Post(url, "text/plain", nil)
+	url := "/spokenAbc/extensions/next/" + strconv.Itoa(subAccountID) + "/type/" + extensionType
+	body, err := s.postRaw(url, "text/plain", nil)
 	if err != nil {
-		return "", err
-	}
-	defer resp.Body.Close()
-	body, _ := ioutil.ReadAll(resp.Body)
-
-	if resp.StatusCode != http.StatusOK {
 		s.log.WithFields(logrus.Fields{
-			"status":        resp.StatusCode,
 			"extensionType": extensionType,
 			"response":      prettyError(body),
-		}).Error("Error on generating an extension")
-
-		err = fmt.Errorf("Error %d on generating an extension for an %s. Response is: %s", resp.StatusCode, extensionType, prettyError(body))
+		}).WithError(err).Error("Error on generating an extension")
 	}
-	return string(body), nil
+	return string(body), err
 }
 
 func (s *Session) getAgentStationGroupID(subAccountID int) (int, error) {
@@ -70,9 +59,77 @@ func (s *Session) getAgentStationGroupID(subAccountID int) (int, error) {
 	return asg[0].ID, nil
 }
 
-func (s *Session) getSkillIDs(subAccountID int, skillType string) ([]int, error) {
-	body, err := s.get("/spokenAbc/skills/multiClientSkills?clientIds=" + strconv.Itoa(subAccountID) + "&skillType=AGENT")
+func (s *Session) getSkills() ([]string, error) {
+	sv, err := s.getSkillIDs(s.defaultSubAccountID, "AGENT")
+	if err != nil {
+		return []string{}, err
+	}
+	rv := make([]string, len(sv))
+	for i, v := range sv {
+		rv[i] = v.SkillName
+	}
+	return rv, nil
+}
+func (s *Session) getNewNumber(numberClass string) (value int, err error) {
+	path := fmt.Sprintf("/spokenAbc/numbers/next/%d/type/%s", s.defaultSubAccountID, numberClass)
+	body, err := s.postRaw(path, "application/text", []byte{})
+	if err != nil {
+		return 0, err
+	}
+	n, err := strconv.Atoi(string(body))
 
+	return n, err
+}
+
+func (s *Session) createSkill(name string) error {
+	newNumber, err := s.getNewNumber("SKILL")
+	if err != nil {
+		return err
+	}
+	type skillType struct {
+		Name      string `json:"name"`
+		Number    int    `json:"number"`
+		ClientID  int    `json:"clientId"`
+		SkillType string `json:"skillType"`
+	}
+	skill := skillType{
+		ClientID:  s.defaultSubAccountID,
+		Name:      stationName,
+		Number:    newNumber,
+		SkillType: "AGENT",
+	}
+	_, err = s.postJSON("/spokenAbc/jobs/skills", skill)
+	if err != nil {
+		return err
+	}
+	_, err = s.waitFor(func() (interface{}, error) {
+		skills, err := s.getSkills()
+		if err != nil {
+			return "", err
+		}
+		for _, value := range skills {
+			if strings.EqualFold(value, name) {
+				return value, nil
+			}
+		}
+		return "", errors.New("Skill was not created")
+	}, waitRetries, waitInterval, true)
+
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *Session) updateAgentSkills(username string, skills []Skill) error {
+	return errors.New("Unimplemented")
+}
+
+func (s *Session) getSkillIDs(subAccountID int, skillType string) ([]Skill, error) {
+	body, err := s.get("/spokenAbc/skills/multiClientSkills?clientIds=" + strconv.Itoa(subAccountID) + "&skillType=AGENT")
+	if err != nil {
+		return []Skill{}, err
+	}
 	type skill struct {
 		ID        int    `json:"id"`
 		Name      string `json:"name"`
@@ -86,20 +143,24 @@ func (s *Session) getSkillIDs(subAccountID int, skillType string) ([]int, error)
 	sr := skillResponse{}
 	err = json.Unmarshal(body, &sr)
 	if err != nil {
-		return []int{0}, err
+		return []Skill{}, err
 	}
 	skillList, exists := sr.SkillResponses[strconv.Itoa(subAccountID)]
 	if !exists {
-		return []int{0}, errors.New("Getting Skills: The sub account didn't respond")
+		return []Skill{}, errors.New("Getting Skills: The sub account didn't respond")
 	}
 	if len(skillList) == 0 {
-		return []int{0}, errors.New("There are no skills -- expected at least one")
+		return []Skill{}, errors.New("There are no skills -- expected at least one")
 	}
-	rv := make([]int, 0, len(skillList))
+	rv := make([]Skill, 0, len(skillList))
 
 	for _, v := range skillList {
 		if strings.EqualFold(skillType, v.SkillType) {
-			rv = append(rv, v.ID)
+			rv = append(rv, Skill{
+				SkillNumber:   v.Number,
+				SkillName:     v.Name,
+				SkillPriority: -1, // Don't know how to get this
+			})
 		}
 	}
 	return rv, nil
@@ -194,7 +255,7 @@ func (s *Session) deleteStation(subAccountID int, username string) error {
 	return err
 }
 
-func (s *Session) createAgent(username, password, firstName, lastName, email string) (Agent, error) {
+func (s *Session) createAgent(username, password, firstName, lastName, email string, skills []string) (Agent, error) {
 	sa, err := s.getActiveSubAccount()
 	if err != nil {
 		return Agent{}, err
@@ -207,27 +268,65 @@ func (s *Session) createAgent(username, password, firstName, lastName, email str
 	if err != nil {
 		return Agent{}, err
 	}
-	skills, err := s.getSkillIDs(sa.ID, "AGENT")
+	availableSkills, err := s.getSkillIDs(sa.ID, "AGENT")
 	if err != nil {
 		return Agent{}, err
 	}
+	if len(availableSkills) == 0 {
+		return Agent{}, errors.New("There are no available skills to provision this agent")
+	}
+	availableSkillsByName := make(map[string]int)
+	for _, v := range availableSkills {
+		availableSkillsByName[v.SkillName] = v.SkillNumber
+	}
+	//
+	// Go through the requested skills and log them. If none specified, pick the first one.
+	//
+	type agentSkill struct {
+		SkillNumber   int `json:"skillNumber"`
+		SkillPriority int `json:"skillPriority"`
+	}
+	agentSkills := make([]agentSkill, 0, len(skills))
+	priority := 1
+	for _, name := range skills {
+		if number, exists := availableSkillsByName[name]; exists {
+			agentSkills = append(agentSkills, agentSkill{SkillNumber: number, SkillPriority: priority})
+			priority++
+		} else {
+			return Agent{}, errors.New(fmt.Sprintf("Requested skill '%s' is not available", name))
+		}
+	}
+	if len(agentSkills) == 0 {
+		agentSkills = append(agentSkills, agentSkill{
+			SkillNumber:   availableSkills[0].SkillNumber,
+			SkillPriority: 1,
+		})
+	}
+	//
+	// Make the skill structure to send to AC
+	//
+	skillIDs := make([]int, len(agentSkills))
+	for k, v := range agentSkills {
+		skillIDs[k] = v.SkillNumber
+	}
 
 	type createAgentRequest struct {
-		Username            string `json:"username"`
-		FirstName           string `json:"firstName"`
-		LastName            string `json:"lastName"`
-		Password            string `json:"password"`
-		Email               string `json:"email"`
-		LoginID             string `json:"loginId"`
-		AgentStationGroupID int    `json:"agentStationGroupId"`
-		SecurityCode        string `json:"securityCode"`
-		StartDate           string `json:"startDate"`
-		EndDate             string `json:"endDate"`
-		AvayaPassword       string `json:"avayaPassword"`
-		ClientID            int    `json:"clientId"`
-		SkillIDs            []int  `json:"skillIds"`
-		SupervisorID        int    `json:"supervisorId"`
-		ChannelIDs          []int  `json:"channelIds"`
+		Username            string       `json:"username"`
+		FirstName           string       `json:"firstName"`
+		LastName            string       `json:"lastName"`
+		Password            string       `json:"password"`
+		Email               string       `json:"email"`
+		LoginID             string       `json:"loginId"`
+		AgentStationGroupID int          `json:"agentStationGroupId"`
+		SecurityCode        string       `json:"securityCode"`
+		StartDate           string       `json:"startDate"`
+		EndDate             string       `json:"endDate"`
+		AvayaPassword       string       `json:"avayaPassword"`
+		ClientID            int          `json:"clientId"`
+		SkillIDs            []int        `json:"skillIds"`
+		AgentSkills         []agentSkill `json:"agentSkills"`
+		SupervisorID        int          `json:"supervisorId"`
+		ChannelIDs          []int        `json:"channelIds"`
 	}
 	car := createAgentRequest{
 		Username:            username,
@@ -245,8 +344,9 @@ func (s *Session) createAgent(username, password, firstName, lastName, email str
 		// no supervisors
 		SupervisorID: 0,
 		// channel 1 is voice
-		ChannelIDs: []int{1},
-		SkillIDs:   skills,
+		ChannelIDs:  []int{1},
+		SkillIDs:    skillIDs,
+		AgentSkills: agentSkills,
 	}
 	_, err = s.postJSON("/spokenAbc/jobs/agents", car)
 	if err != nil {

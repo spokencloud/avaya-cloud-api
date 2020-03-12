@@ -41,26 +41,21 @@ func prettyError(text []byte) string {
 	return string(text)
 }
 
+// MakeSession Create and return a new session object
+func MakeSession(endpoint, token string, logger *logrus.Logger) *Session {
+	s := Session{endpoint: endpoint, token: token, log: logger}
+	s.accounts = make(map[int]Account)
+	s.subaccounts = make(map[int]SubAccount)
+
+	return &s
+}
+
 func (s *Session) connectSession() error {
+	var err error
 	cookieJar, _ := cookiejar.New(nil)
 
 	s.client = &http.Client{
 		Jar: cookieJar,
-	}
-	err := s.goLogin()
-	if err != nil {
-		s.log.WithError(err).Error("avayacloud: login method failed")
-		return err
-	}
-	questions, err := s.createQuestionRequest()
-	if err != nil {
-		s.log.WithError(err).Error("avayacloud: question request failed")
-		return err
-	}
-	err = s.createQuestionAnswerRequest(questions)
-	if err != nil {
-		s.log.WithError(err).Error("avayacloud: question answers failed")
-		return err
 	}
 	s.user, err = s.getUser()
 	if err != nil {
@@ -81,14 +76,13 @@ func (s *Session) connectSession() error {
 	if id, ok := s.user["email"].(string); ok {
 		s.email = id
 	}
-	s.accounts = make(map[int]Account)
-
 	if accessibleTenants, ok := s.user["accessibleTenants"].([]interface{}); ok {
 		for _, at := range accessibleTenants {
 			if a, ok := at.(map[string]interface{}); ok {
 				var acc Account
 				if x, ok := a["id"].(float64); ok {
 					acc.ID = int(x)
+					s.defaultAccountID = acc.ID
 				} else {
 					continue
 				}
@@ -105,8 +99,6 @@ func (s *Session) connectSession() error {
 			}
 		}
 	}
-	s.subaccounts = make(map[int]SubAccount)
-
 	if accessibleClients, ok := s.user["accessibleClients"].([]interface{}); ok {
 		for _, ac := range accessibleClients {
 			if sa, ok := ac.(map[string]interface{}); ok {
@@ -126,7 +118,7 @@ func (s *Session) connectSession() error {
 				if x, ok := sa["accountSize"].(string); ok {
 					sub.AccountSize = x
 				}
-				if x, ok := sa["tennantId"].(float64); ok {
+				if x, ok := sa["tenantId"].(float64); ok {
 					sub.AccountID = int(x)
 				}
 				if x, ok := sa["appId"].(string); ok {
@@ -154,14 +146,24 @@ func (s *Session) connectSession() error {
 	return nil
 }
 
-func (s *Session) setSubAccountByName(name string) error {
+func (s *Session) setAccountByName(name string) (Account, error) {
+	for _, a := range s.accounts {
+		if strings.EqualFold(a.Name, name) {
+			s.defaultAccountID = a.ID
+			return a, nil
+		}
+	}
+	return Account{}, errors.New("Account was not found")
+}
+
+func (s *Session) setSubAccountByName(name string) (SubAccount, error) {
 	for _, sa := range s.subaccounts {
 		if strings.EqualFold(sa.Name, name) {
 			s.defaultSubAccountID = sa.ID
-			return nil
+			return sa, nil
 		}
 	}
-	return errors.New("Subaccount was not found")
+	return SubAccount{}, errors.New("Subaccount was not found")
 }
 
 func (s *Session) getActiveSubAccount() (SubAccount, error) {
@@ -174,7 +176,12 @@ func (s *Session) getActiveSubAccount() (SubAccount, error) {
 func (s *Session) get(path string) ([]byte, error) {
 	s.log.WithField("request", string(s.endpoint+path)).Info("avayacloud: get request")
 
-	resp, err := s.client.Get(s.endpoint + path)
+	req, err := http.NewRequest("GET", s.endpoint+path, nil)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Authorization", s.token)
+	resp, err := s.client.Do(req)
 	if err != nil {
 		return []byte{}, err
 	}
@@ -196,10 +203,11 @@ func (s *Session) get(path string) ([]byte, error) {
 func (s *Session) delete(path string) ([]byte, error) {
 	s.log.WithField("request", string(s.endpoint+path)).Info("avayacloud: delete request")
 
-	req, err := http.NewRequest("DELETE", path, nil)
+	req, err := http.NewRequest("DELETE", s.endpoint+path, nil)
 	if err != nil {
 		return nil, err
 	}
+	req.Header.Set("Authorization", s.token)
 	resp, err := s.client.Do(req)
 	if err != nil {
 		return []byte{}, err
@@ -207,16 +215,22 @@ func (s *Session) delete(path string) ([]byte, error) {
 	defer resp.Body.Close()
 	body, _ := ioutil.ReadAll(resp.Body)
 
-	if resp.StatusCode != http.StatusOK {
-		err = fmt.Errorf("Error deleting %d on %s", resp.StatusCode, s.endpoint+path)
+	switch resp.StatusCode {
+	case http.StatusOK, http.StatusNoContent:
+		return body, nil
 	}
-	return body, err
+	return body, fmt.Errorf("Error deleting %d on %s", resp.StatusCode, s.endpoint+path)
 }
 
 func (s *Session) postForm(path string, values url.Values) ([]byte, error) {
 	s.log.WithField("request", string(s.endpoint+path)).Info("avayacloud: post request")
 
-	resp, err := s.client.PostForm(s.endpoint+path, values)
+	req, err := http.NewRequest("POST", s.endpoint+path, strings.NewReader(values.Encode()))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Authorization", s.token)
+	resp, err := s.client.Do(req)
 	if err != nil {
 		return []byte{}, err
 	}
@@ -240,101 +254,38 @@ func (s *Session) postJSON(path string, data interface{}) ([]byte, error) {
 
 	s.log.WithField("request", string(s.endpoint+path)).WithField("json", string(json)).Info("avayacloud: post JSON request")
 
-	resp, err := s.client.Post(s.endpoint+path, "application/json", bytes.NewReader(json))
+	body, err := s.postRaw(path, "application/json", json)
+
+	return body, err
+}
+
+func (s *Session) postRaw(path, contentType string, data []byte) ([]byte, error) {
+	req, err := http.NewRequest("POST", s.endpoint+path, bytes.NewReader(data))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Authorization", s.token)
+	req.Header.Set("Content-Type", contentType)
+	resp, err := s.client.Do(req)
 	if err != nil {
 		return []byte{}, err
 	}
 	defer resp.Body.Close()
 	body, _ := ioutil.ReadAll(resp.Body)
 
-	if resp.StatusCode != http.StatusOK {
-		s.log.WithFields(logrus.Fields{
-			"status":   resp.StatusCode,
-			"url":      s.endpoint + path,
-			"response": prettyError(body),
-		}).Debug("Error on POST JSON")
-
-		err = fmt.Errorf("Error %d on %s. Response is: %s", resp.StatusCode, s.endpoint+path, prettyError(body))
+	switch resp.StatusCode {
+	case http.StatusOK, http.StatusNoContent:
+		return body, nil
 	}
+	s.log.WithFields(logrus.Fields{
+		"status":   resp.StatusCode,
+		"url":      s.endpoint + path,
+		"response": prettyError(body),
+	}).Debug("Error on POST")
+
+	err = fmt.Errorf("Error %d on %s. Response is: %s", resp.StatusCode, s.endpoint+path, prettyError(body))
+
 	return body, err
-}
-
-func (s *Session) goLogin() error {
-	body, err := s.postForm("/login", url.Values{"username": {s.username}, "password": {s.password}})
-	if err != nil {
-		s.log.WithField("response", string(body)).Info("avayacloud: response text")
-	}
-	return err
-}
-
-func (s *Session) createQuestionRequest() ([]string, error) {
-	body, err := s.get("/question/answer")
-	if err != nil {
-		s.log.WithField("response", string(body)).Info("avayacloud: response text")
-		return nil, errors.WithMessage(err, "doing /question/answer")
-	}
-	//
-	// Find "questions" key.
-	// Example response: {"userId":3749009,"questions":[
-	//	                  "What is your youngest child's nickname?",
-	//                    "What is the first name of your spouse’s father?",
-	//					  "What is your maternal grandmother’s middle name?"]}
-	//
-	rv := make([]string, 0)
-	data := make(map[string]interface{})
-	err = json.Unmarshal(body, &data)
-	if err != nil {
-		s.log.WithField("bad_json_body", string(body)).Error("bad json body")
-		return nil, errors.WithMessage(err, "doing /question/answer unmarshal")
-	}
-	if q, exists := data["questions"]; exists {
-		iv, ok := q.([]interface{})
-		if !ok {
-			return nil, errors.New("questions was wrong type")
-		}
-		for _, v := range iv {
-			q, ok := v.(string)
-			if !ok {
-				return nil, errors.New("question was wrong type")
-			}
-			rv = append(rv, q)
-		}
-		return rv, nil
-	}
-	return nil, errors.New("questions did not exist in /question/answer")
-}
-
-func getAnswer(rawQuestion string) string {
-	words := strings.Split(rawQuestion, " ")
-	answer := strings.Trim(words[len(words)-1], "?")
-	return answer
-}
-
-func (s *Session) createQuestionAnswerRequest(questions []string) error {
-	type qaPair struct {
-		Q string `json:"question"`
-		A string `json:"answer"`
-	}
-
-	type ar struct {
-		Username string   `json:"username"`
-		Qap      []qaPair `json:"questionAnswerPairs"`
-	}
-
-	answers := make([]qaPair, 0, len(questions))
-	for _, q := range questions {
-		answers = append(answers, qaPair{Q: q, A: getAnswer(q)})
-	}
-	if len(questions) < 3 {
-		return fmt.Errorf("At least three questions were expected")
-	}
-	answerResponse := ar{Username: s.username, Qap: answers}
-
-	body, err := s.postJSON("/user/question/answer", answerResponse)
-
-	s.log.WithField("response", string(body)).Info("avayacloud: response text")
-
-	return err
 }
 
 func (s *Session) getUser() (map[string]interface{}, error) {
