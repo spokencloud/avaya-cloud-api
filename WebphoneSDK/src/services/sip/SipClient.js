@@ -1,4 +1,4 @@
-// import JsSIP from 'jssip/dist/jssip.min'
+import JsSIP from './jssip.min.js'
 import SipSessionClient from './SipSessionClient'
 import AudioManager from '../AudioManager'
 /**

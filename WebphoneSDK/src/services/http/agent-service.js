@@ -1,9 +1,9 @@
 const apiPrefix = '/gateway'
 let url = '/gateway/'
 
-  url = `http://localhost:9001${apiPrefix}/`
+url = `http://localhost:9001${apiPrefix}/`
 
-
+const axios = require('axios').default
 const api = axios.create({
   baseURL: url,
   withCredentials: true

@@ -233,7 +233,7 @@ async function commandToWebPhone(command, value) {
           state.pending.transfer = false;
           refreshControls();
         },
-        onConfirmedWarmTransferSuccess: () => {
+      onConfirmedWarmTransferSuccess: () => {
           console.log('confirmedWarmTransferSuccess')
           state.pending.warmTransfer = false;
           state.onCall = false;
@@ -243,25 +243,42 @@ async function commandToWebPhone(command, value) {
           state.options.hold = false;
           state.options.mute = false;
           refreshControls();
-	    },
-	    onConfirmedWarmTransferError: error => {
-	      console.error('confirmedWarmTransferError', error)
-	      state.pending.warmTransfer = false;
-	      addErrorMessages(error);
-	      refreshControls();
-	    },
-	    onWarmTransferFailed: () => {
-	      console.error('warmTransferFailed', error)
-	      state.pending.warmTransfer = false;
-	      addErrorMessages(error);
-	      refreshControls();
-	    },
-	    onWarmTransferFailedError: error => {
-	      console.error('warmTransferFailedError', error)
-	      state.pending.warmTransfer = false;
+      },
+      onWarmTransferSuccess: () => {
+        console.log('warmTransferSuccess')
+        try {
+          sipService.terminate()
+        } catch (error) {
+          console.warn('Attempted to terminate an already terminated call', error)
+        }
+        state.callDetails.consultationCallId = null;
+        state.callDetails.consultationCallerId = '';
+        state.onConsultationCall = false;
+        state.onCall = false;
+        state.callDetails.callerId = '';
+        endCallTimer();
+        resetCallTimer();
+        state.options.hold = false;
+        state.options.mute = false;
+       
+       state.callDetails.connectionUid = null;
+       state.callDetails.sessionUid = null;
+       state.onMergedCall = false;
+       refreshControls();
+      },
+      onWarmTransferInSuccess: callDetails => {
+        console.log('warmTransferInSuccess', callDetails)
+        startCall(callDetails);
+        state.pending.outboundCall = false;
+        refreshControls();
+     },
+      onWarmTransferError: (error) => {
+        console.log('warmTransferError: ', error)
+        state.pending.warmTransfer = false;
 	      addErrorMessages(error);
 	      refreshControls();    
-	    },
+      },
+ 
         onConsultationSuccess: callDetails => {
           console.log('onConsultationSuccess', callDetails)
           const { callerId = '' } = callDetails || {}

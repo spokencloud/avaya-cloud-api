@@ -25,70 +25,70 @@ function addSessionEventHandlers () {
 }
 export default {
   sipInitialize (config) {
-  const {
-    url,
-    port,
-    extension,
-    username,
-    password,
-    secure
-  } = config || {}
-  // var password1 = 'Spoken@1';
-  _sipClient = new SipClient({ url, port, extension, username, password, secure })
-  console.log('_sipClient: ', _sipClient)
+    const {
+      url,
+      port,
+      extension,
+      username,
+      password,
+      secure
+    } = config || {}
+    // var password1 = 'Spoken@1';
+    _sipClient = new SipClient({ url, port, extension, username, password, secure })
+    console.log('_sipClient: ', _sipClient)
 
-  addEventHandler(_sipClient.onEventNewRtcSession, _sipClient, sipSessionClient => {
-    console.log('%cAssigning SipSessionClient instance', 'font-weight: bold;')
-    _sipSessionClient = sipSessionClient
-    addSessionEventHandlers()
-    console.log('_sipSessionClient:3 ', _sipSessionClient)
-    console.log('_eventhandler:3 ', _eventHandlers)
-  })
-  _sipClient.start()
+    addEventHandler(_sipClient.onEventNewRtcSession, _sipClient, sipSessionClient => {
+      console.log('%cAssigning SipSessionClient instance', 'font-weight: bold;')
+      _sipSessionClient = sipSessionClient
+      addSessionEventHandlers()
+      console.log('_sipSessionClient:3 ', _sipSessionClient)
+      console.log('_eventhandler:3 ', _eventHandlers)
+    })
+    _sipClient.start()
 
-  return new Promise((resolve, reject) => {
-    addEventHandler(_sipClient.onEventRegistered, _sipClient, () => {
-      console.log('_sipClient1: ', _sipClient)
-      console.log('Registered!')
-      console.log('Returning resolved promise!')
-      resolve()
+    return new Promise((resolve, reject) => {
+      addEventHandler(_sipClient.onEventRegistered, _sipClient, () => {
+        console.log('_sipClient1: ', _sipClient)
+        console.log('Registered!')
+        console.log('Returning resolved promise!')
+        resolve()
+      })
+      addEventHandler(_sipClient.onEventRegistrationFailed, _sipClient, error => {
+        console.log('Registration failed!')
+        console.log('Returning rejected promise!')
+        reject(error)
+      })
+      addEventHandler(_sipClient.onEventDisconnected, _sipClient, error => {
+        console.log('Disconnected!')
+        console.log('Returning rejected promise!')
+        _sipClient.stop()
+        reject(error)
+      })
     })
-    addEventHandler(_sipClient.onEventRegistrationFailed, _sipClient, error => {
-      console.log('Registration failed!')
-      console.log('Returning rejected promise!')
-      reject(error)
-    })
-    addEventHandler(_sipClient.onEventDisconnected, _sipClient, error => {
-      console.log('Disconnected!')
-      console.log('Returning rejected promise!')
-      _sipClient.stop()
-      reject(error)
-    })
-  })
-},
-sipAddEventHandlers (handlers) {
-  const {
-    onIncomingCall,
-    onMute,
-    onUnmute,
-    onDtmf
-  } = handlers || {}
-  console.log('_sipSessionClient2:', _sipSessionClient)
-  console.log('_eventHandlers2 :', _eventHandlers)
-  _eventHandlers.push(
-    () => addEventHandler(_sipSessionClient.onEventProgress, _sipSessionClient, onIncomingCall),
-    () => addEventHandler(_sipSessionClient.onEventMuted, _sipSessionClient, onMute),
-    () => addEventHandler(_sipSessionClient.onEventUnmuted, _sipSessionClient, onUnmute),
-    () => addEventHandler(_sipSessionClient.onEventNewDtmf, _sipSessionClient, onDtmf)
-  )
-},
+  },
+  sipAddEventHandlers (handlers) {
+    const {
+      onIncomingCall,
+      onMute,
+      onUnmute,
+      onDtmf
+    } = handlers || {}
+    console.log('_sipSessionClient2:', _sipSessionClient)
+    console.log('_eventHandlers2 :', _eventHandlers)
+    _eventHandlers.push(
+      () => addEventHandler(_sipSessionClient.onEventProgress, _sipSessionClient, onIncomingCall),
+      () => addEventHandler(_sipSessionClient.onEventMuted, _sipSessionClient, onMute),
+      () => addEventHandler(_sipSessionClient.onEventUnmuted, _sipSessionClient, onUnmute),
+      () => addEventHandler(_sipSessionClient.onEventNewDtmf, _sipSessionClient, onDtmf)
+    )
+  },
   sipAnswer () {
-  console.log('sipService.answer before')
-  execute(() => {
-    console.log('sipService.answer')
-    _sipSessionClient.answer({ sessionTimersExpires: SESSION_EXPIRATION_TIME })
-  })
-},
+    console.log('sipService.answer before')
+    execute(() => {
+      console.log('sipService.answer')
+      _sipSessionClient.answer({ sessionTimersExpires: SESSION_EXPIRATION_TIME })
+    })
+  },
   terminate () {
     execute(() => {
       console.log('sipService.terminate')

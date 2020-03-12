@@ -48,8 +48,12 @@ const Event = {
   CONFIRMED_CONSULTATION: 'CONFIRMED_CONSULTATION',
   MERGE: 'MERGE',
   CONFIRMED_WARM_TRANSFER: 'CONFIRMED_WARM_TRANSFER',
-  WARM_TRANSFER_FAILED: 'WARM_TRANSFER', // Backend sends 'WARM_TRANSFER' event upon failure.
-  HEARTBEAT: 'HEARTBEAT',
+  // Transfer event for caller who initials the transfer call
+  WARM_TRANSFER: 'WARM_TRANSFER',
+  // Transfer event for calee who receives the transfer call and answer it
+  WARM_TRANSFER_IN: 'WARM_TRANSFER_IN',
+  CONFIRMED_SWAP: 'CONFIRMED_SWAP',
+ HEARTBEAT: 'HEARTBEAT',
   DISCONNECT: 'DISCONNECT'
 }
 
@@ -242,8 +246,11 @@ class SesClient {
       onTransferError = noop,
       onConfirmedWarmTransferSuccess = noop,
       onConfirmedWarmTransferError = noop,
-      onWarmTransferFailed = noop,
-      onWarmTransferFailedError = noop,
+      onWarmTransferSuccess = noop,
+      onWarmTransferError = noop,
+      onWarmTransferInSuccess = noop,
+      onConfirmedSwapSuccess = noop,
+      onConfirmedSwapError = noop,
       onConsultationSuccess = noop,
       onConsultationError = noop,
       onConfirmedConsultationSuccess = noop,
@@ -283,11 +290,21 @@ class SesClient {
         onSuccess: onConfirmedWarmTransferSuccess,
         onError: onConfirmedWarmTransferError,
         normalize: noop
-      },
-      [Event.WARM_TRANSFER_FAILED]: {
-        onSuccess: onWarmTransferFailed,
-        onError: onWarmTransferFailedError,
+      },   
+      [Event.WARM_TRANSFER]: {
+        onSuccess: onWarmTransferSuccess,
+        onError: onWarmTransferError,
         normalize: noop
+      },
+      [Event.WARM_TRANSFER_IN]: {
+        onSuccess: onWarmTransferInSuccess,
+        onError: noop,
+        normalize: Serializer.normalizeCallDetails
+      },
+      [Event.CONFIRMED_SWAP]: {
+        onSuccess: onConfirmedSwapSuccess,
+        onError: onConfirmedSwapError,
+        normalize: Serializer.normalizeCallDetails
       },
       [Event.CALL_DELIVERED]: {
         onSuccess: onCallDeliveredSuccess,
