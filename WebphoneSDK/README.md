@@ -9,9 +9,7 @@ npm run build
 The built files (`bundle.js` and `bundle.js.map`) will be in `dist/`.
 
 ### Using the built files
-```
 Import the `bundle.js` file in your html or JS file.
-```
 
 ### Interacting with the SDK
 You can interact with the SDK from your JS using the following:
