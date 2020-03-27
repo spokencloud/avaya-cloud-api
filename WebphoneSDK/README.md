@@ -1,5 +1,8 @@
 # Webphone SDK
 
+### Known issues
+- The SDK cannot take consecutive calls. The agent needs to logout and login again in order to take the next call.
+
 ### Build
 Change to the directory containing `src/` and run:
 ```
