@@ -46,8 +46,8 @@ describe('AgentClient.ts tests with spied internal methods', () => {
     const error = new Error('test')
     when(agentClientSpy.createDefaultSkill()).thenThrow(error)
 
-    agentClient.setDefaultSkillNumberIfNotExists().catch(error => {
-      expect(error.toString()).toBe('test')
+    agentClient.setDefaultSkillNumberIfNotExists().catch(err => {
+      expect(err.toString()).toBe(error.toString())
 
       expect(agentClient.getDefaultSkillNumber()).toEqual(-1)
       verify(agentClientSpy.fetchDefaultSkillNumber()).times(1)
