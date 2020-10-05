@@ -14,7 +14,7 @@ import {
   log4js,
   NUMBER_PATH,
   REMOVE_AGENT_PATH,
-  SKILL_JOB_PATH,
+  SKILLV2_PATH,
   STATION_GROUP_PATH,
   STATION_JOB_PATH,
   STATION_ONLY_PATH,
@@ -122,6 +122,13 @@ export class RestClient {
       return response.appId
     })
     return appId
+  }
+
+  public async getSubAccountIdAndAppId() {
+    const result = await this.getSubAccount().then((response: any) => {
+      return { appId: response.appId, id: response.id }
+    })
+    return result
   }
 
   public getAgentByUsername(agentUsername: string): Promise<any> {
@@ -257,9 +264,9 @@ export class RestClient {
         return -error.response.status
       })
   }
-  public createSkillJob(skill: SkillCreateRequest): Promise<number> {
-    const url = `${this.baseUrl}/${SKILL_JOB_PATH}`
-    logger.debug(`createSkillJob url = ${url}`)
+  public createSkillV2(skill: SkillCreateRequest): Promise<number> {
+    const url = `${this.baseUrl}/${SKILLV2_PATH}`
+    logger.debug(`createSkillV2 url = ${url}`)
     const options = this.prepareBaseOptions()
     return axios
       .post(url, skill, options)
@@ -272,8 +279,17 @@ export class RestClient {
         return -error.response.status
       })
   }
-  public getSubAccountAgentSkills(subAccountId: string): Promise<any> {
-    const url = `${this.baseUrl}/${FETCH_SKILL_ID_PATH}${subAccountId}&skillType=AGENT`
+  public getSubAccountAgentSkills(subAccountAppId: string): Promise<any> {
+    const url = `${this.baseUrl}/${FETCH_SKILL_ID_PATH}${subAccountAppId}`
+    logger.debug(url)
+    const options = this.prepareGetOptions(url)
+    return axios(options).then((response: any) => {
+      return response
+    })
+  }
+
+  public getSkillV2(skillNumber: number): Promise<boolean> {
+    const url = `${this.baseUrl}/${SKILLV2_PATH}/${skillNumber}`
     logger.debug(url)
     const options = this.prepareGetOptions(url)
     return axios(options).then((response: any) => {

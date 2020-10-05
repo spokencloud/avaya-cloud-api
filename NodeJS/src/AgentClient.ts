@@ -8,12 +8,21 @@ const logger = Constants.log4js.getLogger('AgentClient')
 export class AgentClient {
   private restClient: RestClient
   private subAccountId: string
+  private subAccountAppId: string
   private defaultSkillNumber: number
 
-  constructor(subAccountId: string, restClient: RestClient) {
+  constructor(
+    subAccountId: string,
+    subAccountAppId: string,
+    restClient: RestClient
+  ) {
     this.restClient = restClient
     this.subAccountId = subAccountId
+    this.subAccountAppId = subAccountAppId
     this.defaultSkillNumber = -1
+    logger.debug(
+      `subAccountAppid=${subAccountAppId}; accountId = ${subAccountId}`
+    )
   }
 
   public getDefaultSkillNumber() {
@@ -71,18 +80,15 @@ export class AgentClient {
   }
   public async setDefaultSkillNumberIfNotExists(): Promise<boolean> {
     const defaultSkillNumber = await this.fetchDefaultSkillNumber()
-
+    logger.debug(`defaultSkillNumber is ${defaultSkillNumber}`)
     if (!!defaultSkillNumber) {
       this.defaultSkillNumber = defaultSkillNumber
       return true
     } else {
       logger.debug('tring to create default skill')
-      const created = await this.createDefaultSkill()
-      if (!created) {
-        logger.debug('failed to submit job to create default skill')
-        return false
-      }
-      return await this.waitForDefaultSkillCreation()
+      const skillNumber = await this.createDefaultSkill()
+      this.defaultSkillNumber = skillNumber
+      return await this.waitForDefaultSkillCreation(skillNumber)
     }
   }
   public async createStationIfNotExists(
@@ -188,9 +194,8 @@ export class AgentClient {
   public getSkillIds(): Promise<[]> {
     return this.restClient
       .getSubAccountAgentSkills(this.subAccountId)
-      .then((response: { data: { [x: string]: { [x: string]: any } } }) => {
-        logger.debug(response.data)
-        const skillResponses = response.data.skillResponses[this.subAccountId]
+      .then((skillResponses: any) => {
+        logger.debug(skillResponses)
         if (skillResponses) {
           return skillResponses.map(
             (skillResponse: { id: any }) => skillResponse.id
@@ -203,23 +208,26 @@ export class AgentClient {
 
   public fetchDefaultSkillNumber(): Promise<number | undefined> {
     return this.restClient
-      .getSubAccountAgentSkills(this.subAccountId)
-      .then((response: { data: { [x: string]: { [x: string]: any } } }) => {
+      .getSubAccountAgentSkills(this.subAccountAppId)
+      .then((response: any) => {
         logger.debug(response.data)
-        // data has a key of skillResponse, which is a map of subaccountId, and array of skillResponse
-        // skillResponses is SkillResponse[]
-        const skillResponses = response.data.skillResponses[this.subAccountId]
-        if (skillResponses) {
-          const defaultSkill = skillResponses.find(
-            (skillResponse: { number: number; name: string }) =>
-              skillResponse.name === Constants.DEFAULT_SKILL_NAME
-          )
-          return defaultSkill?.number
-        }
+
+        const defaultSkill = response.data.find(
+          (skillResponse: { skillNumber: number; name: string }) =>
+            skillResponse.name === Constants.DEFAULT_SKILL_NAME
+        )
+        return defaultSkill?.skillNumber
       })
   }
 
-  public async createDefaultSkill(): Promise<boolean> {
+  public isDefaultSkillProvisioned(skillNumber: number): Promise<boolean> {
+    return this.restClient.getSkillV2(skillNumber).then((response: any) => {
+      logger.debug(response.data.status)
+      return response.data.status === 'COMPLETED'
+    })
+  }
+
+  public async createDefaultSkill(): Promise<number> {
     const skillExtensionNumber = await this.restClient.getNextAvailableNumber(
       this.subAccountId,
       'SKILL'
@@ -229,20 +237,25 @@ export class AgentClient {
     }
     const skillRequest = {
       name: Constants.DEFAULT_SKILL_NAME,
-      number: skillExtensionNumber,
-      clientId: parseInt(this.subAccountId, 10),
-      skillType: Constants.SKILL_TYPE_AGENT,
+      skillNumber: skillExtensionNumber,
+      subAccountAppId: this.subAccountAppId,
       acwInterval: null,
       slaInSeconds: null,
       slaPercentage: null,
-      announcementExtension: null
+      announcementExtension: null,
+      redirectOnNoAnswerRings: null,
+      chatDigitalChannelsEnabled: null,
+      emailDigitalChannelsEnabled: null,
+      smsDigitalChannelsEnabled: null
     }
     logger.debug(
       `creating default skill with payload ${JSON.stringify(skillRequest)}`
     )
-    return this.restClient.createSkillJob(skillRequest).then(status => {
-      return status === 200
-    })
+    const result = await this.restClient.createSkillV2(skillRequest)
+    if (result === 200) {
+      return skillExtensionNumber
+    }
+    throw new Error(`Failed to create default skill error is ${-result}`)
   }
 
   /**
@@ -252,12 +265,8 @@ export class AgentClient {
     Array<{ skillName: string; skillNumber: number }>
   > {
     return await this.restClient
-      .getSubAccountAgentSkills(this.subAccountId)
-      .then((response: { data: { [x: string]: { [x: string]: any } } }) => {
-        const skillResponses = response.data.skillResponses[this.subAccountId]
-        if (skillResponses === undefined) {
-          return []
-        }
+      .getSubAccountAgentSkills(this.subAccountAppId)
+      .then((skillResponses: any) => {
         const availableSkills = []
         for (const skill of skillResponses) {
           const skillInfo = {
@@ -389,14 +398,11 @@ export class AgentClient {
     return this.repeat(callback)
   }
 
-  public async waitForDefaultSkillCreation(): Promise<boolean> {
+  public async waitForDefaultSkillCreation(
+    skillNumber: number
+  ): Promise<boolean> {
     const callback = () => {
-      return this.fetchDefaultSkillNumber().then(skillNumber => {
-        if (!!skillNumber) {
-          this.defaultSkillNumber = skillNumber
-        }
-        return !!skillNumber
-      })
+      return this.isDefaultSkillProvisioned(skillNumber)
     }
     return this.repeat(callback)
   }
@@ -442,8 +448,8 @@ export class AgentClient {
   }
 }
 async function createInstance(restClient: RestClient) {
-  const subAccountId = await restClient.getSubAccountId()
-  return new AgentClient(subAccountId, restClient)
+  const result = await restClient.getSubAccountIdAndAppId()
+  return new AgentClient(result.id, result.appId, restClient)
 }
 
 export async function createAgentClient(
