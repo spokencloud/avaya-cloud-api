@@ -39,10 +39,10 @@ describe('AgentClient', () => {
     testTimeOut
   )
 
-  test.only(
+  test(
     'createAgent',
     async () => {
-      const username = 'ddksgy3dnr' // randomString(10)
+      const username = 'abcagent1' // randomString(10)  ddksgy3dnr
       const result = await agentClient.createAgentAndStation(
         username,
         'Passw0rd!'
@@ -57,10 +57,10 @@ describe('AgentClient', () => {
     const result = await agentClient.createStationIfNotExists('ddksgy3dnr', '2')
     expect(result).toBeTruthy()
   })
-  test(
+  test.only(
     'deleteAgent',
     async () => {
-      const result = await agentClient.deleteAgentAndStation('ddksgy3dnr')
+      const result = await agentClient.deleteAgentAndStation('abcagent1')
       expect(result).toBeTruthy()
     },
     testTimeOut

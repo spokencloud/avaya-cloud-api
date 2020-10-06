@@ -68,10 +68,12 @@ describe('AgentClient', () => {
     expect(agentAndStation).toBeUndefined()
   })
 
-  xtest('createStationIfNotExists should return true', async () => {
-    const result = await agentClient.createStationIfNotExists('ddksgy3dnr', '2')
+  test.only('createStationIfNotExists should return true', async () => {
+    const result = await agentClient
+      .createStationIfNotExists('agent2', '2')
+      .catch(error => console.log(error))
     expect(result).toBeTruthy()
-  })
+  }, 60000)
   test('getUserToken should return 400 for admin user', async () => {
     const result = await agentClient.getUserToken('yangadmin1').catch(error => {
       return error.response.status

@@ -50,7 +50,7 @@ describe('RestClient.ts integration test', () => {
     expect(agent.username).toEqual(username)
   }, 10000)
 
-  test.only('getAgentByUsername should return 404 if username does not exist', async () => {
+  test('getAgentByUsername should return 404 if username does not exist', async () => {
     const username = 'notexist'
     const agent = await restClient
       .getAgentByUsername(username)
@@ -73,7 +73,7 @@ describe('RestClient.ts integration test', () => {
     const submitted = await restClient.requestStationDeletion(stationId)
     expect(submitted).toBeFalsy()
   })
-  test('getStationForAgent return undefined when not found', async () => {
+  test.only('getStationForAgent return undefined when not found', async () => {
     const subAccountId = '1'
     const username = 'super1'
     const submitted = await restClient.getStationForAgent(
