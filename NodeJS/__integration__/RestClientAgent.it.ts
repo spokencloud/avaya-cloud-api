@@ -49,6 +49,17 @@ describe('RestClient.ts integration test', () => {
     console.log(agent)
     expect(agent.username).toEqual(username)
   }, 10000)
+
+  test.only('getAgentByUsername should return 404 if username does not exist', async () => {
+    const username = 'notexist'
+    const agent = await restClient
+      .getAgentByUsername(username)
+      .catch((error: any) => {
+        return error.response.status
+      })
+    console.log(agent)
+    expect(agent).toEqual(404)
+  }, 10000)
   test('requestAgentDeletion should return false if agent1 can not be deleted', async () => {
     const username = 'agent1'
     const submitted = await restClient.requestAgentDeletion(
@@ -139,7 +150,7 @@ describe('RestClient.ts integration test', () => {
    * Number needs to be in reserved state for this to work. Reserve number via AC or call
    * getNextAvaialbeNumber()
    */
-  test.only('createSkillV2 with reserved extension should work.', async () => {
+  test('createSkillV2 with reserved extension should work.', async () => {
     const reservedNumber = 103
     const skillCreateRequest: SkillCreateRequest = {
       name: 'DEFAULT_SKILL',

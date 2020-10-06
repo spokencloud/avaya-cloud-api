@@ -45,7 +45,9 @@ describe('AgentClient', () => {
   test(
     'createAgent',
     async () => {
-      const username = 'ddksgy3dnr' // randomString(10)
+      // const username = 'ddksgy3dnr' // randomString(10)
+      const username = 'yangagent1' // randomString(10)
+
       const result = await agentClient.createAgentAndStation(
         username,
         'Passw0rd!'
@@ -56,7 +58,7 @@ describe('AgentClient', () => {
     testTimeOut
   )
 
-  test.only('fetchDefaultSkillNumber should return skillId', async () => {
+  test('fetchDefaultSkillNumber should return skillId', async () => {
     const result = await agentClient.fetchDefaultSkillNumber()
     console.log(`skillNumber of default skill = ${result}`)
     expect(result).toBeGreaterThan(100)
@@ -66,10 +68,10 @@ describe('AgentClient', () => {
     const result = await agentClient.createStationIfNotExists('ddksgy3dnr', '2')
     expect(result).toBeTruthy()
   })
-  test(
+  test.only(
     'deleteAgent',
     async () => {
-      const result = await agentClient.deleteAgentAndStation('ddksgy3dnr')
+      const result = await agentClient.deleteAgentAndStation('yangagent1')
       expect(result).toBeTruthy()
     },
     testTimeOut

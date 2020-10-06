@@ -93,7 +93,7 @@ An agent can receive or make a phone call.
 This sample client creates an agent, reads it back, and deletes it.
 The sample will also retrieve a token for an agent and print it out in the console.
 
-`node lib/sample/SampleAgentClient.js --endpoint='http://localhost:8081' --api_key=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ5YW5nYWRtaW4xIiwiaXNzIjoiQUJDX1NFQ1VSSVRZX0dBVEVXQVkifQ.4kf1hrPV6C30PZu3tx48dgsaev9UowvG7pVszXKhghY --agent_username=tenfoldagent1 --agent_password=Passw0rd@1`
+`node lib/sample/SampleAgentClient.js --endpoint='http://localhost:8081' --api_key=YOUR-API-KEY --agent_username=tenfoldagent1 --agent_password=Passw0rd@1`
 
 ## Run SampleSubscriptionClient
 
@@ -102,13 +102,13 @@ Please look in sampleSubscriptionClient.js for how to create
 a data subscription object to pass to the server.
 This sample client creates a subscription, reads it back, and deletes it.
 
-`node lib/sample/SampleSubscriptionClient.js --endpoint='http://localhost:8081' --api_key=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ5YW5nYWRtaW4xIiwiaXNzIjoiQUJDX1NFQ1VSSVRZX0dBVEVXQVkifQ.4kf1hrPV6C30PZu3tx48dgsaev9UowvG7pVszXKhghY`
+`node lib/sample/SampleSubscriptionClient.js --endpoint='http://localhost:8081' --api_key=YOUR-API-KEY`
 
 ## Run SampleAUXCodeClient
 
 AUX Codes (or Auxiliary Codes) are used to track the time an agent has deliberately chosen to not accept calls. This sample client fetches the list of configured AUX Codes.
 
-`node lib/sample/SampleAUXCodeClient.js --endpoint='http://localhost:8081' --api_key=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJTaGVybG9jayIsImlzcyI6IkFCQ19TRUNVUklUWV9HQVRFV0FZIn0.rBbxKSScgqI6tJy-vdehBqdncMIVjMzoNFKsb8Zzuyc`
+`node lib/sample/SampleAUXCodeClient.js --endpoint='http://localhost:8081' --api_key=YOUR-API-KEY`
 
 ## Notable Changes:
 

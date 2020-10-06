@@ -44,19 +44,30 @@ describe('AgentClient', () => {
     const exists = await agentClient.waitForAgentCreation(3337300000100)
     expect(exists).toBeFalsy()
   })
-  xtest('existsAgentByUsername returns when agent exists by username', async () => {
-    const exists = await agentClient.existsAgentByUsername('ddksgy3dnr')
+  test('existsAgentByUsername returns true when agent exists', async () => {
+    const exists = await agentClient.existsAgentByUsername('agent2')
     expect(exists).toBeTruthy()
+  })
+  test('existsAgentByUsername returns false when agent does not exist', async () => {
+    const exists = await agentClient.existsAgentByUsername('notexistagent')
+    expect(exists).toBeFalsy()
   })
   xtest('existsStationForAgent should return false when agent has no station', async () => {
     const exists = await agentClient.existsStationForAgent('ddksgy3dnr')
     expect(exists).toBeFalsy()
   })
-  test('getAgent should return agent and station', async () => {
-    const agentAndStation = await agentClient.getAgent('agent2')
-    expect(agentAndStation.agent).toBeDefined()
-    expect(agentAndStation.station).toEqual({})
+  test('getAgent should return agent if agent exists', async () => {
+    const username = 'agent2'
+    const agentAndStation = await agentClient.getAgent(username)
+    expect(agentAndStation.username).toEqual(username)
   })
+
+  test('getAgent should return undefined if agent does not exist', async () => {
+    const username = 'notexistsagent2'
+    const agentAndStation = await agentClient.getAgent(username)
+    expect(agentAndStation).toBeUndefined()
+  })
+
   xtest('createStationIfNotExists should return true', async () => {
     const result = await agentClient.createStationIfNotExists('ddksgy3dnr', '2')
     expect(result).toBeTruthy()
