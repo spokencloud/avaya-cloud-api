@@ -73,7 +73,7 @@ describe('RestClient.ts integration test', () => {
     const submitted = await restClient.requestStationDeletion(stationId)
     expect(submitted).toBeFalsy()
   })
-  test.only('getStationForAgent return undefined when not found', async () => {
+  test('getStationForAgent return undefined when not found', async () => {
     const subAccountId = '1'
     const username = 'super1'
     const submitted = await restClient.getStationForAgent(
@@ -139,6 +139,25 @@ describe('RestClient.ts integration test', () => {
     const submitted = await restClient.getNextAvailableExtension('1', 'AGENT')
     console.log(submitted)
     expect(submitted).toBeDefined()
+  })
+
+  test.only('getNextAvailableExtension concurrent calls should return different values', async () => {
+    const submitted1 = restClient.getNextAvailableExtension('1', 'AGENT')
+    const submitted2 = restClient.getNextAvailableExtension('1', 'AGENT')
+    const submitted3 = restClient.getNextAvailableExtension('1', 'AGENT')
+
+    const [loginId1, loginId2, loginId3] = await Promise.all([
+      submitted1,
+      submitted2,
+      submitted3
+    ]).then(([value1, value2, value3]) => {
+      return [value1, value2, value3]
+    })
+    console.log(loginId1, loginId2, loginId3)
+    expect(loginId1).toBeDefined()
+    expect(loginId1).not.toEqual(loginId2)
+    expect(loginId1).not.toEqual(loginId3)
+    expect(loginId2).not.toEqual(loginId3)
   })
 
   test('getNextAvailableExtension for skill called correctly.', async () => {
