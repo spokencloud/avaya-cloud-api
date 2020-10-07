@@ -241,14 +241,14 @@ export class RestClient {
     type: string
   ): Promise<number> {
     const url = `${this.baseUrl}/${EXTENSION_PATH}/${subAccountId}/type/${type}`
-    return this.getByUrl(url)
+    return this.postToUrl(url)
   }
   public getNextAvailableNumber(
     subAccountId: string,
     type: string
   ): Promise<number> {
     const url = `${this.baseUrl}/${NUMBER_PATH}/${subAccountId}/type/${type}`
-    return this.getByUrl(url)
+    return this.postToUrl(url)
   }
   public createStationJob(station: object): Promise<number> {
     const url = `${this.baseUrl}/${STATION_JOB_PATH}`
@@ -418,7 +418,7 @@ export class RestClient {
       return response.data
     })
   }
-  protected getByUrl(url: string): Promise<number> {
+  protected postToUrl(url: string): Promise<number> {
     logger.debug(`url=${url}`)
     const options = this.preparePostOptions(url)
     return axios(options)
