@@ -8,52 +8,50 @@ const args = require('minimist')(process.argv.slice(2))
 let endpoint: string
 let apiKey: string
 let agentUsername: string
-let agentPassword: string
 try {
-    endpoint = getValue(Constants.ENDPOINT_KEY, args)
-    apiKey = getValue(Constants.API_KEY, args)
+  endpoint = getValue(Constants.ENDPOINT_KEY, args)
+  apiKey = getValue(Constants.API_KEY, args)
 
-    agentUsername = getValue(Constants.AGENT_USERNAME_KEY, args)
-    agentPassword = getValue(Constants.AGENT_PASSWORD_KEY, args)
+  agentUsername = getValue(Constants.AGENT_USERNAME_KEY, args)
 
-    main()
+  main()
 } catch (error) {
-    console.log(error)
-    process.exit(-1)
+  console.log(error)
+  process.exit(-1)
 }
 
 async function createAgent(agentClient: AgentClient) {
-    try {
-        const response = await agentClient.createAgentAndStation(agentUsername, agentPassword)
-        console.log(response)
-    } catch (e) {
-        console.error(e)
-    }
+  try {
+    const response = await agentClient.createAgentAndStation(agentUsername)
+    console.log(response)
+  } catch (e) {
+    console.error(e)
+  }
 }
 
 async function getAgent(agentClient: AgentClient) {
-    try {
-        const agentObject = await agentClient.getAgent(agentUsername)
-        console.log('agentObject from getAgent')
-        console.log(agentObject)
-    } catch (e) {
-        console.error(e)
-    }
+  try {
+    const agentObject = await agentClient.getAgent(agentUsername)
+    console.log('agentObject from getAgent')
+    console.log(agentObject)
+  } catch (e) {
+    console.error(e)
+  }
 }
 
 async function deleteAgent(agentClient: AgentClient) {
-    try {
-        await agentClient.deleteAgentAndStation(agentUsername)
-    } catch (e) {
-        console.error(e)
-    }
+  try {
+    await agentClient.deleteAgentAndStation(agentUsername)
+  } catch (e) {
+    console.error(e)
+  }
 }
 
 async function main() {
-    const agentClient = await createAgentClient(endpoint, apiKey)
-    await createAgent(agentClient)
-    await getAgent(agentClient)
-    await deleteAgent(agentClient)
-    const agentToken = await agentClient.getUserToken('yangadmin1')
-    console.log(agentToken)
+  const agentClient = await createAgentClient(endpoint, apiKey)
+  await createAgent(agentClient)
+  await getAgent(agentClient)
+  await deleteAgent(agentClient)
+  const agentToken = await agentClient.getUserToken('yangadmin1')
+  console.log(agentToken)
 }

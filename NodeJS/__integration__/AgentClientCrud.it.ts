@@ -44,10 +44,7 @@ describe('AgentClient', () => {
     'createAgent',
     async () => {
       const username = 'ddksgy3dnr' // randomString(10)
-      const result = await agentClient.createAgentAndStation(
-        username,
-        'Passw0rd!'
-      )
+      const result = await agentClient.createAgentAndStation(username)
       console.log(result)
       expect(result.agent.username).toEqual(username)
     },
