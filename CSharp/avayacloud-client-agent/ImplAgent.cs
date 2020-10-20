@@ -37,8 +37,6 @@ namespace AvayaCloudClient
             public string Firstname;
             [JsonProperty("lastName")]
             public string Lastname;
-            [JsonProperty("password")]
-            public string Password;
             [JsonProperty("avayaPassword")]
             public string AvayaPassword;
             [JsonProperty("loginId")]
@@ -58,14 +56,13 @@ namespace AvayaCloudClient
             [JsonProperty("supervisorId")]
             public long? supervisorId;
 
-            public Agent(string username, string firstname, string lastname, string password,
+            public Agent(string username, string firstname, string lastname,
                 string avayaPassword, string loginID, int clientID, int agentStationGroupID,
                 string securityCode, string startDate, string endDate, List<int> skillIds, long? supervisorId)
             {
                 Username = username;
                 Firstname = firstname;
                 Lastname = lastname;
-                Password = password;
                 AvayaPassword = avayaPassword;
                 LoginID = loginID;
                 ClientID = clientID;
@@ -131,13 +128,12 @@ namespace AvayaCloudClient
         /// Public API for creating an Agent
         /// </summary>
         /// <param name="agent_username">User name of the Agent.This has to be unique across the system</param>
-        /// <param name="agent_password">Password of the agent.Minimum 8 characters. Must contain at least one digit. Must contain at least one special character </param>
         /// <param name="firstName">First Name of the Agent</param>
         /// <param name="lastName">Last Name of the Agent</param>
         /// <param name="startDate">Start date from which the agent is to be activated in the system</param>
         /// <param name="endDate">End date till the Agent will be activated in the system</param>
         /// <returns>Created Agent object</returns>
-        public async Task<Agent> createAgent(string agent_username, string agent_password, string firstName,
+        public async Task<Agent> createAgent(string agent_username, string firstName,
           string lastName, string startDate, string endDate)
         {
             await session.login();
@@ -150,7 +146,7 @@ namespace AvayaCloudClient
             {
                 startDate = DateTime.Now.ToString("yyyy-MM-dd");
             }
-            await sendCreateAgentRequest(subAccountId, agent_username, agent_password,firstName, lastName, startDate, endDate, agentStationGroupId, agentLoginId, skillIds);
+            await sendCreateAgentRequest(subAccountId, agent_username,firstName, lastName, startDate, endDate, agentStationGroupId, agentLoginId, skillIds);
             Console.WriteLine("Waiting for Agent creation to complete");
             bool agentCreated = await waitForAgentCreation(agent_username);
             Console.WriteLine(agentCreated ? "Agent creation " + agent_username + " successfull" : "Agent creation failed");
@@ -189,13 +185,13 @@ namespace AvayaCloudClient
             List<int> skillIds = skills.Select(s => s.ID).ToList();
             return skillIds;
         }
-        private async Task sendCreateAgentRequest(int subAccountId, string agent_username, string agent_password, string firstName,
+        private async Task sendCreateAgentRequest(int subAccountId, string agent_username, string firstName,
           string lastName, string startDate, string endDate, int agentStationGroupId,
             string agentLoginId, List<int> skillIds)
         {
             string securityCode = generateSecurityCode(agentLoginId);
             string avayaPassword = generateAvayaPassword(agentLoginId);
-            Agent agent = new Agent(agent_username, firstName, lastName, agent_password, avayaPassword, agentLoginId, subAccountId,
+            Agent agent = new Agent(agent_username, firstName, lastName, avayaPassword, agentLoginId, subAccountId,
                 agentStationGroupId, securityCode, startDate, endDate, skillIds, 0);
             HttpResponseMessage httpResponseMessage = await Session.client.PostAsJsonAsync("/spokenAbc/jobs/agents", agent);
             var responseJson = await httpResponseMessage.Content.ReadAsStringAsync();

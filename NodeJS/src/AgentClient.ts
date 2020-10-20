@@ -33,14 +33,7 @@ export class AgentClient {
    * @param agentUsername min length 2, max length 20, must pass ^[-.@\w]+$
    * @param agentPassword min length 8, max length 32, must have a uppercase character, must have at least one lowercase char, no whitespace, must contains a number, must contain one of ~!@?#$%^&*_
    */
-  public async createAgentAndStation(
-    agentUsername: string,
-    agentPassword: string
-  ) {
-    if (!isValidPassword(agentPassword)) {
-      return Promise.reject('invalid password')
-    }
-
+  public async createAgentAndStation(agentUsername: string) {
     if (!isValidUsername(agentUsername)) {
       return Promise.reject('invalid username')
     }
@@ -70,7 +63,6 @@ export class AgentClient {
 
     await this.createUserIfNotExists(
       agentUsername,
-      agentPassword,
       skillsWithPriority,
       agentStationGroupId
     )
@@ -119,7 +111,6 @@ export class AgentClient {
 
   public async createUserIfNotExists(
     agentUsername: string,
-    agentPassword: string,
     skillsWithPriority: SkillPriority[],
     agentStationGroupId: string
   ) {
@@ -139,7 +130,6 @@ export class AgentClient {
 
     await this.sendCreateAgentRequest(
       agentUsername,
-      agentPassword,
       agentStationGroupId,
       agentLoginId,
       skillsWithPriority
@@ -148,7 +138,6 @@ export class AgentClient {
   }
   public async sendCreateAgentRequest(
     agentUsername: string,
-    agentPassword: string,
     agentStationGroupId: any,
     agentLoginId: any,
     skillsWithPriority: SkillPriority[]
@@ -159,7 +148,6 @@ export class AgentClient {
       username: agentUsername,
       firstName: Constants.AGENT_FIRST_NAME,
       lastName: Constants.AGENT_LAST_NAME,
-      password: agentPassword,
       loginId: agentLoginId,
       agentStationGroupId,
       securityCode,

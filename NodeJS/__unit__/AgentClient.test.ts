@@ -9,15 +9,9 @@ describe('AgentClient.ts', () => {
     const restClient: any = RestClient as jest.Mock
     client = new AgentClient('1', 'MYA_MYARec', restClient)
   })
-  test('createAgentAndStation throws an error given an invalid password', async () => {
-    expect.assertions(1)
-    await expect(
-      client.createAgentAndStation('agent1', 'badpassword')
-    ).rejects.toEqual('invalid password')
-  })
   test('createAgentAndStation throws an error given an invalid username', async () => {
     expect.assertions(1)
-    expect(client.createAgentAndStation('a', 'Passw0rd@')).rejects.toEqual(
+    expect(client.createAgentAndStation('a')).rejects.toEqual(
       'invalid username'
     )
   })
@@ -27,9 +21,9 @@ describe('AgentClient.ts', () => {
     when(agentClientSpy.setDefaultSkillNumberIfNotExists()).thenResolve(false)
 
     expect.assertions(1)
-    expect(
-      client.createAgentAndStation('testuser', 'Passw0rd@')
-    ).rejects.toEqual('Can not create default skill for agent creation.')
+    expect(client.createAgentAndStation('testuser')).rejects.toEqual(
+      'Can not create default skill for agent creation.'
+    )
   })
 
   test('generateAvayaPassword should return last 6 characters', () => {
