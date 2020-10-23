@@ -25,7 +25,7 @@ The API provides AgentClient class that could be used to create and delete agent
     // retrieve agent skills
     let skillWithPriorities = await agentClient.getSkillNumbers();
     // create Agent and Station
-    let response = await agentClient.createAgentAndStation(agentUsername, agentPassword, skillWithPriorities);
+    let response = await agentClient.createAgentAndStation(agentUsername, skillWithPriorities);
     // retrieve token for agent
     let token = agentClient.getUserToken(agentUsername)
 

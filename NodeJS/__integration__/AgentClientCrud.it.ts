@@ -33,7 +33,7 @@ describe("AgentClient", () => {
    test("createAgent", async () => {
       let skillPriority = { skillNumber: 100, skillPriority: 2 }
       let username = "ddksgy3dnr" // randomString(10)
-      let result = await agentClient.createAgentAndStation(username, "Passw0rd!", [skillPriority])
+      let result = await agentClient.createAgentAndStation(username, [skillPriority])
       console.log(result)
       expect(result.agent.username).toEqual(username)
    }, testTimeOut)
