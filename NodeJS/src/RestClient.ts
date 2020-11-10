@@ -85,8 +85,12 @@ export class RestClient {
    * For other errors, a negative value of http status code will be returned;
    * @param subAccountId
    */
-  public getAgentStationGroupId(subAccountId: string) {
-    const url = `${this.baseUrl}/${STATION_GROUP_PATH}/${subAccountId}`
+  public getAgentStationGroupId(subAccountAppId: string) {
+    const stationGroupUri = STATION_GROUP_PATH.replace(
+      '{subAccountAppId}',
+      subAccountAppId
+    )
+    const url = `${this.baseUrl}/${stationGroupUri}`
     logger.debug(`getAgentStationGroupId url is ${url}`)
     const options = this.prepareGetOptions(url)
     return axios(options)

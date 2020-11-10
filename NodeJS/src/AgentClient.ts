@@ -60,7 +60,7 @@ export class AgentClient {
       }
     ]
     const agentStationGroupId = await this.restClient.getAgentStationGroupId(
-      this.subAccountId
+      this.subAccountAppId
     )
     if (agentStationGroupId < 0) {
       throw new Error(
