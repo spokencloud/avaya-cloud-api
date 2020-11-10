@@ -26,9 +26,15 @@ import { SkillCreateRequest, Subscription } from './models'
 export const STATION_GROUP_ID_NOT_EXISTS = -1
 
 const axios = require('axios').default
+
 const axiosCookieJarSupport = require('@3846masa/axios-cookiejar-support')
   .default
 const logger = log4js.getLogger('RestClient')
+
+axios.interceptors.request.use((request: any) => {
+  logger.debug('Starting Request', JSON.stringify(request, null, 2))
+  return request
+})
 
 axiosCookieJarSupport(axios)
 
@@ -298,7 +304,7 @@ export class RestClient {
   }
 
   public makeSubAccountSubscriptionUrl(subAccountAppId: string) {
-    return `${this.baseUrl}/${SUBSCRIPTION_PATH}?${SUB_ACCOUNT_KEY}=${subAccountAppId}`
+    return `${this.baseUrl}/${SUBSCRIPTION_PATH}`
   }
   /**
    * create data subscription given a valid subAccountAppId and request.  Returns a subscription response on success
