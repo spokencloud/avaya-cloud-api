@@ -26,6 +26,7 @@ describe('RestClient Subscription Integration Test', () => {
 
   let restClient: RestClient
   let subscriptionId: string
+
   beforeEach(() => {
     restClient = new RestClient(url, token)
     subscriptionId = ''
@@ -40,19 +41,19 @@ describe('RestClient Subscription Integration Test', () => {
     expect(subscriptions).toEqual({})
   })
 
-  test('createDataSubscription, updateDataSubscription, and deleteDataSubscription should work as expected.', async () => {
+  test.only('createDataSubscription, updateDataSubscription, and deleteDataSubscription should work as expected.', async () => {
     const createSubscriptionRequest = {
       dataSourceType: 'HAGENT',
-      dataDeliveryFormat: 'CSV',
+      dataDeliveryFormat: 'JSON',
       endpoint: 'https://example.com',
       retryPolicy: 'DEFAULT',
       basicAuthUsername: 'avaya',
       basicAuthPassword: 'avayanodeapi',
-      frequencyInMinutes: 0,
+      frequencyInMinutes: 1,
       maxPostSize: 0,
       startTime: '2019-11-04T21:55:24.421Z',
       disableTLSVerify: true,
-      subAccountAppId: 'ALL',
+      subAccountAppId: 'MYA_MYARec',
       eventType: 'HISTORICAL'
     }
     const subscription = await restClient.createDataSubscription(

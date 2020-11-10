@@ -1,7 +1,14 @@
 import { SkillCreateRequest } from '../src'
+import * as Constants from '../src/Constants'
 import { RestClient, STATION_GROUP_ID_NOT_EXISTS } from '../src/RestClient'
 
-describe('RestClient.ts integration test', () => {
+const rootLogger = Constants.log4js.getLogger()
+rootLogger.level = 'debug'
+const restClientLogger = Constants.log4js.getLogger('RestClient')
+restClientLogger.level = 'debug'
+restClientLogger.debug('Starting RestClientAgent Integration Test on local')
+
+describe('RestClientAgent.ts integration test', () => {
   // yangadmin1
   const token =
     'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ5YW5nYWRtaW4xIiwiaXNzIjoiQUJDX1NFQ1VSSVRZX0dBVEVXQVkifQ.4kf1hrPV6C30PZu3tx48dgsaev9UowvG7pVszXKhghY'
@@ -23,21 +30,23 @@ describe('RestClient.ts integration test', () => {
     expect(userToken).toEqual(token)
   })
   test('getAgentStationGroupId should return id if station groups exist', async () => {
-    const clientIdWithAgentGroups = '2'
-    const id = await restClient.getAgentStationGroupId(clientIdWithAgentGroups)
-    expect(id).toEqual(1)
+    const subAccountAppIdWithAgentGroups = 'MYA_MYARec'
+    const id = await restClient.getAgentStationGroupId(
+      subAccountAppIdWithAgentGroups
+    )
+    expect(id).toBeGreaterThan(0)
   })
   test('getAgentStationGroupId should return STATION_GROUP_ID_NOT_EXISTS if no station groups exist', async () => {
-    const clientIdWithoutAgentStationGroups = '3'
+    const subAccountAppIdWithoutAgentStationGroups = 'GRO_GRORec'
     const id = await restClient.getAgentStationGroupId(
-      clientIdWithoutAgentStationGroups
+      subAccountAppIdWithoutAgentStationGroups
     )
     expect(id).toEqual(STATION_GROUP_ID_NOT_EXISTS)
   })
-  test('getAgentStationGroupId should return id if no station groups exist', async () => {
-    const clientIdNotExists = '11111'
-    const id = await restClient.getAgentStationGroupId(clientIdNotExists)
-    expect(id).toEqual(-403)
+  test('getAgentStationGroupId should return -404 if no station groups exist', async () => {
+    const subAccountAppIdNotExists = 'app_id_not_exist'
+    const id = await restClient.getAgentStationGroupId(subAccountAppIdNotExists)
+    expect(id).toEqual(-404)
   })
   test('getSubAccount should return first subaccount', async () => {
     const subaccount = await restClient.getSubAccount()
@@ -141,7 +150,7 @@ describe('RestClient.ts integration test', () => {
     expect(submitted).toBeDefined()
   })
 
-  test.only('getNextAvailableExtension concurrent calls should return different values', async () => {
+  test('getNextAvailableExtension concurrent calls should return different values', async () => {
     const submitted1 = restClient.getNextAvailableExtension('1', 'AGENT')
     const submitted2 = restClient.getNextAvailableExtension('1', 'AGENT')
     const submitted3 = restClient.getNextAvailableExtension('1', 'AGENT')
