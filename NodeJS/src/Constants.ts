@@ -1,4 +1,5 @@
 export const lodash = require('lodash')
+export const jwt = require('jsonwebtoken')
 export const axios = require('axios').default
 export const axiosCookieJarSupport = require('@3846masa/axios-cookiejar-support')
   .default

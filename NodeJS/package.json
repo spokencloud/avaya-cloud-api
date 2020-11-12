@@ -24,6 +24,7 @@
     "axios": "^0.18.0",
     "axios-cookiejar-support": "^0.4.2",
     "build": "^0.1.4",
+    "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.11",
     "minimist": "^1.2.0",
     "tough-cookie": "^3.0.1",

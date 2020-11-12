@@ -11,7 +11,9 @@ import isValidParameter, {
   isValidUsername,
   randomString,
   skillDecoder,
-  sleep
+  sleep,
+  isEmpty,
+  isTokenWellFormed
 } from '../src/Utils'
 describe('Utils.ts', () => {
   test('isValidParameter should return false when param is undefined', () => {
@@ -128,5 +130,27 @@ describe('Utils.ts', () => {
   test('isValidUsername should return false', () => {
     expect(isValidUsername('j')).toBeFalsy()
     expect(isValidUsername('123456789012345678901')).toBeFalsy()
+  })
+  test('isEmpty should return true', () => {
+    expect(isEmpty('')).toBeTruthy()
+    expect(isEmpty(undefined)).toBeTruthy()
+    expect(isEmpty(null)).toBeTruthy()
+    expect(isEmpty('')).toBeTruthy()
+    expect(isEmpty('  ')).toBeTruthy()
+    expect(isEmpty({})).toBeTruthy()
+    expect(isEmpty([])).toBeTruthy()
+  })
+  test('isEmpty should return false', () => {
+    expect(isEmpty(0)).toBeFalsy()
+    expect(isEmpty('hi')).toBeFalsy()
+  })
+  test('isTokenWellFormed should return true for valid token', () => {
+    const token =
+      'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ5YW5nYWRtaW4xIiwiaXNzIjoiQUJDX1NFQ1VSSVRZX0dBVEVXQVkifQ.4kf1hrPV6C30PZu3tx48dgsaev9UowvG7pVszXKhghY'
+    expect(isTokenWellFormed(token)).toBeTruthy()
+  })
+  test('isTokenWellFormed should return false for invalid token', () => {
+    const token = 'header.payload.signature'
+    expect(isTokenWellFormed(token)).toBeFalsy()
   })
 })
