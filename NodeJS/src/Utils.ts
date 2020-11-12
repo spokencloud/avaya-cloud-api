@@ -142,8 +142,8 @@ export function isTokenWellFormed(token: string): boolean {
     return false
   }
   try {
-    jwt.decode(token)
-    return true
+    const payload = jwt.decode(token)
+    return !isEmpty(payload)
   } catch (error) {
     logger.console.warn(error)
     return false
