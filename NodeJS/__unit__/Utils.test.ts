@@ -156,16 +156,27 @@ describe('Utils.ts', () => {
     expect(isTokenWellFormed(token)).toBeFalsy()
   })
   test('isValidUrl should return true with valid url string', () => {
+    expect(isValidUrl('http://localhost:8080')).toBeTruthy()
     expect(isValidUrl('http://www.google.com')).toBeTruthy()
     expect(isValidUrl('https://integration.bpo.avaya.com')).toBeTruthy()
     expect(isValidUrl('https://login.bpo.avaya.com')).toBeTruthy()
   })
   test('isValidUrl should return false with invalid url string', () => {
+    expect(isValidUrl('http://localhost:123456')).toBeFalsy()
     expect(isValidUrl('')).toBeFalsy()
     expect(isValidUrl(' ')).toBeFalsy()
     expect(isValidUrl('example')).toBeFalsy()
   })
   test('isValidLocalUrl should return true', () => {
     expect(isValidLocalUrl('http://localhost:8080')).toBeTruthy()
+    expect(isValidLocalUrl('http://localhost:80')).toBeTruthy()
+  })
+  test('isValidLocalUrl should return false', () => {
+    // too many digits in port number
+    expect(isValidLocalUrl('http://localhost:987654')).toBeFalsy()
+    // too few digits in port number
+    expect(isValidLocalUrl('http://localhost:9')).toBeFalsy()
+    // no port number specified
+    expect(isValidLocalUrl('http://localhost:')).toBeFalsy()
   })
 })

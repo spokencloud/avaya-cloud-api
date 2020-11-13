@@ -150,7 +150,7 @@ export function isTokenWellFormed(token: string): boolean {
 }
 
 export function isValidLocalUrl(url: string): boolean {
-  const regex = /^https?:\/\/localhost:[0-9]{2,5}/
+  const regex = /^https?:\/\/localhost:\d{2,5}$/
   return regex.test(url)
 }
 
@@ -158,7 +158,7 @@ export function isValidUrl(url: string): boolean {
   if (isEmpty(url)) {
     return false
   }
-  if (url.indexOf('localhost')) {
+  if (url.includes('localhost')) {
     return isValidLocalUrl(url)
   }
   try {
