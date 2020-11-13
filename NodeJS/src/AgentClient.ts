@@ -1,7 +1,13 @@
 import * as Constants from './Constants'
 import { SkillPriority } from './models'
 import { RestClient } from './RestClient'
-import { isValidPassword, isValidUsername, sleep } from './Utils'
+import {
+  isValidPassword,
+  isValidUsername,
+  sleep,
+  isValidUrl,
+  isTokenWellFormed
+} from './Utils'
 
 const logger = Constants.log4js.getLogger('AgentClient')
 
@@ -456,6 +462,14 @@ export async function createAgentClient(
   endpoint: string,
   apiKey: string
 ): Promise<AgentClient> {
+  if (!isValidUrl(endpoint)) {
+    return Promise.reject('invalid endpoint')
+  }
+
+  if (!isTokenWellFormed(apiKey)) {
+    return Promise.reject('invalid api key')
+  }
+
   const restClient = new RestClient(endpoint, apiKey)
   return await createInstance(restClient)
 }
