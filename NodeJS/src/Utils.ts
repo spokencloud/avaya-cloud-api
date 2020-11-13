@@ -158,8 +158,8 @@ export function isValidUrl(url: string): boolean {
   if (isEmpty(url)) {
     return false
   }
-  if (isValidLocalUrl(url)) {
-    return true
+  if (url.indexOf('localhost')) {
+    return isValidLocalUrl(url)
   }
   try {
     new URL(url)
