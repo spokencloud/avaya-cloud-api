@@ -6,14 +6,16 @@ import isValidParameter, {
   hasSpecialCharacter,
   hasUpperCase,
   hasWhiteSpace,
+  isEmpty,
+  isTokenWellFormed,
+  isValidLocalUrl,
   isValidPassword,
   isValidSkillsWithPriorities,
+  isValidUrl,
   isValidUsername,
   randomString,
   skillDecoder,
-  sleep,
-  isEmpty,
-  isTokenWellFormed
+  sleep
 } from '../src/Utils'
 describe('Utils.ts', () => {
   test('isValidParameter should return false when param is undefined', () => {
@@ -152,5 +154,18 @@ describe('Utils.ts', () => {
   test('isTokenWellFormed should return false for invalid token', () => {
     const token = 'header.payload.signature'
     expect(isTokenWellFormed(token)).toBeFalsy()
+  })
+  test('isValidUrl should return true with valid url string', () => {
+    expect(isValidUrl('http://www.google.com')).toBeTruthy()
+    expect(isValidUrl('https://integration.bpo.avaya.com')).toBeTruthy()
+    expect(isValidUrl('https://login.bpo.avaya.com')).toBeTruthy()
+  })
+  test('isValidUrl should return false with invalid url string', () => {
+    expect(isValidUrl('')).toBeFalsy()
+    expect(isValidUrl(' ')).toBeFalsy()
+    expect(isValidUrl('example')).toBeFalsy()
+  })
+  test('isValidLocalUrl should return true', () => {
+    expect(isValidLocalUrl('http://localhost:8080')).toBeTruthy()
   })
 })

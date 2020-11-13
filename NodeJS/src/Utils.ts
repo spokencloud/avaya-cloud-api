@@ -1,8 +1,9 @@
 import { Err, JsonDecoder } from 'ts.data.json'
 import { EMPTY_STRING, jwt, log4js, REPLACE_REGEX } from './Constants'
 import { SkillPriority } from './models'
-
 const logger = log4js.getLogger('Utils')
+const URL = require('url').URL
+const MAX_USERNAME_LENGTH = 20 // constraint from station username field
 
 export default function isValidParameter(key: string, parameter: any): boolean {
   if (parameter === undefined) {
@@ -11,8 +12,6 @@ export default function isValidParameter(key: string, parameter: any): boolean {
   }
   return true
 }
-
-const MAX_USERNAME_LENGTH = 20 // constraint from station username field
 
 export const skillDecoder = JsonDecoder.object<SkillPriority>(
   {
@@ -145,7 +144,28 @@ export function isTokenWellFormed(token: string): boolean {
     const payload = jwt.decode(token)
     return !isEmpty(payload)
   } catch (error) {
-    logger.console.warn(error)
+    logger.warn(error)
+    return false
+  }
+}
+
+export function isValidLocalUrl(url: string): boolean {
+  const regex = /^https?:\/\/localhost:[0-9]{2,5}/
+  return regex.test(url)
+}
+
+export function isValidUrl(url: string): boolean {
+  if (isEmpty(url)) {
+    return false
+  }
+  if (isValidLocalUrl(url)) {
+    return true
+  }
+  try {
+    new URL(url)
+    return true
+  } catch (error) {
+    logger.warn(error)
     return false
   }
 }
