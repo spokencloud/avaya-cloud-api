@@ -1,5 +1,5 @@
 import { anyString, instance, mock, reset, spy, verify, when } from 'ts-mockito'
-import { AgentClient } from '../src/AgentClient'
+import { AgentClient, createAgentClient } from '../src/AgentClient'
 import { RestClient } from '../src/RestClient'
 
 describe('AgentClient.ts', () => {
@@ -19,6 +19,19 @@ describe('AgentClient.ts', () => {
     expect.assertions(1)
     expect(client.createAgentAndStation('a', 'Passw0rd@')).rejects.toEqual(
       'invalid username'
+    )
+  })
+  test('createAgentClient should fail given invalid endpoint', async () => {
+    const token =
+      'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ5YW5nYWRtaW4xIiwiaXNzIjoiQUJDX1NFQ1VSSVRZX0dBVEVXQVkifQ.4kf1hrPV6C30PZu3tx48dgsaev9UowvG7pVszXKhghY'
+    expect(createAgentClient('http://localhost:888888', token)).rejects.toEqual(
+      'invalid endpoint'
+    )
+  })
+  test('createAgentClient should fail given invalid token', async () => {
+    const token = 'bad.jwt.token.'
+    expect(createAgentClient('http://localhost:8080', token)).rejects.toEqual(
+      'invalid api key'
     )
   })
   test('createAgentAndStation throws an error when createDefaultSkill fails', async () => {

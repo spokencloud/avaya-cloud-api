@@ -6,8 +6,12 @@ import isValidParameter, {
   hasSpecialCharacter,
   hasUpperCase,
   hasWhiteSpace,
+  isEmpty,
+  isTokenWellFormed,
+  isValidLocalUrl,
   isValidPassword,
   isValidSkillsWithPriorities,
+  isValidUrl,
   isValidUsername,
   randomString,
   skillDecoder,
@@ -128,5 +132,51 @@ describe('Utils.ts', () => {
   test('isValidUsername should return false', () => {
     expect(isValidUsername('j')).toBeFalsy()
     expect(isValidUsername('123456789012345678901')).toBeFalsy()
+  })
+  test('isEmpty should return true', () => {
+    expect(isEmpty('')).toBeTruthy()
+    expect(isEmpty(undefined)).toBeTruthy()
+    expect(isEmpty(null)).toBeTruthy()
+    expect(isEmpty('')).toBeTruthy()
+    expect(isEmpty('  ')).toBeTruthy()
+    expect(isEmpty({})).toBeTruthy()
+    expect(isEmpty([])).toBeTruthy()
+  })
+  test('isEmpty should return false', () => {
+    expect(isEmpty(0)).toBeFalsy()
+    expect(isEmpty('hi')).toBeFalsy()
+  })
+  test('isTokenWellFormed should return true for valid token', () => {
+    const token =
+      'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ5YW5nYWRtaW4xIiwiaXNzIjoiQUJDX1NFQ1VSSVRZX0dBVEVXQVkifQ.4kf1hrPV6C30PZu3tx48dgsaev9UowvG7pVszXKhghY'
+    expect(isTokenWellFormed(token)).toBeTruthy()
+  })
+  test('isTokenWellFormed should return false for invalid token', () => {
+    const token = 'header.payload.signature'
+    expect(isTokenWellFormed(token)).toBeFalsy()
+  })
+  test('isValidUrl should return true with valid url string', () => {
+    expect(isValidUrl('http://localhost:8080')).toBeTruthy()
+    expect(isValidUrl('http://www.google.com')).toBeTruthy()
+    expect(isValidUrl('https://integration.bpo.avaya.com')).toBeTruthy()
+    expect(isValidUrl('https://login.bpo.avaya.com')).toBeTruthy()
+  })
+  test('isValidUrl should return false with invalid url string', () => {
+    expect(isValidUrl('http://localhost:123456')).toBeFalsy()
+    expect(isValidUrl('')).toBeFalsy()
+    expect(isValidUrl(' ')).toBeFalsy()
+    expect(isValidUrl('example')).toBeFalsy()
+  })
+  test('isValidLocalUrl should return true', () => {
+    expect(isValidLocalUrl('http://localhost:8080')).toBeTruthy()
+    expect(isValidLocalUrl('http://localhost:80')).toBeTruthy()
+  })
+  test('isValidLocalUrl should return false', () => {
+    // too many digits in port number
+    expect(isValidLocalUrl('http://localhost:987654')).toBeFalsy()
+    // too few digits in port number
+    expect(isValidLocalUrl('http://localhost:9')).toBeFalsy()
+    // no port number specified
+    expect(isValidLocalUrl('http://localhost:')).toBeFalsy()
   })
 })
