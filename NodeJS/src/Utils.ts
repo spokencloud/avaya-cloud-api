@@ -3,7 +3,8 @@ import { EMPTY_STRING, jwt, log4js, REPLACE_REGEX } from './Constants'
 import { SkillPriority } from './models'
 const logger = log4js.getLogger('Utils')
 const URL = require('url').URL
-const MAX_USERNAME_LENGTH = 20 // constraint from station username field
+// Username in mpact.user and ac_station.user is 50 chars long; Bulk upload uses 49, so does here.
+const MAX_USERNAME_LENGTH = 49
 
 export default function isValidParameter(key: string, parameter: any): boolean {
   if (parameter === undefined) {
@@ -107,7 +108,7 @@ export function hasAllowableCharacters(str: string) {
 }
 /**
  * check if a username is valid
- * @param username min length 2, max length 20, must pass ^[-.@\w]+$
+ * @param username min length 2, max length 49, must pass ^[-.@\w]+$
  */
 export function isValidUsername(username: string): boolean {
   if (username.length < 2 || username.length > MAX_USERNAME_LENGTH) {
