@@ -41,9 +41,9 @@ describe('RestClient Subscription Integration Test', () => {
     expect(subscriptions).toEqual({})
   })
 
-  test.only('createDataSubscription, updateDataSubscription, and deleteDataSubscription should work as expected.', async () => {
+  test('createDataSubscription, updateDataSubscription, and deleteDataSubscription should work as expected.', async () => {
     const createSubscriptionRequest = {
-      dataSourceType: 'HAGENT',
+      dataSourceType: 'REAL_TIME_FEED',
       dataDeliveryFormat: 'JSON',
       endpoint: 'https://example.com',
       retryPolicy: 'DEFAULT',
@@ -53,11 +53,10 @@ describe('RestClient Subscription Integration Test', () => {
       maxPostSize: 0,
       startTime: '2019-11-04T21:55:24.421Z',
       disableTLSVerify: true,
-      subAccountAppId: 'MYA_MYARec',
-      eventType: 'HISTORICAL'
+      subAccountAppId,
+      eventType: 'REALTIME'
     }
     const subscription = await restClient.createDataSubscription(
-      subAccountAppId,
       createSubscriptionRequest
     )
     subscriptionId = subscription.subscriptionId
@@ -65,7 +64,7 @@ describe('RestClient Subscription Integration Test', () => {
     expect(subscription.subAccountAppId).toEqual(subAccountAppId)
 
     console.log('updating subscription ', subscriptionId)
-    updateDateSubscripitonTest()
+    await updateDateSubscripitonTest(subscriptionId)
 
     console.log('deleting subscription ', subscription.subscriptionId)
     const status = await restClient.deleteDataSubscription(
@@ -81,7 +80,7 @@ describe('RestClient Subscription Integration Test', () => {
     const updateSubscriptionRequest = {
       subAccountAppId: testSubAccountAppId,
       endpoint: 'http://localhost:8081',
-      dataSourceType: 'ECH',
+      dataSourceType: 'REAL_TIME_FEED',
       dataDeliveryFormat: 'JSON',
       retryPolicy: 'DEFAULT'
     }
@@ -93,17 +92,10 @@ describe('RestClient Subscription Integration Test', () => {
     expect(subscriptions).toEqual(500)
   })
 
-  xtest(
-    'updateDataSubscription on exist subscription should succeed',
-    updateDateSubscripitonTest
-  )
-
-  async function updateDateSubscripitonTest() {
-    const testSubAccountAppId = 'MYA_MYARec'
-    const testSubscriptionId = '6b9296f0-d43a-4fc7-89e6-b4bd9b4a8ff7'
+  async function updateDateSubscripitonTest(subScriptionId: string) {
     const updateSubscriptionRequest = {
-      dataSourceType: 'HAGENT',
-      dataDeliveryFormat: 'CSV',
+      dataSourceType: 'REAL_TIME_FEED',
+      dataDeliveryFormat: 'JSON',
       endpoint: 'https://example.com',
       retryPolicy: 'DEFAULT',
       basicAuthUsername: 'avaya',
@@ -112,15 +104,15 @@ describe('RestClient Subscription Integration Test', () => {
       maxPostSize: 0,
       startTime: '2019-11-04T21:55:24.421Z',
       disableTLSVerify: true,
-      subAccountAppId: testSubAccountAppId,
-      eventType: 'HISTORICAL'
+      subAccountAppId,
+      eventType: 'REALTIME'
     }
     const subscriptions = await restClient.updateDataSubscription(
-      testSubAccountAppId,
-      testSubscriptionId,
+      subAccountAppId,
+      subScriptionId,
       updateSubscriptionRequest
     )
-    expect(subscriptions.subscriptionId).toEqual(testSubscriptionId)
+    expect(subscriptions.subscriptionId).toEqual(subScriptionId)
   }
 
   test('deleteDataSubscription should return 403 when subAccountAppId does not exists.', async () => {
@@ -142,8 +134,8 @@ describe('RestClient Subscription Integration Test', () => {
   })
 
   test('getAllSubscriptions should return subscriptions', async () => {
-    const subscriptions = await restClient.getAllSubscriptions(subAccountAppId)
+    const subscriptions = await restClient.getAllSubscriptions('ALL')
     console.log(subscriptions)
-    expect(subscriptions.length).toBeGreaterThan(0)
+    expect(subscriptions.length).toBeGreaterThanOrEqual(0)
   })
 })

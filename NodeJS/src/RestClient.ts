@@ -307,21 +307,22 @@ export class RestClient {
     })
   }
 
-  public makeSubAccountSubscriptionUrl(subAccountAppId: string) {
-    return `${this.baseUrl}/${SUBSCRIPTION_PATH}`
+  public makeSubAccountSubscriptionUrl(subAccountAppId: string | undefined) {
+    const path = `${this.baseUrl}/${SUBSCRIPTION_PATH}`
+    if (subAccountAppId === undefined) {
+      return path
+    } else {
+      return `${path}?subAccountAppId=${subAccountAppId}`
+    }
   }
   /**
    * create data subscription given a valid subAccountAppId and request.  Returns a subscription response on success
    * or empty object on error
    *
-   * @param subAccountAppId
    * @param createSubscriptionRequest
    */
-  public createDataSubscription(
-    subAccountAppId: string,
-    createSubscriptionRequest: any
-  ) {
-    const url = this.makeSubAccountSubscriptionUrl(subAccountAppId)
+  public createDataSubscription(createSubscriptionRequest: any) {
+    const url = this.makeSubAccountSubscriptionUrl(undefined)
     logger.debug(`createDataSubscription url = ${url}`)
     const options = this.prepareBaseOptions()
     return axios
