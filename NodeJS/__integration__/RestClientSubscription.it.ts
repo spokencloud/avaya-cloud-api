@@ -133,7 +133,7 @@ describe('RestClient Subscription Integration Test', () => {
     expect(subscription).toEqual(200)
   })
 
-  test.only('getAllSubscriptions should return subscriptions', async () => {
+  test('getAllSubscriptions should return subscriptions', async () => {
     const subscriptions = await restClient.getAllSubscriptions('ALL')
     console.log(subscriptions)
     expect(subscriptions.length).toBeGreaterThanOrEqual(0)

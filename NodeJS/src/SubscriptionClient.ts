@@ -82,8 +82,8 @@ async function createInstance(restClient: RestClient) {
   return new SubscriptionClient(subAccountAppId, restClient)
 }
 /**
- * create SubscriptionClient given endpoint and apiKey. SubAccountAppId is used interally, so the only
- * allowable feed will be REAL_TIME_FEED
+ * create SubscriptionClient given endpoint and apiKey. Note to user: SubAccountAppId is used interally and the only
+ * allowable feed will be REAL_TIME_FEED.
  * @param endpoint
  * @param apiKey
  */
