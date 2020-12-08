@@ -250,9 +250,10 @@ export class AgentClient {
       slaPercentage: null,
       announcementExtension: null,
       redirectOnNoAnswerRings: null,
-      chatDigitalChannelsEnabled: null,
-      emailDigitalChannelsEnabled: null,
-      smsDigitalChannelsEnabled: null
+      chatDigitalChannelsEnabled: false,
+      emailDigitalChannelsEnabled: false,
+      smsDigitalChannelsEnabled: false,
+      dispositionSetId: ''
     }
     logger.debug(
       `creating default skill with payload ${JSON.stringify(skillRequest)}`

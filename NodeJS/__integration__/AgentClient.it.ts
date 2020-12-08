@@ -68,7 +68,7 @@ describe('AgentClient', () => {
     expect(agentAndStation).toBeUndefined()
   })
 
-  test.only('createStationIfNotExists should return true', async () => {
+  test('createStationIfNotExists should return true', async () => {
     const result = await agentClient
       .createStationIfNotExists('agent2', '2')
       .catch(error => console.log(error))
