@@ -6,3 +6,8 @@ node_modules
 # Ignore coverage folder
 coverage
 *.tgz
+# Ignore production test bash script
+tesla*.sh
+acprod*.sh
+# Ignore integration test scripts
+integration*.sh

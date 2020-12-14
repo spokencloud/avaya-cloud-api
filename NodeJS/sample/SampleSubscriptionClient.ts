@@ -19,7 +19,9 @@ let apiKey: string
 try {
   endpoint = getValue(Constants.ENDPOINT_KEY, args)
   apiKey = getValue(Constants.API_KEY, args)
-  main()
+  main().catch(error => {
+    console.error(error)
+  })
 } catch (error) {
   console.log(error)
   process.exit(-1)
@@ -28,18 +30,17 @@ try {
 async function createSubscription(subscriptionClient: SubscriptionClient) {
   try {
     const createSubscriptionRequest = {
-      dataSourceType: DataSourceType.HAgent,
-      dataDeliveryFormat: DataDeliveryFormat.Csv,
+      dataSourceType: DataSourceType.RealTimeFeed,
+      dataDeliveryFormat: DataDeliveryFormat.Json,
       endpoint: 'https://example.com',
       retryPolicy: RetryPolicy.Default,
       basicAuthUsername: 'avaya',
-      basicAuthPassword: 'password',
-      frequencyInMinutes: 0,
+      basicAuthPassword: 'avayanodeapi',
+      frequencyInMinutes: 1,
       maxPostSize: 0,
       startTime: '2019-11-04T21:55:24.421Z',
       disableTLSVerify: true,
-      subAccountAppId: 'ALL',
-      eventType: EventType.Historical
+      eventType: EventType.Realtime
     }
     const response = await subscriptionClient.createSubscription(
       createSubscriptionRequest

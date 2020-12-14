@@ -113,3 +113,5 @@ AUX Codes (or Auxiliary Codes) are used to track the time an agent has deliberat
 ## Notable Changes:
 
 ### Starting at version 0.1.0, Agent will be created with default skill. If default skill is not present, it will be created first.
+
+## [Link to API docs](http://htmlpreview.github.io/?https://github.com/spokencloud/avaya-cloud-api/blob/ENG-17506_doc/NodeJS/docs/index.html)

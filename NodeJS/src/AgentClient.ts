@@ -31,6 +31,9 @@ export class AgentClient {
     )
   }
 
+  /**
+   * @protected
+   */
   public getDefaultSkillNumber() {
     return this.defaultSkillNumber
   }
@@ -84,6 +87,9 @@ export class AgentClient {
 
     return this.getAgentAndStation(agentUsername)
   }
+  /**
+   * @protected
+   */
   public async setDefaultSkillNumberIfNotExists(): Promise<boolean> {
     const defaultSkillNumber = await this.fetchDefaultSkillNumber()
     logger.debug(`defaultSkillNumber is ${defaultSkillNumber}`)
@@ -97,6 +103,9 @@ export class AgentClient {
       return await this.waitForDefaultSkillCreation(skillNumber)
     }
   }
+  /**
+   * @protected
+   */
   public async createStationIfNotExists(
     agentUsername: string,
     agentStationGroupId: string
@@ -122,7 +131,9 @@ export class AgentClient {
     )
     return await this.waitForStationCreation(agentUsername)
   }
-
+  /**
+   * @protected
+   */
   public async createUserIfNotExists(
     agentUsername: string,
     agentPassword: string,
@@ -152,6 +163,9 @@ export class AgentClient {
     )
     return await this.waitForAgentCreation(agentLoginId)
   }
+  /**
+   * @protected
+   */
   public async sendCreateAgentRequest(
     agentUsername: string,
     agentPassword: string,
@@ -183,6 +197,9 @@ export class AgentClient {
     return this.restClient.createAgentJob(agent)
   }
 
+  /**
+   * @protected
+   */
   public generateAvayaPassword(agentLoginId: { toString: () => any }) {
     const agentLoginIdString = agentLoginId.toString()
     const length = agentLoginIdString.length
@@ -190,6 +207,9 @@ export class AgentClient {
     return agentLoginIdString.substring(length - 6, length)
   }
 
+  /**
+   * @protected
+   */
   public generateSecurityCode(agentLoginId: { toString: () => any }) {
     const agentLoginIdString = agentLoginId.toString()
     const length = agentLoginIdString.length
@@ -197,6 +217,9 @@ export class AgentClient {
     return agentLoginIdString.substring(length - 4, length)
   }
 
+  /**
+   * @protected
+   */
   public getSkillIds(): Promise<[]> {
     return this.restClient
       .getSubAccountAgentSkills(this.subAccountId)
@@ -212,6 +235,9 @@ export class AgentClient {
       })
   }
 
+  /**
+   * @protected
+   */
   public fetchDefaultSkillNumber(): Promise<number | undefined> {
     return this.restClient
       .getSubAccountAgentSkills(this.subAccountAppId)
@@ -226,6 +252,9 @@ export class AgentClient {
       })
   }
 
+  /**
+   * @protected
+   */
   public isDefaultSkillProvisioned(skillNumber: number): Promise<boolean> {
     return this.restClient.getSkillV2(skillNumber).then((response: any) => {
       logger.debug(response.data.status)
@@ -233,6 +262,9 @@ export class AgentClient {
     })
   }
 
+  /**
+   * @protected
+   */
   public async createDefaultSkill(): Promise<number> {
     const skillExtensionNumber = await this.restClient.getNextAvailableNumber(
       this.subAccountId,
@@ -267,6 +299,7 @@ export class AgentClient {
 
   /**
    * retrieve agent skills in {skillName:string, skillNumber:number}[]
+   * @protected
    */
   public async getSkillNumbers(): Promise<
     Array<{ skillName: string; skillNumber: number }>
@@ -287,6 +320,9 @@ export class AgentClient {
       })
   }
 
+  /**
+   * @protected
+   */
   public sendCreateStationRequest(
     agentStationGroupId: any,
     subAccountId: any,
@@ -307,6 +343,9 @@ export class AgentClient {
     return this.restClient.createStationJob(station)
   }
 
+  /**
+   * @protected
+   */
   public async getAgent(agentUsername: string) {
     return this.restClient
       .getAgentByUsername(agentUsername)
@@ -314,6 +353,9 @@ export class AgentClient {
       .catch(error => undefined)
   }
 
+  /**
+   * @protected
+   */
   public async getStation(agentUsername: string) {
     return this.restClient
       .getStationForAgent(this.subAccountId, agentUsername)
@@ -321,20 +363,36 @@ export class AgentClient {
       .catch((error: any) => undefined)
   }
 
+  /**
+   * @protected
+   */
   public async getAgentAndStation(agentUsername: string) {
     const agent = await this.getAgent(agentUsername)
     const station = await this.getStation(agentUsername)
     return { agent: agent || {}, station: station || {} }
   }
 
+  /**
+   * @protected
+   */
   public existsAgentByLoginId(loginId: number) {
     const promise = this.restClient.getAgentByLoginId(loginId)
     return this.existsAgent(promise)
   }
+
+  /**
+   * @protected
+   */
+
   public existsAgentByUsername(username: string) {
     const promise = this.restClient.getAgentByUsername(username)
     return this.existsAgent(promise)
   }
+
+  /**
+   * @protected
+   */
+
   public existsAgent(promise: Promise<any>): Promise<boolean> {
     return promise
       .then(agent => {
@@ -345,6 +403,9 @@ export class AgentClient {
       })
   }
 
+  /**
+   * @protected
+   */
   public existsStationForAgent(agentUsername: string) {
     return this.restClient
       .getStationForAgent(this.subAccountId, agentUsername)
@@ -356,6 +417,7 @@ export class AgentClient {
    * @param callback need to always resolve to either true or false
    * @param retries max number of retries
    * @param millis time to sleep before retry
+   * @protected
    */
   public async redo(
     callback: () => Promise<boolean>,
@@ -375,6 +437,9 @@ export class AgentClient {
     return false
   }
 
+  /**
+   * @protected
+   */
   public async waitForAgentCreation(loginId: number) {
     const callback = () => {
       return this.existsAgentByLoginId(loginId)
@@ -382,6 +447,9 @@ export class AgentClient {
     return this.repeat(callback)
   }
 
+  /**
+   * @protected
+   */
   public async waitForAgentDeletion(agentUsername: string) {
     const callback = () => {
       return this.existsAgentByUsername(agentUsername).then(result => !result)
@@ -389,6 +457,9 @@ export class AgentClient {
     return this.repeat(callback)
   }
 
+  /**
+   * @protected
+   */
   public async waitForStationCreation(agentUsername: string) {
     const callback = () => {
       return this.existsStationForAgent(agentUsername)
@@ -396,6 +467,9 @@ export class AgentClient {
     return this.repeat(callback)
   }
 
+  /**
+   * @protected
+   */
   public async waitForStationDeletion(agentUsername: string) {
     const callback = () => {
       return this.restClient
@@ -405,6 +479,9 @@ export class AgentClient {
     return this.repeat(callback)
   }
 
+  /**
+   * @protected
+   */
   public async waitForDefaultSkillCreation(
     skillNumber: number
   ): Promise<boolean> {
@@ -413,7 +490,10 @@ export class AgentClient {
     }
     return this.repeat(callback)
   }
-
+  /**
+   * delete agent and station
+   * @param agentUsername username of agent
+   */
   public async deleteAgentAndStation(agentUsername: string) {
     const station = await this.restClient.getStationForAgent(
       this.subAccountId,
@@ -454,6 +534,9 @@ export class AgentClient {
     )
   }
 }
+/**
+ * @protected
+ */
 async function createInstance(restClient: RestClient) {
   const result = await restClient.getSubAccountIdAndAppId()
   return new AgentClient(result.id, result.appId, restClient)

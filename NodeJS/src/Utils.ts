@@ -1,3 +1,13 @@
+/**
+ * @hidden
+ * @ignore
+ * @internal
+ */
+
+/**
+ * This comment and the above tags will tell typedoc to ignore the whole module.
+ */
+
 import { Err, JsonDecoder } from 'ts.data.json'
 import { EMPTY_STRING, jwt, log4js, REPLACE_REGEX } from './Constants'
 import { SkillPriority } from './models'
