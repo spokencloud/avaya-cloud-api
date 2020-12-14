@@ -36,14 +36,14 @@ describe('RestClientAgent.ts integration test', () => {
     )
     expect(id).toBeGreaterThan(0)
   })
-  test.only('getAgentStationGroupId should return STATION_GROUP_ID_NOT_EXISTS if no station groups exist', async () => {
+  test('getAgentStationGroupId should return STATION_GROUP_ID_NOT_EXISTS if no station groups exist', async () => {
     const subAccountAppIdWithoutAgentStationGroups = 'GRO_GRORec'
     const id = await restClient.getAgentStationGroupId(
       subAccountAppIdWithoutAgentStationGroups
     )
     expect(id).toEqual(STATION_GROUP_ID_NOT_EXISTS)
   })
-  test.only('getAgentStationGroupId should return -404 if no station groups exist', async () => {
+  test('getAgentStationGroupId should return -404 if no station groups exist', async () => {
     const subAccountAppIdNotExists = 'app_id_not_exist'
     const id = await restClient.getAgentStationGroupId(subAccountAppIdNotExists)
     expect(id).toEqual(-404)
