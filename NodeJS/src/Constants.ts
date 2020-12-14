@@ -1,3 +1,13 @@
+/**
+ * @hidden
+ * @ignore
+ * @internal
+ */
+
+/**
+ * This comment and the above tags will tell typedoc to ignore the whole module.
+ */
+
 export const lodash = require('lodash')
 export const jwt = require('jsonwebtoken')
 export const axios = require('axios').default

@@ -1,3 +1,13 @@
+/**
+ * @hidden
+ * @ignore
+ * @internal
+ */
+
+/**
+ * This comment and the above tags will tell typedoc to ignore the whole module.
+ */
+
 import { CookieJar } from 'tough-cookie'
 import {
   AGENT_JOB_PATH,
