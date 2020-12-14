@@ -1,0 +1,257 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>avaya-cloud-api</title>
+	<meta name="description" content="Documentation for avaya-cloud-api">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="assets/js/search.json" data-base=".">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="index.html" class="title">avaya-cloud-api</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+							<input type="checkbox" id="tsd-filter-only-exported" />
+							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="globals.html">Globals</a>
+				</li>
+			</ul>
+			<h1>avaya-cloud-api</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<div class="tsd-panel tsd-typography">
+				<a href="#the-nodejs-api-for-the-avaya-public-cloud" id="the-nodejs-api-for-the-avaya-public-cloud" style="color: inherit; text-decoration: none;">
+					<h1>The Node.js API for the Avaya Public Cloud</h1>
+				</a>
+				<p>Before using the API, please contact Avaya for API key and endpoint information.</p>
+				<a href="#build-the-project" id="build-the-project" style="color: inherit; text-decoration: none;">
+					<h2>Build the project</h2>
+				</a>
+				<p>To build the API, you need npm and node.js installed.</p>
+				<ul>
+					<li><code>npm install</code></li>
+					<li><code>npm run compile</code></li>
+					<li><code>npm run unit</code> to run all unit tests</li>
+				</ul>
+				<p>To ensure code quality, you could install VSCode plugins including</p>
+				<ul>
+					<li>Coverage Gutters 2.4.2, see coverage in editor</li>
+					<li>Jest, run tests in watch mode</li>
+					<li>Prettier - Code formatter, to format code on save</li>
+					<li>TSLint, fix Typescript on save</li>
+				</ul>
+				<p>Git Hooks: The project also uses husky, lint-staged, and prettier to make sure code is formatted and tested before being committed to Git repository. Make sure latest version of npm is used for this work. e.g. nvm use 13.5</p>
+				<ul>
+					<li>pre-commit, compile and format code</li>
+					<li>pre-push, run unit tests</li>
+				</ul>
+				<a href="#using-the-api-in-your-project" id="using-the-api-in-your-project" style="color: inherit; text-decoration: none;">
+					<h2>Using the API in your project</h2>
+				</a>
+				<p>To import API into your project:
+				<code>npm install avaya-cloud-api</code></p>
+				<p>The API is published with type declaration files, once imported, VSCode would assist code completion automatically. To import from the API, do like below:</p>
+				<pre><code><span class="hljs-keyword">import</span> { createAgentClient, createSubscriptionClient} <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;avaya-cloud-api&quot;</span></code></pre>
+				<a href="#api" id="api" style="color: inherit; text-decoration: none;">
+					<h1>API</h1>
+				</a>
+				<a href="#agentclient" id="agentclient" style="color: inherit; text-decoration: none;">
+					<h2>AgentClient</h2>
+				</a>
+				<p>The API provides AgentClient class that could be used to create and delete agents in Avaya system. AgentClient also has method to retrieve a user token for an agent, which is needed to login to Avaya Webphone</p>
+				<pre><code><span class="hljs-comment">// create an instance of AgentClient</span>
+<span class="hljs-keyword">let</span> agentClient = await create<span class="hljs-constructor">AgentClient(<span class="hljs-params">endpoint</span>, <span class="hljs-params">apiKey</span>)</span>;
+
+<span class="hljs-comment">// create Agent and Station</span>
+<span class="hljs-keyword">let</span> response = await agentClient.create<span class="hljs-constructor">AgentAndStation(<span class="hljs-params">agentUsername</span>, <span class="hljs-params">agentPassword</span>)</span>;
+
+<span class="hljs-comment">// retrieve token for agent</span>
+<span class="hljs-keyword">let</span> token = agentClient.get<span class="hljs-constructor">UserToken(<span class="hljs-params">agentUsername</span>)</span></code></pre>
+				<a href="#subscriptionclient" id="subscriptionclient" style="color: inherit; text-decoration: none;">
+					<h2>SubscriptionClient</h2>
+				</a>
+				<p>The API also provides SubscriptionClient to subscribe to sub-account data. Please see sample source code for examples on how to use the API.</p>
+				<pre><code><span class="hljs-comment">// create an instance of SubscriptionClient</span>
+<span class="hljs-keyword">let</span> subscriptionClient = await create<span class="hljs-constructor">SubscriptionClient(<span class="hljs-params">endpoint</span>, <span class="hljs-params">apiKey</span>)</span>;
+<span class="hljs-comment">// an create subscription request payload</span>
+<span class="hljs-keyword">let</span> createSubscriptionRequest = {
+    <span class="hljs-string">&quot;dataSourceType&quot;</span>: DataSourceType.HAgent,
+    <span class="hljs-string">&quot;dataDeliveryFormat&quot;</span>: DataDeliveryFormat.Csv,
+    <span class="hljs-string">&quot;endpoint&quot;</span>: <span class="hljs-string">&quot;https://example.com&quot;</span>,
+    <span class="hljs-string">&quot;retryPolicy&quot;</span>: RetryPolicy.Default,
+    <span class="hljs-string">&quot;basicAuthUsername&quot;</span>: <span class="hljs-string">&quot;avaya&quot;</span>,
+    <span class="hljs-string">&quot;basicAuthPassword&quot;</span>: <span class="hljs-string">&quot;password&quot;</span>,
+    <span class="hljs-string">&quot;frequencyInMinutes&quot;</span>: <span class="hljs-number">0</span>,
+    <span class="hljs-string">&quot;maxPostSize&quot;</span>: <span class="hljs-number">0</span>,
+    <span class="hljs-string">&quot;startTime&quot;</span>: <span class="hljs-string">&quot;2019-11-04T21:55:24.421Z&quot;</span>,
+    <span class="hljs-string">&quot;disableTLSVerify&quot;</span>: <span class="hljs-literal">true</span>,
+    <span class="hljs-string">&quot;subAccountAppId&quot;</span>: <span class="hljs-string">&quot;ALL&quot;</span>,
+    <span class="hljs-string">&quot;eventType&quot;</span>: EventType.Historical
+};
+<span class="hljs-comment">// fire subscription create request</span>
+<span class="hljs-keyword">let</span> response = await subscriptionClient.create<span class="hljs-constructor">Subscription(<span class="hljs-params">createSubscriptionRequest</span>)</span>;
+<span class="hljs-comment">// save subscription id</span>
+<span class="hljs-keyword">let</span> subscriptionId = response.subscriptionId
+<span class="hljs-comment">// delete a subscription</span>
+await subscriptionClient.delete<span class="hljs-constructor">Subscription(<span class="hljs-params">subscriptionId</span>)</span>;</code></pre>
+				<a href="#auxcodeclient" id="auxcodeclient" style="color: inherit; text-decoration: none;">
+					<h2>AUXCodeClient</h2>
+				</a>
+				<p>The AUXCodeClient retrieves sub account aux codes, effective aux code given sub account app id.</p>
+				<pre><code><span class="hljs-comment">// create an instance of AUXCodeClient</span>
+<span class="hljs-keyword">let</span> auxCodeClient = await create<span class="hljs-constructor">AUXCodeClient(<span class="hljs-params">endpoint</span>, <span class="hljs-params">apiKey</span>)</span>;
+<span class="hljs-comment">// get subaccount aux codes</span>
+<span class="hljs-keyword">let</span> auxCodes = await auxCodeClient.get<span class="hljs-constructor">AuxCodes()</span>;
+<span class="hljs-comment">// get subaccount effective aux code via sub account app id</span>
+<span class="hljs-keyword">let</span> appIdAuxCodes = await auxCodeClient.get<span class="hljs-constructor">AUXCodesForEffectiveAppId()</span>;</code></pre>
+				<a href="#samples" id="samples" style="color: inherit; text-decoration: none;">
+					<h1>Samples</h1>
+				</a>
+				<a href="#run-sampleagentclient-to-create-agent-and-station" id="run-sampleagentclient-to-create-agent-and-station" style="color: inherit; text-decoration: none;">
+					<h2>Run SampleAgentclient to create Agent and Station</h2>
+				</a>
+				<p>An agent can receive or make a phone call.
+					This sample client creates an agent, reads it back, and deletes it.
+				The sample will also retrieve a token for an agent and print it out in the console.</p>
+				<p><code>node lib/sample/SampleAgentClient.js --endpoint=&#39;http://localhost:8081&#39; --api_key=YOUR-API-KEY --agent_username=tenfoldagent1 --agent_password=Passw0rd@1</code></p>
+				<a href="#run-samplesubscriptionclient" id="run-samplesubscriptionclient" style="color: inherit; text-decoration: none;">
+					<h2>Run SampleSubscriptionClient</h2>
+				</a>
+				<p>Data subscription allows a user to receive call data on their chosen endpoint.
+					Please look in sampleSubscriptionClient.js for how to create
+					a data subscription object to pass to the server.
+				This sample client creates a subscription, reads it back, and deletes it.</p>
+				<p><code>node lib/sample/SampleSubscriptionClient.js --endpoint=&#39;http://localhost:8081&#39; --api_key=YOUR-API-KEY</code></p>
+				<a href="#run-sampleauxcodeclient" id="run-sampleauxcodeclient" style="color: inherit; text-decoration: none;">
+					<h2>Run SampleAUXCodeClient</h2>
+				</a>
+				<p>AUX Codes (or Auxiliary Codes) are used to track the time an agent has deliberately chosen to not accept calls. This sample client fetches the list of configured AUX Codes.</p>
+				<p><code>node lib/sample/SampleAUXCodeClient.js --endpoint=&#39;http://localhost:8081&#39; --api_key=YOUR-API-KEY</code></p>
+				<a href="#notable-changes" id="notable-changes" style="color: inherit; text-decoration: none;">
+					<h2>Notable Changes:</h2>
+				</a>
+				<a href="#starting-at-version-010-agent-will-be-created-with-default-skill-if-default-skill-is-not-present-it-will-be-created-first" id="starting-at-version-010-agent-will-be-created-with-default-skill-if-default-skill-is-not-present-it-will-be-created-first" style="color: inherit; text-decoration: none;">
+					<h3>Starting at version 0.1.0, Agent will be created with default skill. If default skill is not present, it will be created first.</h3>
+				</a>
+			</div>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="globals.html"><em>Globals</em></a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_auxcodeclient_.html">&quot;AUXCode<wbr>Client&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_agentclient_.html">&quot;<wbr>Agent<wbr>Client&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_constants_.html">&quot;<wbr>Constants&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_restclient_.html">&quot;<wbr>Rest<wbr>Client&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_subscriptionclient_.html">&quot;<wbr>Subscription<wbr>Client&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_utils_.html">&quot;<wbr>Utils&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_index_.html">&quot;index&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_models_skillcreaterequest_.html">&quot;models/<wbr>Skill<wbr>Create<wbr>Request&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_models_skillpriority_.html">&quot;models/<wbr>Skill<wbr>Priority&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_models_subscription_.html">&quot;models/<wbr>Subscription&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_models_index_.html">&quot;models/index&quot;</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
+				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="assets/js/main.js"></script>
+</body>
+</html>

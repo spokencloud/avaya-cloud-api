@@ -44,6 +44,7 @@
     "tsc-watch": "^2.1.2",
     "tslint": "^5.16.0",
     "tslint-config-prettier": "^1.18.0",
-    "typescript": "^3.7.2"
+    "typedoc": "^0.19.2",
+    "typescript": "^3.9.5"
   }
 }
