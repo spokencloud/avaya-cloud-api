@@ -8,6 +8,13 @@ export default {
     }
 }
 
+function addHeader(request) {
+    let authorizationHeader = {
+        'Content-Type': "application/x-www-form-urlencoded"
+    }
+    Object.assign(request, {headers: authorizationHeader})
+}
+
 function httpRequest (method, url, request, config) {
     return axios[method](url, request, config)
         .then(response => {
@@ -19,7 +26,7 @@ function httpRequest (method, url, request, config) {
 }
 
 function setConnected(callDetails, userName) {
-    let callerId = "+1" + callDetails.callerId;
+    let callerId = callDetails.callerId;
     let payload =
         {
             "from": callerId,
@@ -30,5 +37,6 @@ function setConnected(callDetails, userName) {
 }
 
 function post(url, payload, config = {}) {
+    addHeader(config);
     return httpRequest('post', url, payload, config)
 }

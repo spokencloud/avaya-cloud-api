@@ -181,8 +181,8 @@ async function commandToWebPhone(command, value) {
           console.log('callDeliveredSuccess', callDetails)
           console.log('notify cognigy test.js')
           cognigy.notifyCognigy(callDetails);
-          console.log('notify spoken test.js', username)
-          spoken.notifySpoken(callDetails, username);
+          // console.log('notify spoken test.js', username)
+          // spoken.notifySpoken(callDetails, username);
           startCall(callDetails);
           state.pending.outboundCall = false;
           refreshControls();

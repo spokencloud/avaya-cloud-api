@@ -4,8 +4,14 @@ const apiKey = '3082be54832725ce49156dea1bc888dc338382849833b88e864bf78d4bcd25f1
 import axios from 'axios';
 
 function getProfile(callDetails) {
-    const newUurl = cognigyUrl + '?filter=' + callDetails.callerId;
-    return get(newUurl)
+    console.log ("callDetails: ", callDetails);
+
+    let caller = callDetails.callerId.replace("+", "");
+    console.log("caller: ", caller);
+
+    const newUrl = cognigyUrl + '?filter=' + caller;
+    console.log ("new url: ", newUrl);
+    return get(newUrl)
         .then(normalizeProfileResponse)
 
 }
@@ -13,7 +19,7 @@ function normalizeProfileResponse(response) {
     return response;
 }
 function SearchContactId(profiles, callDetails) {
-    let caller = "+1" + callDetails.callerId;
+    let caller = callDetails.callerId;
     let connectedProfileId = "";
     for (let i = 0; i < profiles.items.length; i++) {
         for (let j = 0; j < profiles.items[i].contactIds.length; j++) {
@@ -32,7 +38,8 @@ function get(url, config = {}) {
 function addAuthorizationHeaderByKey(request) {
     let authorizationHeader = {
         'X-API-Key': apiKey,
-        'Accept': 'application/json'
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
     }
     Object.assign(request, {headers: authorizationHeader})
 }
@@ -57,6 +64,7 @@ function setCallConnected(profileId) {
             }
         };
     let url = cognigyUrl + '/' + profileId;
+    console.log('url ', url);
     return patch(url, payload);
 
 }
@@ -71,7 +79,10 @@ export default {
         let connectedProfileId = "";
         getProfile(callDetails)
             .then(profiles => {
+                console.log('SearchContactId called');
+                console.log('profiles: ', profiles);
                 connectedProfileId = SearchContactId(profiles, callDetails);
+                console.log('SearchContactId result', connectedProfileId);
                 setCallConnected(connectedProfileId);
             })
     }
