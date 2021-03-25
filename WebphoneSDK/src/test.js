@@ -99,6 +99,7 @@ async function commandToWebPhone(command, value) {
       const username = value.username
       const password = value.password
       const url = value.url
+      const cburl = value.cburl;
       const authToken = value.authToken;
       if (typeof authToken === 'undefined') {
         sesClient = new SesClient(url, null, null, username, password)
@@ -181,8 +182,8 @@ async function commandToWebPhone(command, value) {
           console.log('callDeliveredSuccess', callDetails)
           console.log('notify cognigy test.js')
           cognigy.notifyCognigy(callDetails);
-          // console.log('notify spoken test.js', username)
-          // spoken.notifySpoken(callDetails, username);
+          console.log('notify spoken test.js', username)
+          spoken.notifySpoken(callDetails, username, cburl);
           startCall(callDetails);
           state.pending.outboundCall = false;
           refreshControls();

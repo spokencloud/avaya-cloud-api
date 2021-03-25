@@ -1,10 +1,10 @@
-const spokenUrl = 'https://mars-omni.bpo.avaya.com/callback/v1/call';
+// const spokenUrl = 'https://mars-omni.bpo.avaya.com/callback/v1/call';
 import axios from 'axios';
 
 export default {
-     notifySpoken(callDetails, userName) {
+     notifySpoken(callDetails, userName, cburl) {
         console.log("notify spoken");
-        setConnected(callDetails, userName);
+        setConnected(callDetails, userName, cburl);
     }
 }
 
@@ -25,7 +25,7 @@ function httpRequest (method, url, request, config) {
         })
 }
 
-function setConnected(callDetails, userName) {
+function setConnected(callDetails, userName, cburl) {
     let callerId = callDetails.callerId;
     let payload =
         {
@@ -33,7 +33,8 @@ function setConnected(callDetails, userName) {
             "callStatus": "connected",
             "agentId": userName
         };
-    return post(spokenUrl, payload);
+    console.log("cb url : ", cburl);
+    return post(cburl, payload);
 }
 
 function post(url, payload, config = {}) {

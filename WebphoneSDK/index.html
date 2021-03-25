@@ -164,6 +164,7 @@
       var url = document.getElementById("eurl").value;
       await actions.commandToWebPhone('initialize', {
         url: url,
+        cburl: document.getElementById("cburl").value,
         username: document.getElementById("user").value,
         password: document.getElementById("password").value
       });
@@ -291,6 +292,14 @@
           <input style="width:100%" type="text" value="wss://moon-ses.bpo.avaya.com/ses/webphone" id="eurl">
         </td>
       </tr>
+        <tr>
+            <td>
+                Call back url
+            </td>
+            <td  colspan = 3>
+                <input style="width:100%" type="text" value="https://mars-omni.bpo.avaya.com/callback/v1/call" id="cburl">
+            </td>
+        </tr>
       <tr>
         <td>
           User Name
