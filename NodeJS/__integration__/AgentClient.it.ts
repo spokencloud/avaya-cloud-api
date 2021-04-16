@@ -15,10 +15,6 @@ describe('AgentClient', () => {
   beforeEach(async () => {
     agentClient = await createAgentClient('http://localhost:8081', token)
   })
-  test('waitForStationDeletion should return true', async () => {
-    const result = await agentClient.waitForStationDeletion('agentNotExists')
-    expect(result).toBeTruthy()
-  })
   test('waitForAgentDeletion should return true', async () => {
     const result = await agentClient.waitForAgentDeletion('agentNotExists')
     expect(result).toBeTruthy()
@@ -52,10 +48,6 @@ describe('AgentClient', () => {
     const exists = await agentClient.existsAgentByUsername('notexistagent')
     expect(exists).toBeFalsy()
   })
-  xtest('existsStationForAgent should return false when agent has no station', async () => {
-    const exists = await agentClient.existsStationForAgent('ddksgy3dnr')
-    expect(exists).toBeFalsy()
-  })
   test('getAgent should return agent if agent exists', async () => {
     const username = 'agent2'
     const agentAndStation = await agentClient.getAgent(username)
@@ -68,12 +60,6 @@ describe('AgentClient', () => {
     expect(agentAndStation).toBeUndefined()
   })
 
-  test('createStationIfNotExists should return true', async () => {
-    const result = await agentClient
-      .createStationIfNotExists('agent2', '2')
-      .catch(error => console.log(error))
-    expect(result).toBeTruthy()
-  }, 60000)
   test('getUserToken should return 400 for admin user', async () => {
     const result = await agentClient.getUserToken('yangadmin1').catch(error => {
       return error.response.status

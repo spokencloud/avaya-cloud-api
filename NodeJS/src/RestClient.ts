@@ -11,7 +11,6 @@
 import { CookieJar } from 'tough-cookie'
 import {
   AGENT_JOB_PATH,
-  DELETE_STATION_PATH,
   EXTENSION_PATH,
   FETCH_AGENT_BY_USERNAME_PATH,
   FETCH_AGENT_ID_PATH,
@@ -26,8 +25,6 @@ import {
   REMOVE_AGENT_PATH,
   SKILLV2_PATH,
   STATION_GROUP_PATH,
-  STATION_JOB_PATH,
-  STATION_ONLY_PATH,
   SUB_ACCOUNT_KEY,
   SUBSCRIPTION_PATH,
   USER_PATH
@@ -162,7 +159,7 @@ export class RestClient {
   }
   /**
    * return true if agent deletion is requested successfully
-   * return fasle otherwise
+   * return false otherwise
    * @param agentUsername
    * @param agentLoginId
    */
@@ -200,40 +197,6 @@ export class RestClient {
   }
 
   /**
-   * returns true if request submitted successfully
-   * returns false otherwise
-   * @param stationId
-   */
-  public requestStationDeletion(stationId: string) {
-    const url = `${this.baseUrl}/${DELETE_STATION_PATH}/${stationId}`
-    const options = this.prepareDeleteOptions(url)
-    return axios(options)
-      .then((response: any) => {
-        return true
-      })
-      .catch((error: any) => {
-        logger.debug(error.response.status)
-        return false
-      })
-  }
-  /**
-   * return station or undefined
-   * @param subAccountId
-   * @param agentUsername
-   */
-  public getStationForAgent(subAccountId: string, agentUsername: string) {
-    const url = `${this.baseUrl}/${STATION_ONLY_PATH}${subAccountId}`
-    const options = this.prepareGetOptions(url)
-    return axios(options)
-      .then((result: { data: any[] }) => {
-        return result.data.find(element => element.username === agentUsername)
-      })
-      .catch((error: any) => {
-        logger.debug(error.response.status)
-        return undefined
-      })
-  }
-  /**
    * return agent or undefined
    * @param loginId
    */
@@ -270,20 +233,7 @@ export class RestClient {
     const url = `${this.baseUrl}/${NUMBER_PATH}/${subAccountId}/type/${type}`
     return this.postToUrl(url)
   }
-  public createStationJob(station: object): Promise<number> {
-    const url = `${this.baseUrl}/${STATION_JOB_PATH}`
-    const options = this.prepareBaseOptions()
-    return axios
-      .post(url, station, options)
-      .then((result: any) => {
-        // logger.debug(result.data)
-        return result
-      })
-      .catch((error: any) => {
-        logger.debug(error.response.status)
-        return -error.response.status
-      })
-  }
+
   public createSkillV2(skill: SkillCreateRequest): Promise<number> {
     const url = `${this.baseUrl}/${SKILLV2_PATH}`
     logger.debug(`createSkillV2 url = ${url}`)

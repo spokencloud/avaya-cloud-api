@@ -22,15 +22,6 @@ describe('AgentClient', () => {
   })
 
   test(
-    'waitForStationDeletion should return true',
-    async () => {
-      const result = await agentClient.waitForStationDeletion('nonExistAgent1')
-      expect(result).toBeTruthy()
-    },
-    testTimeOut
-  )
-
-  test(
     'waitForAgentDeletion should return true',
     async () => {
       const result = await agentClient.waitForAgentDeletion('notexistagent')
@@ -53,10 +44,6 @@ describe('AgentClient', () => {
     testTimeOut
   )
 
-  test('createStationIfNotExists should return true', async () => {
-    const result = await agentClient.createStationIfNotExists('ddksgy3dnr', '2')
-    expect(result).toBeTruthy()
-  })
   test.only(
     'deleteAgent',
     async () => {

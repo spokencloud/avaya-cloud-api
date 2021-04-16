@@ -83,7 +83,6 @@ export class AgentClient {
       skillsWithPriority,
       agentStationGroupId
     )
-    await this.createStationIfNotExists(agentUsername, agentStationGroupId)
 
     return this.getAgentAndStation(agentUsername)
   }
@@ -102,34 +101,6 @@ export class AgentClient {
       this.defaultSkillNumber = skillNumber
       return await this.waitForDefaultSkillCreation(skillNumber)
     }
-  }
-  /**
-   * @protected
-   */
-  public async createStationIfNotExists(
-    agentUsername: string,
-    agentStationGroupId: string
-  ) {
-    const stationExists = await this.existsStationForAgent(agentUsername)
-    if (stationExists) {
-      return Promise.resolve(true)
-    }
-    const stationExtension = await this.restClient.getNextAvailableExtension(
-      this.subAccountId,
-      'STATION'
-    )
-    if (stationExtension < 0) {
-      throw new Error(
-        `subAccount ${this.subAccountId} has no station extensions available`
-      )
-    }
-    await this.sendCreateStationRequest(
-      agentStationGroupId,
-      this.subAccountId,
-      stationExtension,
-      agentUsername
-    )
-    return await this.waitForStationCreation(agentUsername)
   }
   /**
    * @protected
@@ -323,29 +294,6 @@ export class AgentClient {
   /**
    * @protected
    */
-  public sendCreateStationRequest(
-    agentStationGroupId: any,
-    subAccountId: any,
-    stationExtension: { toString: () => any },
-    agentUsername: string
-  ) {
-    const securityCode = this.generateSecurityCode(stationExtension)
-
-    const station = {
-      agentStationGroupId,
-      clientId: subAccountId,
-      extension: stationExtension,
-      name: Constants.STATION_NAME,
-      securityCode,
-      username: agentUsername
-    }
-
-    return this.restClient.createStationJob(station)
-  }
-
-  /**
-   * @protected
-   */
   public async getAgent(agentUsername: string) {
     return this.restClient
       .getAgentByUsername(agentUsername)
@@ -356,19 +304,10 @@ export class AgentClient {
   /**
    * @protected
    */
-  public async getStation(agentUsername: string) {
-    return this.restClient
-      .getStationForAgent(this.subAccountId, agentUsername)
-      .then((response: any) => response)
-      .catch((error: any) => undefined)
-  }
-
-  /**
-   * @protected
-   */
   public async getAgentAndStation(agentUsername: string) {
     const agent = await this.getAgent(agentUsername)
-    const station = await this.getStation(agentUsername)
+    // for backwards-compatibility
+    const station = agent.station
     return { agent: agent || {}, station: station || {} }
   }
 
@@ -401,15 +340,6 @@ export class AgentClient {
       .catch(error => {
         return false
       })
-  }
-
-  /**
-   * @protected
-   */
-  public existsStationForAgent(agentUsername: string) {
-    return this.restClient
-      .getStationForAgent(this.subAccountId, agentUsername)
-      .then((station: any) => station !== undefined)
   }
 
   /**
@@ -460,28 +390,6 @@ export class AgentClient {
   /**
    * @protected
    */
-  public async waitForStationCreation(agentUsername: string) {
-    const callback = () => {
-      return this.existsStationForAgent(agentUsername)
-    }
-    return this.repeat(callback)
-  }
-
-  /**
-   * @protected
-   */
-  public async waitForStationDeletion(agentUsername: string) {
-    const callback = () => {
-      return this.restClient
-        .getStationForAgent(this.subAccountId, agentUsername)
-        .then((station: any) => station === undefined)
-    }
-    return this.repeat(callback)
-  }
-
-  /**
-   * @protected
-   */
   public async waitForDefaultSkillCreation(
     skillNumber: number
   ): Promise<boolean> {
@@ -495,20 +403,6 @@ export class AgentClient {
    * @param agentUsername username of agent
    */
   public async deleteAgentAndStation(agentUsername: string) {
-    const station = await this.restClient.getStationForAgent(
-      this.subAccountId,
-      agentUsername
-    )
-    // station might have been deleted before, so station might be undefined
-    if (station) {
-      await this.restClient.requestStationDeletion(station.id)
-      await this.waitForStationDeletion(agentUsername)
-    } else {
-      logger.debug(
-        'station associated with ' + agentUsername + ' has already been deleted'
-      )
-    }
-
     const agent = await this.getAgent(agentUsername)
     if (!agent) {
       return true
