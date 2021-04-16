@@ -77,20 +77,6 @@ describe('RestClientAgent.ts integration test', () => {
     )
     expect(submitted).toBeFalsy()
   })
-  test('requestStationDeletion should return false if station id not exist', async () => {
-    const stationId = '1'
-    const submitted = await restClient.requestStationDeletion(stationId)
-    expect(submitted).toBeFalsy()
-  })
-  test('getStationForAgent return undefined when not found', async () => {
-    const subAccountId = '1'
-    const username = 'super1'
-    const submitted = await restClient.getStationForAgent(
-      subAccountId,
-      username
-    )
-    expect(submitted).toBeUndefined()
-  })
   test('getAgentByLoginId return undefined when not found', async () => {
     const loginId = 1
     const submitted = await restClient
