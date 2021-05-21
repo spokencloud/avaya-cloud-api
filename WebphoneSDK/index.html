@@ -157,13 +157,13 @@
       }
 
         for(let i = 0; i < state.ivrConversation.length; i++) {
-            console.log('i=' + i);
             const tag = document.createElement("div");
             const msg = state.ivrConversation[i];
             const p = document.createElement("p");
-            console.log(msg.inputText);
-            if (!msg.inputText) {
-                console.log("!msg.inputText so continue...");
+            console.log('msg.inputText=' + msg.inputText);
+            if ( i === 0 && msg.inputText === null) {
+                msg.inputText = 'calling...';
+            } else if (!msg.inputText) {
                 continue;
             }
             const text = document.createTextNode(msg.inputText);
@@ -172,7 +172,6 @@
             const timestamp = document.createTextNode(msg.timestamp);
             t.appendChild(timestamp);
             if (msg.source === 'user') {
-                console.log('source=user');
                 tag.className = 'container darker';
                 const img = document.createElement("img");
                 img.setAttribute('src','https://mars-omni.bpo.avaya.com/avatar/user.jpg');
@@ -185,7 +184,6 @@
                 tag.appendChild(p);
                 tag.appendChild(t);
             } else {
-                console.log('source=bot');
                 tag.className = 'container';
                 const img = document.createElement("img");
                 img.setAttribute('src','https://mars-omni.bpo.avaya.com/avatar/bot.jpg');
