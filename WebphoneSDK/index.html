@@ -161,8 +161,10 @@
             const tag = document.createElement("div");
             const msg = state.ivrConversation[i];
             const p = document.createElement("p");
-            if (i === 0 && msg.inputText === 'null') {
-                msg.inputText = 'calling...';
+            console.log(msg.inputText);
+            if (!msg.inputText) {
+                console.log("!msg.inputText so continue...");
+                continue;
             }
             const text = document.createTextNode(msg.inputText);
             p.appendChild(text);

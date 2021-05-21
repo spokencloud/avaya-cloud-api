@@ -9,8 +9,10 @@ import SipSessionClient from "./services/sip/SipSessionClient"
 import * as Stomp from './stomp.js'
 import { addEventHandler } from './services/common'
 import AudioManager from "./services/AudioManager.js"
+import { getIvrConversation }  from './services/http/cognigy-service';
 
 const SES_HEARTBEAT_INTERVAL_MS = 3000;
+const sessionId = 'CA777c3e320056af1c82e349228beb2bc8';
 
 const state = {
   webphoneInitialized: false,
@@ -445,38 +447,42 @@ function startCall(callDetails) {
   state.callDetails.connectionUid = callDetails.connectionUid;
   state.callDetails.sessionUid = callDetails.sessionUid;
   state.onCall = true;
-  state.ivrConversation = [
-    {
-      "inputText":"null",
-      "source":"user",
-      "timestamp": "2021-05-19T18:20:00.902Z"
-    },
-    {
-      "inputText":"Welcome to Avaya Cloud IVR",
-      "source":"bot",
-      "timestamp": "2021-05-19T18:20:03.332Z"
-    },
-    {
-      "inputText":"Press 1 for Sales, 2 for Support and 3 for Marketing.",
-      "source":"bot",
-      "timestamp": "2021-05-19T18:20:09.944Z"
-    },
-    {
-      "inputText":"support",
-      "source":"user",
-      "timestamp": "2021-05-19T18:20:20.530Z"
-    },
-    {
-      "inputText":"Welcome to the support. I'm transferring you to an available agent.",
-      "source":"bot",
-      "timestamp": "2021-05-19T18:20:20.604Z"
-    }
-  ];
+  getIvrConversation(sessionId,function(data) {
+    state.ivrConversation = data.value;
+    refreshControls();
+    state.ivrConversation = [];
+  });
+  // state.ivrConversation = [
+  //   {
+  //     "inputText":"null",
+  //     "source":"user",
+  //     "timestamp": "2021-05-19T18:20:00.902Z"
+  //   },
+  //   {
+  //     "inputText":"Welcome to Avaya Cloud IVR",
+  //     "source":"bot",
+  //     "timestamp": "2021-05-19T18:20:03.332Z"
+  //   },
+  //   {
+  //     "inputText":"Press 1 for Sales, 2 for Support and 3 for Marketing.",
+  //     "source":"bot",
+  //     "timestamp": "2021-05-19T18:20:09.944Z"
+  //   },
+  //   {
+  //     "inputText":"support",
+  //     "source":"user",
+  //     "timestamp": "2021-05-19T18:20:20.530Z"
+  //   },
+  //   {
+  //     "inputText":"Welcome to the support. I'm transferring you to an available agent.",
+  //     "source":"bot",
+  //     "timestamp": "2021-05-19T18:20:20.604Z"
+  //   }
+  // ];
 
   startCallTimer();
   refreshCallDuration();
   refreshControls();
-  state.ivrConversation = [];
 }
 
 function endCall() {
