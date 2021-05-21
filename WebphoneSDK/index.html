@@ -98,7 +98,8 @@
       document.getElementById("isPendingTransferCall").value = state.pending.transfer;
       document.getElementById("isPendingConsultationCall").value = state.pending.consultationCall;
       document.getElementById("isOnConsultationCall").value = state.onConsultationCall;
-      document.getElementById("skills").value = state.skills;
+      document.getElementById("skills").value = state.callDetails.skillName;
+      document.getElementById("connectionUid").value = state.callDetails.connectionUid;
       document.getElementById("isOnHold").value = state.options.hold;
       document.getElementById("isOnMute").value = state.options.mute;
       if (state.webphoneInitialized === true) {
@@ -154,6 +155,51 @@
       } else {
         document.getElementById("maskButton").value = "Mask";
       }
+
+        for(let i = 0; i < state.ivrConversation.length; i++) {
+            console.log('i=' + i);
+            const tag = document.createElement("div");
+            const msg = state.ivrConversation[i];
+            const p = document.createElement("p");
+            if (i === 0 && msg.inputText === 'null') {
+                msg.inputText = 'calling...';
+            }
+            const text = document.createTextNode(msg.inputText);
+            p.appendChild(text);
+            const t = document.createElement("p");
+            const timestamp = document.createTextNode(msg.timestamp);
+            t.appendChild(timestamp);
+            if (msg.source === 'user') {
+                console.log('source=user');
+                tag.className = 'container darker';
+                const img = document.createElement("img");
+                img.setAttribute('src','https://mars-omni.bpo.avaya.com/avatar/user.jpg');
+                img.setAttribute('alt','Avatar');
+                img.setAttribute('class','left');
+                img.setAttribute('align','left');
+                tag.appendChild(img);
+                p.setAttribute('style','text-align:left');
+                t.setAttribute('style','text-align:left');
+                tag.appendChild(p);
+                tag.appendChild(t);
+            } else {
+                console.log('source=bot');
+                tag.className = 'container';
+                const img = document.createElement("img");
+                img.setAttribute('src','https://mars-omni.bpo.avaya.com/avatar/bot.jpg');
+                img.setAttribute('alt','Avatar');
+                img.setAttribute('class','right');
+                img.setAttribute('align','right');
+                tag.appendChild(img);
+                p.setAttribute('style','text-align:right');
+                t.setAttribute('style','text-align:right');
+                tag.appendChild(p);
+                tag.appendChild(t);
+            }
+            const element = document.getElementById("ivr");
+            element.appendChild(tag);
+        }
+
     }
 
     function refreshCallDuration() {
@@ -288,7 +334,7 @@
           Env
         </td>
         <td  colspan = 3>
-          <input style="width:100%" type="text" value="wss://moon-webphone.bpo.avaya.com:8081/ses/webphone" id="eurl">
+          <input style="width:100%" type="text" value="wss://moon-ses.bpo.avaya.com/ses/webphone" id="eurl">
         </td>
       </tr>
       <tr>
@@ -296,7 +342,7 @@
           User Name
         </td>
         <td>
-          <input type="text" value="web1" id="user">
+          <input type="text" value="agt_sales" id="user">
         </td>
         <td>
           Password
@@ -511,7 +557,26 @@
         <td>
           <input type="text" value="false" id="isOnMergedCall" disabled>
         </td>
+         <td>
+             connectionUid:
+         </td>
+         <td>
+             <input type="text" value="" id="connectionUid" disabled>
+         </td>
      </tr>
     </table>
+    <hr/>
+    <div id="ivr">
+    </div>
+    <style>
+        #ivr {
+            width: 800px;
+            height: 200px;
+            border: 5px solid #E8C48F;
+            padding: 20px;
+            overflow: auto;
+        }
+    </style>
+    <p> IVR Conversation</p>
   </body>
 </html>
