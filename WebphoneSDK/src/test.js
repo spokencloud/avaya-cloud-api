@@ -12,7 +12,7 @@ import AudioManager from "./services/AudioManager.js"
 import { getIvrConversation }  from './services/http/cognigy-service';
 
 const SES_HEARTBEAT_INTERVAL_MS = 3000;
-const sessionId = 'CA777c3e3259fd9ff835e44e4f89390a5a';
+const sessionId = 'CA777c3e3294c431b560694fbf93576904';
 
 const state = {
   webphoneInitialized: false,
