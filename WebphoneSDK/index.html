@@ -159,13 +159,14 @@
         for(let i = 0; i < state.ivrConversation.length; i++) {
             const tag = document.createElement("div");
             const msg = state.ivrConversation[i];
-            const p = document.createElement("p");
-            console.log('msg.inputText=' + msg.inputText);
+            let fontStyle = "p";
             if ( i === 0 && msg.inputText === null) {
-                msg.inputText = 'calling...';
+                msg.inputText = 'calling and connected...';
+                fontStyle = "i";
             } else if (!msg.inputText) {
                 continue;
             }
+            const p = document.createElement(fontStyle);
             const text = document.createTextNode(msg.inputText);
             p.appendChild(text);
             const t = document.createElement("p");
