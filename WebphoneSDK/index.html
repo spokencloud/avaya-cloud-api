@@ -160,7 +160,7 @@
             const tag = document.createElement("div");
             const msg = state.ivrConversation[i];
             let fontStyle = "p";
-            if ( i === 0 && msg.inputText === null) {
+            if ( i === 0 && !msg.inputText) {
                 msg.inputText = 'calling and connected...';
                 fontStyle = "i";
             } else if (!msg.inputText) {

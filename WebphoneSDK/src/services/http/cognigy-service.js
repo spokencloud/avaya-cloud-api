@@ -1,11 +1,19 @@
 //
-const baseUrl = 'https://odata-trial.cognigy.ai/Conversations';
-const apiKey = '34a52236ed7e30643eb70254adbcb4d0f2b127824a0a3f012d5e2d26c83dfab430e68bc3d0ccdda5eceabbc2152b4d03bae540cb088ca254f567f2ea9f9558d8';
+// const baseUrl = 'https://odata-trial.cognigy.ai/Conversations';
+//
+// const baseUrl = 'https://api-trial.cognigy.ai/new/v2.0/conversations';
+// const apiKey = '34a52236ed7e30643eb70254adbcb4d0f2b127824a0a3f012d5e2d26c83dfab430e68bc3d0ccdda5eceabbc2152b4d03bae540cb088ca254f567f2ea9f9558d8';
+const baseUrl = 'https://us-east1.api.aiflow.avayacloud.com/new/v2.0/conversations';
+const apiKey = '3a735b1d4d5716a62973d2fd948a03d4c19235fd07be806b7fce7e082cf0862a0cc05db69c68832544f9bca7dbfddb6478ad800f7efc2e6f3234422b63a003c6';
 const axios = require('axios').default;
 
 export function getIvrConversation(sessionId,callback) {
-    const url = `${baseUrl}/?$filter=sessionId%20eq%20%27${sessionId}%27&$select=source,inputText,timestamp&$orderby=timestamp&apikey=${apiKey}`;
-    axios.get(url)
+    const url = `${baseUrl}/${sessionId}`;
+    axios.get(url, {
+        headers:{
+            'x-api-key': apiKey
+        }
+    })
         .then((response) => {
             callback(response.data);
         }).catch ( (error) => {
@@ -14,9 +22,3 @@ export function getIvrConversation(sessionId,callback) {
         console.log("end of execution");
     });
 }
-
-// const sessionId = 'CA777c3e320056af1c82e349228beb2bc8';
-// getIvrConversation(sessionId,function(data) {
-//         const value = data.value;
-//         console.log(value);
-// });

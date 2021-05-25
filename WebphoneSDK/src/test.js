@@ -12,7 +12,7 @@ import AudioManager from "./services/AudioManager.js"
 import { getIvrConversation }  from './services/http/cognigy-service';
 
 const SES_HEARTBEAT_INTERVAL_MS = 3000;
-const sessionId = 'CA777c3e3294c431b560694fbf93576904';
+const sessionId = 'CA777c3e3246670eb091a24519a65d3cc7';
 
 const state = {
   webphoneInitialized: false,
@@ -448,7 +448,7 @@ function startCall(callDetails) {
   state.callDetails.sessionUid = callDetails.sessionUid;
   state.onCall = true;
   getIvrConversation(sessionId,function(data) {
-    state.ivrConversation = data.value;
+    state.ivrConversation = data.items;
     refreshControls();
     state.ivrConversation = [];
   });
