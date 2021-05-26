@@ -12,10 +12,6 @@ import AudioManager from "./services/AudioManager.js"
 import { getIvrConversation }  from './services/http/cognigy-service';
 
 const SES_HEARTBEAT_INTERVAL_MS = 3000;
-// Cognigy prod east1
-// const sessionId = 'CA777c3e3246670eb091a24519a65d3cc7';
-// Cognigy trial env
-const sessionId = 'CA777c3e3294c431b560694fbf93576904';
 
 const state = {
   webphoneInitialized: false,
@@ -91,6 +87,11 @@ MASK_CALL_RECORDING = 'maskCallRecording';
 
 let sesClient,
 sesHeartbeatInterval;
+const cognigy = {
+      url: "https://api-trial.cognigy.ai/new",
+      apiKey: "34a52236ed7e30643eb70254adbcb4d0f2b127824a0a3f012d5e2d26c83dfab430e68bc3d0ccdda5eceabbc2152b4d03bae540cb088ca254f567f2ea9f9558d8",
+      sessionId: "CA777c3e3294c431b560694fbf93576904"
+};
 
 async function commandToWebPhone(command, value) {
   if (command === INITIALIZED) {
@@ -450,7 +451,7 @@ function startCall(callDetails) {
   state.callDetails.connectionUid = callDetails.connectionUid;
   state.callDetails.sessionUid = callDetails.sessionUid;
   state.onCall = true;
-  getIvrConversation(sessionId,function(data) {
+  getIvrConversation(cognigy,function(data) {
     state.ivrConversation = data.items;
     refreshControls();
     state.ivrConversation = [];
