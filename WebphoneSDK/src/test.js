@@ -87,10 +87,10 @@ MASK_CALL_RECORDING = 'maskCallRecording';
 
 let sesClient,
 sesHeartbeatInterval;
-const cognigy = {
-      url: "https://api-trial.cognigy.ai/new",
-      apiKey: "34a52236ed7e30643eb70254adbcb4d0f2b127824a0a3f012d5e2d26c83dfab430e68bc3d0ccdda5eceabbc2152b4d03bae540cb088ca254f567f2ea9f9558d8",
-      sessionId: "CA777c3e3294c431b560694fbf93576904"
+const cloudivr = {
+      url: "https://mars-omni.bpo.avaya.com",
+      apiKey: "633517168b0ece840cb348057042f0a0c858e57ee93f17d1703e1d7c8bc75f63",
+      connectionUid: "DEF7C18042C37004C2"
 };
 
 async function commandToWebPhone(command, value) {
@@ -451,8 +451,8 @@ function startCall(callDetails) {
   state.callDetails.connectionUid = callDetails.connectionUid;
   state.callDetails.sessionUid = callDetails.sessionUid;
   state.onCall = true;
-  getIvrConversation(cognigy,function(data) {
-    state.ivrConversation = data.items;
+  getIvrConversation(cloudivr,function(data) {
+    state.ivrConversation = data;
     refreshControls();
     state.ivrConversation = [];
   });

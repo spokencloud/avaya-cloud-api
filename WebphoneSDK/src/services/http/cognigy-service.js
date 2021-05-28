@@ -1,10 +1,10 @@
 const axios = require('axios').default;
 
-export function getIvrConversation(cognigy,callback) {
-    const url = `${cognigy.url}/v2.0/conversations/${cognigy.sessionId}`;
+export function getIvrConversation(cloudivr,callback) {
+    const url = `${cloudivr.url}/cloud-ivr/v1/session/${cloudivr.connectionUid}`;
     axios.get(url, {
         headers:{
-            'x-api-key': cognigy.apiKey
+            'x-api-key': cloudivr.apiKey
         }
     })
         .then((response) => {
