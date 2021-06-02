@@ -90,7 +90,7 @@ sesHeartbeatInterval;
 const cloudivr = {
       url: "https://mars-omni.bpo.avaya.com",
       apiKey: "633517168b0ece840cb348057042f0a0c858e57ee93f17d1703e1d7c8bc75f63",
-      connectionUid: "DEF7C18042C37004C2"
+      connectionUid: ""
 };
 
 async function commandToWebPhone(command, value) {
@@ -451,6 +451,7 @@ function startCall(callDetails) {
   state.callDetails.connectionUid = callDetails.connectionUid;
   state.callDetails.sessionUid = callDetails.sessionUid;
   state.onCall = true;
+  cloudivr.connectionUid = callDetails.connectionUid;
   getIvrConversation(cloudivr,function(data) {
     state.ivrConversation = data;
     refreshControls();
