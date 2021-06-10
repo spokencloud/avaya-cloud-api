@@ -129,7 +129,7 @@ export class RestClient {
     const id = await this.getSubAccount().then((response: { id: any }) => {
       return response.id
     })
-    logger.debug(`id is ${id}`)
+    logger.debug(`Sub Account App ID is: ${id}`)
     return id
   }
 
