@@ -9,6 +9,9 @@ describe('AgentClient.ts', () => {
     const restClient: any = RestClient as jest.Mock
     client = new AgentClient('1', 'MYA_MYARec', restClient)
   })
+  test('get SubAccountAppId should return subAccountAppId', async () => {
+    expect(client.SubAccountAppId).toBe('MYA_MYARec')
+  })
   test('createAgentAndStation throws an error given an invalid password', async () => {
     expect.assertions(1)
     await expect(

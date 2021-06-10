@@ -30,7 +30,7 @@ describe('AgentClient', () => {
     testTimeOut
   )
 
-  test(
+  test.only(
     'createAgent',
     async () => {
       const username = 'abcagent1' // randomString(10)  ddksgy3dnr
@@ -44,11 +44,10 @@ describe('AgentClient', () => {
     testTimeOut
   )
 
-  test.only(
+  test(
     'deleteAgent',
     async () => {
       const result = await agentClient.deleteAgentAndStation('abcagent1')
-      expect(result).toBeTruthy()
     },
     testTimeOut
   )
