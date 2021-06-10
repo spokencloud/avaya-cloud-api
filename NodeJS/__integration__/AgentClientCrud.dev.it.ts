@@ -48,6 +48,7 @@ describe('AgentClient', () => {
     'deleteAgent',
     async () => {
       const result = await agentClient.deleteAgentAndStation('abcagent1')
+      expect(result).toBeTruthy()
     },
     testTimeOut
   )
