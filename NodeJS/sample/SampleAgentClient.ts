@@ -55,6 +55,7 @@ async function deleteAgent(agentClient: AgentClient) {
 
 async function main() {
   const agentClient = await createAgentClient(endpoint, apiKey)
+  const subAccountAppId = agentClient.SubAccountAppId
   await createAgent(agentClient)
   await getAgent(agentClient)
   const agentToken = await agentClient.getUserToken(agentUsername)

@@ -46,6 +46,9 @@ The API provides AgentClient class that could be used to create and delete agent
     // retrieve token for agent
     let token = agentClient.getUserToken(agentUsername)
 
+    // get sub account app id
+    const subAccountAppId = agentClient.SubAccountAppId
+
 ## SubscriptionClient
 
 The API also provides SubscriptionClient to subscribe to sub-account data. Please see sample source code for examples on how to use the API.

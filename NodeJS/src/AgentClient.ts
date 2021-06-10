@@ -31,6 +31,9 @@ export class AgentClient {
     )
   }
 
+  public get SubAccountAppId(): string {
+    return this.subAccountAppId
+  }
   /**
    * @protected
    */

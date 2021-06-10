@@ -117,7 +117,6 @@ export class RestClient {
   public getSubAccount() {
     const url = `${this.baseUrl}/${USER_PATH}`
     logger.debug(`getSubAccount url is ${url}`)
-    console.log(`getSubAccount url is ${url}`)
     const options = this.prepareGetOptions(url)
     return axios(options).then((response: { data: { [x: string]: any } }) => {
       let accessibleSubAccounts = response.data.accessibleClients
@@ -130,7 +129,7 @@ export class RestClient {
     const id = await this.getSubAccount().then((response: { id: any }) => {
       return response.id
     })
-    console.log(`id is ${id}`)
+    logger.debug(`Sub Account App ID is: ${id}`)
     return id
   }
 
