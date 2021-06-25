@@ -12,6 +12,7 @@ import { CookieJar } from 'tough-cookie'
 import {
   AGENT_JOB_PATH,
   EXTENSION_PATH,
+  ADDRESS_BOOK_PATH,
   FETCH_AGENT_BY_USERNAME_PATH,
   FETCH_AGENT_ID_PATH,
   FETCH_AUX_CODE_WITH_SUBACCOUNT_APP_ID,
@@ -30,6 +31,9 @@ import {
   USER_PATH
 } from './Constants'
 import { SkillCreateRequest, Subscription } from './models'
+import { JsonDecoder } from 'ts.data.json'
+import object = JsonDecoder.object
+import number = JsonDecoder.number
 export const STATION_GROUP_ID_NOT_EXISTS = -1
 
 const axios = require('axios').default
@@ -388,6 +392,53 @@ export class RestClient {
       return response.data
     })
   }
+
+  public async getAddressBook() {
+    const subAccountAppId = await this.getSubAccountAppId()
+    const url = `${this.baseUrl}/${ADDRESS_BOOK_PATH}/${subAccountAppId}`
+    const options = this.prepareGetOptions(url)
+    return axios(options).then((response: { data: any }) => {
+      return response.data
+    })
+  }
+
+  public async searchContacts(
+    type: string,
+    query: string,
+    orderBy: string,
+    orderDirection: string,
+    page: number,
+    pageSize: number
+  ) {
+    const subAccountAppId = await this.getSubAccountAppId()
+    const url = `${this.baseUrl}/${ADDRESS_BOOK_PATH}/search/${subAccountAppId}`
+    let queryParams = ''
+    if (type !== undefined && type.length > 0) {
+      queryParams = this.appendQueryParam(queryParams, 'type', type)
+    }
+    if (orderBy !== undefined && orderBy.length > 0) {
+      queryParams = this.appendQueryParam(queryParams, 'orderBy', orderBy)
+    }
+    if (orderDirection !== undefined && orderDirection.length > 0) {
+      queryParams = this.appendQueryParam(
+        queryParams,
+        'orderDirection',
+        orderDirection
+      )
+    }
+    if (page !== undefined && page != null) {
+      queryParams = this.appendQueryParam(queryParams, 'page', page)
+    }
+    if (pageSize !== undefined && pageSize != null) {
+      queryParams = this.appendQueryParam(queryParams, 'pageSize', pageSize)
+    }
+    const options = this.prepareGetOptions(url + queryParams)
+
+    return axios(options).then((response: { data: any }) => {
+      return response.data
+    })
+  }
+
   protected postToUrl(url: string): Promise<number> {
     logger.debug(`url=${url}`)
     const options = this.preparePostOptions(url)
@@ -399,5 +450,19 @@ export class RestClient {
         logger.debug(error.response.status)
         return -error.response.status
       })
+  }
+
+  private appendQueryParam(
+    query: string,
+    paramName: string,
+    paramValue: string | number
+  ) {
+    if (query === undefined || query.length === 0) {
+      query = '?'
+    } else {
+      query += '&'
+    }
+    query += paramName + '=' + paramValue
+    return query
   }
 }
