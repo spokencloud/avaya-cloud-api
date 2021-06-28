@@ -34,6 +34,8 @@ import { SkillCreateRequest, Subscription } from './models'
 import { JsonDecoder } from 'ts.data.json'
 import object = JsonDecoder.object
 import number = JsonDecoder.number
+import { AddressBookSearchResponse } from './models/AddressBookSearchResponse'
+import { AddressBookSearchRequest } from './models/AddressBookSearchRequest'
 export const STATION_GROUP_ID_NOT_EXISTS = -1
 
 const axios = require('axios').default
@@ -402,35 +404,41 @@ export class RestClient {
     })
   }
 
-  public async searchContacts(
-    type: string,
-    query: string,
-    orderBy: string,
-    orderDirection: string,
-    page: number,
-    pageSize: number
-  ) {
+  public async searchContacts(request?: AddressBookSearchRequest) {
     const subAccountAppId = await this.getSubAccountAppId()
     const url = `${this.baseUrl}/${ADDRESS_BOOK_PATH}/search/${subAccountAppId}`
     let queryParams = ''
-    if (type !== undefined && type.length > 0) {
-      queryParams = this.appendQueryParam(queryParams, 'type', type)
-    }
-    if (orderBy !== undefined && orderBy.length > 0) {
-      queryParams = this.appendQueryParam(queryParams, 'orderBy', orderBy)
-    }
-    if (orderDirection !== undefined && orderDirection.length > 0) {
-      queryParams = this.appendQueryParam(
-        queryParams,
-        'orderDirection',
-        orderDirection
-      )
-    }
-    if (page !== undefined && page != null) {
-      queryParams = this.appendQueryParam(queryParams, 'page', page)
-    }
-    if (pageSize !== undefined && pageSize != null) {
-      queryParams = this.appendQueryParam(queryParams, 'pageSize', pageSize)
+    if (request !== undefined) {
+      if (request.type) {
+        queryParams = this.appendQueryParam(queryParams, 'type', request.type)
+      }
+      if (request.query) {
+        queryParams = this.appendQueryParam(queryParams, 'query', request.query)
+      }
+      if (request.orderBy) {
+        queryParams = this.appendQueryParam(
+          queryParams,
+          'orderBy',
+          request.orderBy
+        )
+      }
+      if (request.orderDirection) {
+        queryParams = this.appendQueryParam(
+          queryParams,
+          'orderDirection',
+          request.orderDirection
+        )
+      }
+      if (request.page !== undefined) {
+        queryParams = this.appendQueryParam(queryParams, 'page', request.page)
+      }
+      if (request.pageSize !== undefined) {
+        queryParams = this.appendQueryParam(
+          queryParams,
+          'pageSize',
+          request.pageSize
+        )
+      }
     }
     const options = this.prepareGetOptions(url + queryParams)
 

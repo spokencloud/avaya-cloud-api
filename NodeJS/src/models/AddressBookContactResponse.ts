@@ -1,4 +1,4 @@
-export interface AddressBookContactPayload {
+export interface AddressBookContactResponse {
   name: string
   type: string
   virtualExtension: string | null

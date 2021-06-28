@@ -1,8 +1,9 @@
 import { SkillPriority } from './models'
 import { RestClient } from './RestClient'
 import { sleep } from './Utils'
-import { AddressBookPayload } from './models/AddressBookPayload'
-import { AddressBookSearchPayload } from './models/AddressBookSearchPayload'
+import { AddressBookResponse } from './models/AddressBookResponse'
+import { AddressBookSearchRequest } from './models/AddressBookSearchRequest'
+import { AddressBookSearchResponse } from './models/AddressBookSearchResponse'
 
 export class AddressBookClient {
   private restClient: RestClient
@@ -14,52 +15,20 @@ export class AddressBookClient {
   }
 
   /**
-   * @returns AddressBookPayload
-   * {
-   *  addressBookId: number,
-   *  subAccountAppId: string,
-   *  contacts: Array<AddressBookContactPayload>
-   * }
+   * @returns AddressBookResponse with all active contacts for a Sub-account
    */
-  public async getAddressBook(): Promise<AddressBookPayload> {
+  public async getAddressBook(): Promise<AddressBookResponse> {
     return await this.restClient.getAddressBook()
   }
 
   /**
-   * @param type (optional) Contact Type (ACO, Outbound, VDN, Agent, Supervisor)
-   * @param query (optional) text to search (for name and destination properties using partial matching).
-   * Also if query is a valid number, virtualExtension property will also be searched (by comparing values)
-   * @param orderBy (optional, default = name) property to sort by name, type, virtualExtension, destination
-   * @param orderDirection (optional)
-   * @param page (optional)
-   * @param pageSize (optional)
-   *
-   * @returns AddressBookSearchPayload
-   * {
-   *  content: Array<AddressBookContactPayload>,
-   *  totalPages: number,
-   *  totalElements: number,
-   *  number: number,
-   *  numberOfElements: number,
-   *  size: number
-   * }
+   * @param AddressBookSearchRequest (optional) search params: type, query, orderBy, orderDirection, page, pageSize
+   * @returns AddressBookSearchResponse with active contacts for a Sub-account according to query params
    */
   public async searchContacts(
-    type: string,
-    query: string,
-    orderBy: string,
-    orderDirection: string,
-    page: number,
-    pageSize: number
-  ): Promise<AddressBookSearchPayload> {
-    return await this.restClient.searchContacts(
-      type,
-      query,
-      orderBy,
-      orderDirection,
-      page,
-      pageSize
-    )
+    request?: AddressBookSearchRequest
+  ): Promise<AddressBookSearchResponse> {
+    return await this.restClient.searchContacts(request)
   }
 }
 

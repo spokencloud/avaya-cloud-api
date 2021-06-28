@@ -13,7 +13,6 @@ describe('SubscriptionClient.ts', () => {
     user: 'sdetSubAccAdmin',
     token:
       'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzZGV0U3ViQWNjQWRtaW4iLCJpc3MiOiJBQkNfU0VDVVJJVFlfR0FURVdBWSJ9.0HacDx5e1mS9uFmZzrQ8MG8qYp_w27VbsY_z07Tw45w',
-    // url: 'http://localhost:8081',
     url: 'https://integration.bpo.avaya.com',
     subAccountAppId: 'SDE_SDBRec'
   }
@@ -35,37 +34,42 @@ describe('SubscriptionClient.ts', () => {
   }, 3000)
 
   test('searchContacts w/o query params should return AddressBookSearchPayload with all active contacts', async () => {
-    const addressBookSearchPayload = await addressBookClient.searchContacts(
-      '',
-      '',
-      '',
-      '',
-      0,
-      10
-    )
-    console.log('GET searchContacts ', addressBookSearchPayload)
-    expect(addressBookSearchPayload).toBeDefined()
-    expect(addressBookSearchPayload.content.length).toBeGreaterThan(0)
-    expect(addressBookSearchPayload.number).toEqual(0)
-    expect(addressBookSearchPayload.totalPages).toBeGreaterThan(0)
+    const addressBookSearchResponse = await addressBookClient.searchContacts()
+    console.log('GET searchContacts ', addressBookSearchResponse)
+    expect(addressBookSearchResponse).toBeDefined()
+    expect(addressBookSearchResponse.content.length).toBeGreaterThan(0)
+    expect(addressBookSearchResponse.number).toEqual(0)
+    expect(addressBookSearchResponse.totalPages).toBeGreaterThan(0)
   }, 3000)
 
   test('searchContacts of ACO type should return AddressBookSearchPayload with active ACO contacts', async () => {
-    const addressBookSearchPayload = await addressBookClient.searchContacts(
-      'ACO',
-      '',
-      '',
-      '',
-      0,
-      10
+    const request = { type: 'ACO' }
+    const addressBookSearchResponse = await addressBookClient.searchContacts(
+      request
     )
-    console.log('GET searchContacts ', addressBookSearchPayload)
-    expect(addressBookSearchPayload).toBeDefined()
-    expect(addressBookSearchPayload.content.length).toBeGreaterThan(0)
-    expect(addressBookSearchPayload.number).toEqual(0)
-    expect(addressBookSearchPayload.totalPages).toBeGreaterThan(0)
-    for (const contact of addressBookSearchPayload.content) {
+    console.log('GET searchContacts ', addressBookSearchResponse)
+    expect(addressBookSearchResponse).toBeDefined()
+    expect(addressBookSearchResponse.content.length).toBeGreaterThan(0)
+    expect(addressBookSearchResponse.number).toEqual(0)
+    expect(addressBookSearchResponse.totalPages).toBeGreaterThan(0)
+    for (const contact of addressBookSearchResponse.content) {
       expect(contact.type).toEqual('ACO')
+    }
+  }, 3000)
+
+  test('searchContacts using query should return AddressBookSearchPayload with corresponding contacts', async () => {
+    const request = { query: 'agent' }
+    const addressBookSearchResponse = await addressBookClient.searchContacts(
+      request
+    )
+    console.log('GET searchContacts ', addressBookSearchResponse)
+    expect(addressBookSearchResponse).toBeDefined()
+    expect(addressBookSearchResponse.content.length).toBeGreaterThan(0)
+    expect(addressBookSearchResponse.number).toEqual(0)
+    expect(addressBookSearchResponse.totalPages).toBeGreaterThan(0)
+    for (const contact of addressBookSearchResponse.content) {
+      expect(contact.name).toContain('agent')
+      console.log(contact.name)
     }
   }, 3000)
 })
