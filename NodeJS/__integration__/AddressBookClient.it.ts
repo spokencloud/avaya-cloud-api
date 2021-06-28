@@ -33,7 +33,7 @@ describe('SubscriptionClient.ts', () => {
     expect(addressBookPayload.contacts.length).toBeGreaterThan(0)
   }, 3000)
 
-  test('searchContacts w/o query params should return AddressBookSearchPayload with all active contacts', async () => {
+  test('searchContacts w/o query params should return all active contacts', async () => {
     const addressBookSearchResponse = await addressBookClient.searchContacts()
     console.log('GET searchContacts ', addressBookSearchResponse)
     expect(addressBookSearchResponse).toBeDefined()
@@ -42,10 +42,10 @@ describe('SubscriptionClient.ts', () => {
     expect(addressBookSearchResponse.totalPages).toBeGreaterThan(0)
   }, 3000)
 
-  test('searchContacts of ACO type should return AddressBookSearchPayload with active ACO contacts', async () => {
-    const request = { type: 'ACO' }
+  test('searchContacts of ACO type should return active ACO contacts', async () => {
+    const searchRequest = { type: 'ACO' }
     const addressBookSearchResponse = await addressBookClient.searchContacts(
-      request
+      searchRequest
     )
     console.log('GET searchContacts ', addressBookSearchResponse)
     expect(addressBookSearchResponse).toBeDefined()
@@ -57,10 +57,10 @@ describe('SubscriptionClient.ts', () => {
     }
   }, 3000)
 
-  test('searchContacts using query should return AddressBookSearchPayload with corresponding contacts', async () => {
-    const request = { query: 'agent' }
+  test('searchContacts using query should return corresponding contacts', async () => {
+    const searchRequest = { query: 'agent' }
     const addressBookSearchResponse = await addressBookClient.searchContacts(
-      request
+      searchRequest
     )
     console.log('GET searchContacts ', addressBookSearchResponse)
     expect(addressBookSearchResponse).toBeDefined()
@@ -71,5 +71,41 @@ describe('SubscriptionClient.ts', () => {
       expect(contact.name).toContain('agent')
       console.log(contact.name)
     }
+  }, 3000)
+
+  test('searchContacts sorted by should return all active contacts in expected order', async () => {
+    const searchRequest = { orderBy: 'name', orderDirection: 'DESC' }
+    const addressBookSearchResponse = await addressBookClient.searchContacts(
+      searchRequest
+    )
+    console.log('GET searchContacts ', addressBookSearchResponse)
+    expect(addressBookSearchResponse).toBeDefined()
+    expect(addressBookSearchResponse.content.length).toBeGreaterThan(0)
+    expect(addressBookSearchResponse.number).toEqual(0)
+    expect(addressBookSearchResponse.totalPages).toBeGreaterThan(0)
+    // Collect all contact names and sort in expected order
+    const names: string[] = []
+    let i = 0
+    for (const contact of addressBookSearchResponse.content) {
+      names[i++] = contact.name
+    }
+    names.sort()
+    names.reverse()
+    let j = 0
+    for (const contact of addressBookSearchResponse.content) {
+      expect(contact.name).toEqual(names[j++])
+    }
+  }, 3000)
+
+  test('searchContacts with page number/size query should return corresponding page', async () => {
+    const searchRequest = { page: 2, pageSize: 2 }
+    const addressBookSearchResponse = await addressBookClient.searchContacts(
+      searchRequest
+    )
+    console.log('GET searchContacts ', addressBookSearchResponse)
+    expect(addressBookSearchResponse).toBeDefined()
+    expect(addressBookSearchResponse.content.length).toBeGreaterThan(0)
+    expect(addressBookSearchResponse.number).toEqual(2)
+    expect(addressBookSearchResponse.totalPages).toBeGreaterThan(2)
   }, 3000)
 })

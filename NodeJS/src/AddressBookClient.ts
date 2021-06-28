@@ -22,8 +22,8 @@ export class AddressBookClient {
   }
 
   /**
-   * @param AddressBookSearchRequest (optional) search params: type, query, orderBy, orderDirection, page, pageSize
-   * @returns AddressBookSearchResponse with active contacts for a Sub-account according to query params
+   * @param AddressBookSearchRequest (optional) search by type, query, orderBy, orderDirection, page, pageSize
+   * @returns AddressBookSearchResponse with active contacts for a Sub-account according to search params
    */
   public async searchContacts(
     request?: AddressBookSearchRequest
