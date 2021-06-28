@@ -10,9 +10,9 @@
 
 import { CookieJar } from 'tough-cookie'
 import {
+  ADDRESS_BOOK_PATH,
   AGENT_JOB_PATH,
   EXTENSION_PATH,
-  ADDRESS_BOOK_PATH,
   FETCH_AGENT_BY_USERNAME_PATH,
   FETCH_AGENT_ID_PATH,
   FETCH_AUX_CODE_WITH_SUBACCOUNT_APP_ID,
@@ -31,11 +31,8 @@ import {
   USER_PATH
 } from './Constants'
 import { SkillCreateRequest, Subscription } from './models'
-import { JsonDecoder } from 'ts.data.json'
-import object = JsonDecoder.object
-import number = JsonDecoder.number
-import { AddressBookSearchResponse } from './models/AddressBookSearchResponse'
-import { AddressBookSearchRequest } from './models/AddressBookSearchRequest'
+import { AddressBookSearchRequest } from './models'
+
 export const STATION_GROUP_ID_NOT_EXISTS = -1
 
 const axios = require('axios').default
@@ -86,7 +83,7 @@ export class RestClient {
     const credential = { token: userToken, cookieJar: new CookieJar() }
     this.credentials.set(username, credential)
   }
-  public async getAndStoreUserStoken(username: string) {
+  public async getAndStoreUserToken(username: string) {
     const userToken = await this.getUserToken(username)
     logger.debug(`storing token for ${username}`)
     this.storeUserToken(username, userToken)
@@ -404,42 +401,11 @@ export class RestClient {
     })
   }
 
-  public async searchContacts(request?: AddressBookSearchRequest) {
+  public async searchContacts(searchRequest?: AddressBookSearchRequest) {
     const subAccountAppId = await this.getSubAccountAppId()
     const url = `${this.baseUrl}/${ADDRESS_BOOK_PATH}/search/${subAccountAppId}`
-    let queryParams = ''
-    if (request !== undefined) {
-      if (request.type) {
-        queryParams = this.appendQueryParam(queryParams, 'type', request.type)
-      }
-      if (request.query) {
-        queryParams = this.appendQueryParam(queryParams, 'query', request.query)
-      }
-      if (request.orderBy) {
-        queryParams = this.appendQueryParam(
-          queryParams,
-          'orderBy',
-          request.orderBy
-        )
-      }
-      if (request.orderDirection) {
-        queryParams = this.appendQueryParam(
-          queryParams,
-          'orderDirection',
-          request.orderDirection
-        )
-      }
-      if (request.page !== undefined) {
-        queryParams = this.appendQueryParam(queryParams, 'page', request.page)
-      }
-      if (request.pageSize !== undefined) {
-        queryParams = this.appendQueryParam(
-          queryParams,
-          'pageSize',
-          request.pageSize
-        )
-      }
-    }
+    const queryParams =
+      searchRequest !== undefined ? this.buildQueryParams(searchRequest) : ''
     const options = this.prepareGetOptions(url + queryParams)
 
     return axios(options).then((response: { data: any }) => {
@@ -460,17 +426,47 @@ export class RestClient {
       })
   }
 
+  private buildQueryParams(request: AddressBookSearchRequest) {
+    let queryParams = ''
+    if (request.type) {
+      queryParams = this.appendQueryParam(queryParams, 'type', request.type)
+    }
+    if (request.query) {
+      queryParams = this.appendQueryParam(queryParams, 'query', request.query)
+    }
+    if (request.orderBy) {
+      queryParams = this.appendQueryParam(
+        queryParams,
+        'orderBy',
+        request.orderBy
+      )
+    }
+    if (request.orderDirection) {
+      queryParams = this.appendQueryParam(
+        queryParams,
+        'orderDirection',
+        request.orderDirection
+      )
+    }
+    if (request.page !== undefined) {
+      queryParams = this.appendQueryParam(queryParams, 'page', request.page)
+    }
+    if (request.pageSize !== undefined) {
+      queryParams = this.appendQueryParam(
+        queryParams,
+        'pageSize',
+        request.pageSize
+      )
+    }
+    return queryParams
+  }
+
   private appendQueryParam(
     query: string,
     paramName: string,
     paramValue: string | number
   ) {
-    if (!query) {
-      query = '?'
-    } else {
-      query += '&'
-    }
-    query += paramName + '=' + paramValue
-    return query
+    const connectorCharacter = !query ? '?' : '&'
+    return `${query}${connectorCharacter}${paramName}=${paramValue}`
   }
 }

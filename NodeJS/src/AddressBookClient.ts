@@ -1,17 +1,13 @@
-import { SkillPriority } from './models'
+import { AddressBookResponse } from './models'
+import { AddressBookSearchRequest } from './models'
+import { AddressBookSearchResponse } from './models'
 import { RestClient } from './RestClient'
-import { sleep } from './Utils'
-import { AddressBookResponse } from './models/AddressBookResponse'
-import { AddressBookSearchRequest } from './models/AddressBookSearchRequest'
-import { AddressBookSearchResponse } from './models/AddressBookSearchResponse'
 
 export class AddressBookClient {
   private restClient: RestClient
-  private subAccountId: string
 
-  constructor(subAccountId: string, restClient: RestClient) {
-    this.restClient = restClient
-    this.subAccountId = subAccountId
+  constructor(endpoint: string, apiKey: string) {
+    this.restClient = new RestClient(endpoint, apiKey)
   }
 
   /**
@@ -32,15 +28,9 @@ export class AddressBookClient {
   }
 }
 
-async function createInstance(restClient: RestClient) {
-  const subAccountId = await restClient.getSubAccountId()
-  return new AddressBookClient(subAccountId, restClient)
-}
-
-export async function createAddressBookClient(
+export function createAddressBookClient(
   endpoint: string,
   apiKey: string
-): Promise<AddressBookClient> {
-  const restClient = new RestClient(endpoint, apiKey)
-  return await createInstance(restClient)
+): AddressBookClient {
+  return new AddressBookClient(endpoint, apiKey)
 }

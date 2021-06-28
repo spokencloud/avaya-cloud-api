@@ -1,7 +1,4 @@
-import {
-  AddressBookClient,
-  createAddressBookClient
-} from '../src/AddressBookClient'
+import { AddressBookClient, createAddressBookClient } from '../src'
 import { log4js } from '../src/Constants'
 
 const rootLogger = log4js.getLogger()
@@ -21,91 +18,88 @@ describe('SubscriptionClient.ts', () => {
 
   let addressBookClient: AddressBookClient
   beforeEach(async () => {
-    addressBookClient = await createAddressBookClient(url, token)
+    addressBookClient = createAddressBookClient(url, token)
   })
 
-  test('getAddressBook should return AddressBookPayload with active contacts', async () => {
+  test('getAddressBook should return AddressBookPayload with contacts', async () => {
     const addressBookPayload = await addressBookClient.getAddressBook()
-    console.log('GET addressBook ', addressBookPayload)
+    console.debug('GET addressBook ', addressBookPayload)
     expect(addressBookPayload).toBeDefined()
     expect(addressBookPayload.addressBookId).toBeDefined()
     expect(addressBookPayload.subAccountAppId).toEqual(subAccountAppId)
     expect(addressBookPayload.contacts.length).toBeGreaterThan(0)
   }, 3000)
 
-  test('searchContacts w/o query params should return all active contacts', async () => {
+  test('searchContacts does not require parameters', async () => {
     const addressBookSearchResponse = await addressBookClient.searchContacts()
-    console.log('GET searchContacts ', addressBookSearchResponse)
+    console.debug('GET searchContacts ', addressBookSearchResponse)
     expect(addressBookSearchResponse).toBeDefined()
     expect(addressBookSearchResponse.content.length).toBeGreaterThan(0)
     expect(addressBookSearchResponse.number).toEqual(0)
     expect(addressBookSearchResponse.totalPages).toBeGreaterThan(0)
   }, 3000)
 
-  test('searchContacts of ACO type should return active ACO contacts', async () => {
+  test('searchContacts of ACO type should return only ACO contacts', async () => {
     const searchRequest = { type: 'ACO' }
     const addressBookSearchResponse = await addressBookClient.searchContacts(
       searchRequest
     )
-    console.log('GET searchContacts ', addressBookSearchResponse)
+    console.debug('GET searchContacts ', addressBookSearchResponse)
     expect(addressBookSearchResponse).toBeDefined()
     expect(addressBookSearchResponse.content.length).toBeGreaterThan(0)
     expect(addressBookSearchResponse.number).toEqual(0)
     expect(addressBookSearchResponse.totalPages).toBeGreaterThan(0)
-    for (const contact of addressBookSearchResponse.content) {
+    addressBookSearchResponse.content.forEach(contact =>
       expect(contact.type).toEqual('ACO')
-    }
+    )
   }, 3000)
 
-  test('searchContacts using query should return corresponding contacts', async () => {
-    const searchRequest = { query: 'agent' }
+  test('searchContacts by partial name should return corresponding contacts', async () => {
+    const searchRequest = { query: 'sdetAg' }
     const addressBookSearchResponse = await addressBookClient.searchContacts(
       searchRequest
     )
-    console.log('GET searchContacts ', addressBookSearchResponse)
+    console.debug('GET searchContacts ', addressBookSearchResponse)
     expect(addressBookSearchResponse).toBeDefined()
     expect(addressBookSearchResponse.content.length).toBeGreaterThan(0)
     expect(addressBookSearchResponse.number).toEqual(0)
     expect(addressBookSearchResponse.totalPages).toBeGreaterThan(0)
-    for (const contact of addressBookSearchResponse.content) {
-      expect(contact.name).toContain('agent')
-      console.log(contact.name)
-    }
+    addressBookSearchResponse.content.forEach(contact =>
+      expect(contact.name).toContain('sdetAg')
+    )
   }, 3000)
 
-  test('searchContacts sorted by should return all active contacts in expected order', async () => {
+  test('searchContacts sorted by name in DESC order should return all contacts in expected order', async () => {
     const searchRequest = { orderBy: 'name', orderDirection: 'DESC' }
     const addressBookSearchResponse = await addressBookClient.searchContacts(
       searchRequest
     )
-    console.log('GET searchContacts ', addressBookSearchResponse)
+    console.debug('GET searchContacts ', addressBookSearchResponse)
     expect(addressBookSearchResponse).toBeDefined()
     expect(addressBookSearchResponse.content.length).toBeGreaterThan(0)
     expect(addressBookSearchResponse.number).toEqual(0)
     expect(addressBookSearchResponse.totalPages).toBeGreaterThan(0)
-    // Collect all contact names and sort in expected order
-    const names: string[] = []
+    // Collect all contact names and sort in expected (Descending) order
+    const names = addressBookSearchResponse.content
+      .map(contact => contact.name)
+      .sort()
+      .reverse()
+    // Validate response contacts are sorted in expected order
     let i = 0
-    for (const contact of addressBookSearchResponse.content) {
-      names[i++] = contact.name
-    }
-    names.sort()
-    names.reverse()
-    let j = 0
-    for (const contact of addressBookSearchResponse.content) {
-      expect(contact.name).toEqual(names[j++])
-    }
+    addressBookSearchResponse.content.forEach(contact => {
+      expect(contact.name).toEqual(names[i++])
+    })
   }, 3000)
 
-  test('searchContacts with page number/size query should return corresponding page', async () => {
+  test('searchContacts with page number/size query should return requested page number and size', async () => {
     const searchRequest = { page: 2, pageSize: 2 }
     const addressBookSearchResponse = await addressBookClient.searchContacts(
       searchRequest
     )
-    console.log('GET searchContacts ', addressBookSearchResponse)
+    console.debug('GET searchContacts ', addressBookSearchResponse)
     expect(addressBookSearchResponse).toBeDefined()
     expect(addressBookSearchResponse.content.length).toBeGreaterThan(0)
     expect(addressBookSearchResponse.number).toEqual(2)
-    expect(addressBookSearchResponse.totalPages).toBeGreaterThan(2)
+    expect(addressBookSearchResponse.size).toEqual(2)
   }, 3000)
 })
