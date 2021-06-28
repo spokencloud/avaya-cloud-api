@@ -465,7 +465,7 @@ export class RestClient {
     paramName: string,
     paramValue: string | number
   ) {
-    if (query === undefined || query.length === 0) {
+    if (!query) {
       query = '?'
     } else {
       query += '&'
