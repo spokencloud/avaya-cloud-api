@@ -2,7 +2,7 @@ import {
   AddressBookSearchRequest,
   appendQueryParam,
   buildQueryParams
-} from '../src/models/AddressBookTypes'
+} from '../src'
 
 describe('AddressBookTypes.ts tests', () => {
   test('appendQueryParam for an empty query should return string starts with a question mark', () => {
