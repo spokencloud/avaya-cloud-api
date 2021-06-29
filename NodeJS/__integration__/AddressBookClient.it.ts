@@ -5,7 +5,7 @@ const rootLogger = log4js.getLogger()
 rootLogger.level = 'debug'
 rootLogger.debug('Starting AddressBookClient Integration Test')
 
-describe('SubscriptionClient.ts', () => {
+describe('AddressBookClient.ts', () => {
   const localEnv = {
     user: 'sdetSubAccAdmin',
     token:
