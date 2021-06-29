@@ -31,7 +31,7 @@ import {
   USER_PATH
 } from './Constants'
 import { SkillCreateRequest, Subscription } from './models'
-import { AddressBookSearchRequest } from './models'
+import { AddressBookSearchRequest, buildQueryParams } from './models'
 
 export const STATION_GROUP_ID_NOT_EXISTS = -1
 
@@ -404,8 +404,7 @@ export class RestClient {
   public async searchContacts(searchRequest?: AddressBookSearchRequest) {
     const subAccountAppId = await this.getSubAccountAppId()
     const url = `${this.baseUrl}/${ADDRESS_BOOK_PATH}/search/${subAccountAppId}`
-    const queryParams =
-      searchRequest !== undefined ? this.buildQueryParams(searchRequest) : ''
+    const queryParams = buildQueryParams(searchRequest)
     const options = this.prepareGetOptions(url + queryParams)
 
     return axios(options).then((response: { data: any }) => {
@@ -424,49 +423,5 @@ export class RestClient {
         logger.debug(error.response.status)
         return -error.response.status
       })
-  }
-
-  private buildQueryParams(request: AddressBookSearchRequest) {
-    let queryParams = ''
-    if (request.type) {
-      queryParams = this.appendQueryParam(queryParams, 'type', request.type)
-    }
-    if (request.query) {
-      queryParams = this.appendQueryParam(queryParams, 'query', request.query)
-    }
-    if (request.orderBy) {
-      queryParams = this.appendQueryParam(
-        queryParams,
-        'orderBy',
-        request.orderBy
-      )
-    }
-    if (request.orderDirection) {
-      queryParams = this.appendQueryParam(
-        queryParams,
-        'orderDirection',
-        request.orderDirection
-      )
-    }
-    if (request.page !== undefined) {
-      queryParams = this.appendQueryParam(queryParams, 'page', request.page)
-    }
-    if (request.pageSize !== undefined) {
-      queryParams = this.appendQueryParam(
-        queryParams,
-        'pageSize',
-        request.pageSize
-      )
-    }
-    return queryParams
-  }
-
-  private appendQueryParam(
-    query: string,
-    paramName: string,
-    paramValue: string | number
-  ) {
-    const connectorCharacter = !query ? '?' : '&'
-    return `${query}${connectorCharacter}${paramName}=${paramValue}`
   }
 }

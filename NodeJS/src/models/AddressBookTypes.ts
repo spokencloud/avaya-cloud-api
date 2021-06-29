@@ -29,3 +29,42 @@ export interface AddressBookSearchResponse {
   numberOfElements: number
   size: number
 }
+
+export function buildQueryParams(request?: AddressBookSearchRequest) {
+  if (request === undefined) {
+    return ''
+  }
+  let queryParams = ''
+  if (request.type) {
+    queryParams = appendQueryParam(queryParams, 'type', request.type)
+  }
+  if (request.query) {
+    queryParams = appendQueryParam(queryParams, 'query', request.query)
+  }
+  if (request.orderBy) {
+    queryParams = appendQueryParam(queryParams, 'orderBy', request.orderBy)
+  }
+  if (request.orderDirection) {
+    queryParams = appendQueryParam(
+      queryParams,
+      'orderDirection',
+      request.orderDirection
+    )
+  }
+  if (request.page !== undefined) {
+    queryParams = appendQueryParam(queryParams, 'page', request.page)
+  }
+  if (request.pageSize !== undefined) {
+    queryParams = appendQueryParam(queryParams, 'pageSize', request.pageSize)
+  }
+  return queryParams
+}
+
+export function appendQueryParam(
+  query: string,
+  paramName: string,
+  paramValue: string | number
+) {
+  const connectorCharacter = query ? '&' : '?'
+  return `${query}${connectorCharacter}${paramName}=${paramValue}`
+}
