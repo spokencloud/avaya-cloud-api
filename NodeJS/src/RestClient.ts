@@ -10,6 +10,7 @@
 
 import { CookieJar } from 'tough-cookie'
 import {
+  ADDRESS_BOOK_PATH,
   AGENT_JOB_PATH,
   EXTENSION_PATH,
   FETCH_AGENT_BY_USERNAME_PATH,
@@ -30,6 +31,8 @@ import {
   USER_PATH
 } from './Constants'
 import { SkillCreateRequest, Subscription } from './models'
+import { AddressBookSearchRequest, buildQueryParams } from './models'
+
 export const STATION_GROUP_ID_NOT_EXISTS = -1
 
 const axios = require('axios').default
@@ -80,7 +83,7 @@ export class RestClient {
     const credential = { token: userToken, cookieJar: new CookieJar() }
     this.credentials.set(username, credential)
   }
-  public async getAndStoreUserStoken(username: string) {
+  public async getAndStoreUserToken(username: string) {
     const userToken = await this.getUserToken(username)
     logger.debug(`storing token for ${username}`)
     this.storeUserToken(username, userToken)
@@ -388,6 +391,27 @@ export class RestClient {
       return response.data
     })
   }
+
+  public async getAddressBook() {
+    const subAccountAppId = await this.getSubAccountAppId()
+    const url = `${this.baseUrl}/${ADDRESS_BOOK_PATH}/${subAccountAppId}`
+    const options = this.prepareGetOptions(url)
+    return axios(options).then((response: { data: any }) => {
+      return response.data
+    })
+  }
+
+  public async searchContacts(searchRequest?: AddressBookSearchRequest) {
+    const subAccountAppId = await this.getSubAccountAppId()
+    const url = `${this.baseUrl}/${ADDRESS_BOOK_PATH}/search/${subAccountAppId}`
+    const queryParams = buildQueryParams(searchRequest)
+    const options = this.prepareGetOptions(url + queryParams)
+
+    return axios(options).then((response: { data: any }) => {
+      return response.data
+    })
+  }
+
   protected postToUrl(url: string): Promise<number> {
     logger.debug(`url=${url}`)
     const options = this.preparePostOptions(url)

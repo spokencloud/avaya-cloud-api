@@ -22,7 +22,7 @@ describe('RestClientAgent.ts integration test', () => {
     expect(userToken).toEqual(token)
   })
   test('getAndStoreUserStoken should store user token', async () => {
-    await restClient.getAndStoreUserStoken('yangadmin1')
+    await restClient.getAndStoreUserToken('yangadmin1')
     expect(restClient.credentials.has('yangadmin1')).toBeTruthy()
     const { token: userToken } = restClient.credentials.get('yangadmin1') || {
       token: ''

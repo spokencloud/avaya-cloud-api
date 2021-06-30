@@ -1,3 +1,4 @@
+export * from './AddressBookClient'
 export * from './AgentClient'
 export * from './SubscriptionClient'
 export * from './AUXCodeClient'

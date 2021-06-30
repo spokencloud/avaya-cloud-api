@@ -57,3 +57,6 @@ export const FETCH_AUX_CODE_WITH_SUBACCOUNT_APP_ID = 'auxCodes/effective-appId'
 export const DEFAULT_SKILL_NAME = 'DEFAULT_SKILL'
 export const DEFAULT_SKILL_PRIORITY = 3
 export const SKILL_TYPE_AGENT = 'AGENT'
+
+// AC/AddressBookController URI
+export const ADDRESS_BOOK_PATH = 'spokenAbc/contact/v1/addressBook/'
