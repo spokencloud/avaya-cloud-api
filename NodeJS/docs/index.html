@@ -162,7 +162,7 @@ await subscriptionClient.delete<span class="hljs-constructor">Subscription(<span
 					With search endpoint contacts could be fetched by multiple optional params: type (one or many of Agent/Supervisor/Outbound/ACO/VDN separated by comma); partial name/destination; full virtualExtension.
 				The search request could contain pagination (pageSize; page number) and sorting (by name/type/virtualExtension/destination; direction ASC/DESC) params.</p>
 				<pre><code><span class="hljs-comment">// create an instance of AddressBookClient</span>
-<span class="hljs-keyword">let</span> addressBookClient = createAddressBookClient(endpoint, apiKey)
+<span class="hljs-keyword">const</span> addressBookClient = createAddressBookClient(endpoint, apiKey)
 <span class="hljs-comment">// get Address Book</span>
 <span class="hljs-keyword">const</span> addressBookResponse = <span class="hljs-keyword">await</span> addressBookClient.getAddressBook()
 <span class="hljs-comment">// search contacts w/o query params</span>
