@@ -143,7 +143,10 @@ AUX Codes (or Auxiliary Codes) are used to track the time an agent has deliberat
 
 ## Run SampleAddressBookClient
 
-Address Book contains contacts of different types Agent/Supervisor/Outbound/ACO/VDN. This sample client fetches full AddressBook and sends search request.
+An Address Book contains contacts of the following types:
+Agent | Supervisor | Outbound | ACO | VDN
+
+This sample client can fetch a full Address Book or execute queries on an AddressBook.
 
 `node lib/sample/SampleAddressBookClient.js --endpoint='http://localhost:8081' --api_key=YOUR-API-KEY`
 
