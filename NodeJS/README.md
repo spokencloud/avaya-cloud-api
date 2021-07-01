@@ -95,7 +95,7 @@ With search endpoint contacts could be fetched by multiple optional params: type
 The search request could contain pagination (pageSize; page number) and sorting (by name/type/virtualExtension/destination; direction ASC/DESC) params.
 
     // create an instance of AddressBookClient
-    let addressBookClient = createAddressBookClient(endpoint, apiKey)
+    const addressBookClient = createAddressBookClient(endpoint, apiKey)
     // get Address Book
     const addressBookResponse = await addressBookClient.getAddressBook()
     // search contacts w/o query params
