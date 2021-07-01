@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>&quot;AgentClient&quot; | avaya-cloud-api</title>
+	<title>&quot;models/AddressBookTypes&quot; | avaya-cloud-api</title>
 	<meta name="description" content="Documentation for avaya-cloud-api">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -56,10 +56,10 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="_agentclient_.html">&quot;AgentClient&quot;</a>
+					<a href="_models_addressbooktypes_.html">&quot;models/AddressBookTypes&quot;</a>
 				</li>
 			</ul>
-			<h1>Module &quot;AgentClient&quot;</h1>
+			<h1>Module &quot;models/AddressBookTypes&quot;</h1>
 		</div>
 	</div>
 </header>
@@ -71,64 +71,75 @@
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
 						<section class="tsd-index-section ">
-							<h3>Classes</h3>
+							<h3>Interfaces</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-class tsd-parent-kind-module"><a href="../classes/_agentclient_.agentclient.html" class="tsd-kind-icon">Agent<wbr>Client</a></li>
-							</ul>
-						</section>
-						<section class="tsd-index-section tsd-is-not-exported">
-							<h3>Variables</h3>
-							<ul class="tsd-index-list">
-								<li class="tsd-kind-variable tsd-parent-kind-module tsd-is-not-exported"><a href="_agentclient_.html#logger" class="tsd-kind-icon">logger</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module"><a href="../interfaces/_models_addressbooktypes_.addressbookcontactresponse.html" class="tsd-kind-icon">Address<wbr>Book<wbr>Contact<wbr>Response</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module"><a href="../interfaces/_models_addressbooktypes_.addressbookresponse.html" class="tsd-kind-icon">Address<wbr>Book<wbr>Response</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module"><a href="../interfaces/_models_addressbooktypes_.addressbooksearchrequest.html" class="tsd-kind-icon">Address<wbr>Book<wbr>Search<wbr>Request</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module"><a href="../interfaces/_models_addressbooktypes_.addressbooksearchresponse.html" class="tsd-kind-icon">Address<wbr>Book<wbr>Search<wbr>Response</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
 							<h3>Functions</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-function tsd-parent-kind-module"><a href="_agentclient_.html#createagentclient" class="tsd-kind-icon">create<wbr>Agent<wbr>Client</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-module"><a href="_models_addressbooktypes_.html#appendqueryparam" class="tsd-kind-icon">append<wbr>Query<wbr>Param</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-module"><a href="_models_addressbooktypes_.html#buildqueryparams" class="tsd-kind-icon">build<wbr>Query<wbr>Params</a></li>
 							</ul>
 						</section>
 					</div>
 				</section>
 			</section>
-			<section class="tsd-panel-group tsd-member-group tsd-is-not-exported">
-				<h2>Variables</h2>
-				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-module tsd-is-not-exported">
-					<a name="logger" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagConst">Const</span> logger</h3>
-					<div class="tsd-signature tsd-kind-icon">logger<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> = Constants.log4js.getLogger(&#x27;AgentClient&#x27;)</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/spokencloud/avaya-cloud-api/blob/485542a/NodeJS/src/AgentClient.ts#L12">AgentClient.ts:12</a></li>
-						</ul>
-					</aside>
-				</section>
-			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Functions</h2>
 				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module">
-					<a name="createagentclient" class="tsd-anchor"></a>
-					<h3>create<wbr>Agent<wbr>Client</h3>
+					<a name="appendqueryparam" class="tsd-anchor"></a>
+					<h3>append<wbr>Query<wbr>Param</h3>
 					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module">
-						<li class="tsd-signature tsd-kind-icon">create<wbr>Agent<wbr>Client<span class="tsd-signature-symbol">(</span>endpoint<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, apiKey<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../classes/_agentclient_.agentclient.html" class="tsd-signature-type">AgentClient</a><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">append<wbr>Query<wbr>Param<span class="tsd-signature-symbol">(</span>query<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, paramName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, paramValue<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/spokencloud/avaya-cloud-api/blob/485542a/NodeJS/src/AgentClient.ts#L442">AgentClient.ts:442</a></li>
+									<li>Defined in <a href="https://github.com/spokencloud/avaya-cloud-api/blob/485542a/NodeJS/src/models/AddressBookTypes.ts#L63">models/AddressBookTypes.ts:63</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>endpoint: <span class="tsd-signature-type">string</span></h5>
+									<h5>query: <span class="tsd-signature-type">string</span></h5>
 								</li>
 								<li>
-									<h5>apiKey: <span class="tsd-signature-type">string</span></h5>
+									<h5>paramName: <span class="tsd-signature-type">string</span></h5>
+								</li>
+								<li>
+									<h5>paramValue: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../classes/_agentclient_.agentclient.html" class="tsd-signature-type">AgentClient</a><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module">
+					<a name="buildqueryparams" class="tsd-anchor"></a>
+					<h3>build<wbr>Query<wbr>Params</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module">
+						<li class="tsd-signature tsd-kind-icon">build<wbr>Query<wbr>Params<span class="tsd-signature-symbol">(</span>request<span class="tsd-signature-symbol">?: </span><a href="../interfaces/_models_addressbooktypes_.addressbooksearchrequest.html" class="tsd-signature-type">AddressBookSearchRequest</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/spokencloud/avaya-cloud-api/blob/485542a/NodeJS/src/models/AddressBookTypes.ts#L33">models/AddressBookTypes.ts:33</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> request: <a href="../interfaces/_models_addressbooktypes_.addressbooksearchrequest.html" class="tsd-signature-type">AddressBookSearchRequest</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -146,7 +157,7 @@
 					<li class=" tsd-kind-module">
 						<a href="_addressbookclient_.html">&quot;<wbr>Address<wbr>Book<wbr>Client&quot;</a>
 					</li>
-					<li class="current tsd-kind-module">
+					<li class=" tsd-kind-module">
 						<a href="_agentclient_.html">&quot;<wbr>Agent<wbr>Client&quot;</a>
 					</li>
 					<li class=" tsd-kind-module">
@@ -155,7 +166,7 @@
 					<li class=" tsd-kind-module">
 						<a href="_index_.html">&quot;index&quot;</a>
 					</li>
-					<li class=" tsd-kind-module">
+					<li class="current tsd-kind-module">
 						<a href="_models_addressbooktypes_.html">&quot;models/<wbr>Address<wbr>Book<wbr>Types&quot;</a>
 					</li>
 					<li class=" tsd-kind-module">
@@ -174,14 +185,23 @@
 			</nav>
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
-					<li class=" tsd-kind-class tsd-parent-kind-module">
-						<a href="../classes/_agentclient_.agentclient.html" class="tsd-kind-icon">Agent<wbr>Client</a>
+					<li class=" tsd-kind-interface tsd-parent-kind-module">
+						<a href="../interfaces/_models_addressbooktypes_.addressbookcontactresponse.html" class="tsd-kind-icon">Address<wbr>Book<wbr>Contact<wbr>Response</a>
 					</li>
-					<li class=" tsd-kind-variable tsd-parent-kind-module tsd-is-not-exported">
-						<a href="_agentclient_.html#logger" class="tsd-kind-icon">logger</a>
+					<li class=" tsd-kind-interface tsd-parent-kind-module">
+						<a href="../interfaces/_models_addressbooktypes_.addressbookresponse.html" class="tsd-kind-icon">Address<wbr>Book<wbr>Response</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-module">
+						<a href="../interfaces/_models_addressbooktypes_.addressbooksearchrequest.html" class="tsd-kind-icon">Address<wbr>Book<wbr>Search<wbr>Request</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-module">
+						<a href="../interfaces/_models_addressbooktypes_.addressbooksearchresponse.html" class="tsd-kind-icon">Address<wbr>Book<wbr>Search<wbr>Response</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-module">
-						<a href="_agentclient_.html#createagentclient" class="tsd-kind-icon">create<wbr>Agent<wbr>Client</a>
+						<a href="_models_addressbooktypes_.html#appendqueryparam" class="tsd-kind-icon">append<wbr>Query<wbr>Param</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module">
+						<a href="_models_addressbooktypes_.html#buildqueryparams" class="tsd-kind-icon">build<wbr>Query<wbr>Params</a>
 					</li>
 				</ul>
 			</nav>
