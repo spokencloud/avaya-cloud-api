@@ -88,6 +88,34 @@ The AUXCodeClient retrieves sub account aux codes, effective aux code given sub 
     // get subaccount effective aux code via sub account app id
     let appIdAuxCodes = await auxCodeClient.getAUXCodesForEffectiveAppId();
 
+## AddressBookClient
+
+The AddressBookClient could be used to get sub-account Address Book with all active contacts.
+With search endpoint contacts could be fetched by multiple optional params: type (one or many of Agent/Supervisor/Outbound/ACO/VDN separated by comma); partial name/destination; full virtualExtension.
+The search request could contain pagination (pageSize; page number) and sorting (by name/type/virtualExtension/destination; direction ASC/DESC) params.
+
+    // create an instance of AddressBookClient
+    const addressBookClient = createAddressBookClient(endpoint, apiKey)
+    // get Address Book
+    const addressBookResponse = await addressBookClient.getAddressBook()
+    // search contacts w/o query params
+    const addressBookSearchResponse = await addressBookClient.searchContacts()
+    // search contacts by type
+    const searchRequest = { type: 'ACO' }
+    const addressBookSearchResponse = await addressBookClient.searchContacts(searchRequest)
+    // search contacts by partial name or destination
+    const searchRequest = { query: 'partial_name_or_destination' }
+    const addressBookSearchResponse = await addressBookClient.searchContacts(searchRequest)
+    // search contacts with pagination params
+    const searchRequest = { page: 2, pageSize: 10 }
+    const addressBookSearchResponse = await addressBookClient.searchContacts(searchRequest)
+    // search contacts with sort params
+    const searchRequest = { orderBy: 'type', orderDirection: 'DESC' }
+    const addressBookSearchResponse = await addressBookClient.searchContacts(searchRequest)
+    // search contacts with all params
+    const searchRequest = { type: 'Agent,Supervisor,ACO',  query: 'partial_name_or_destination', page: 0, pageSize: 5, orderBy: 'type', orderDirection: 'ASC' }
+    const addressBookSearchResponse = await addressBookClient.searchContacts(searchRequest)
+
 # Samples
 
 ## Run SampleAgentclient to create Agent and Station
@@ -112,6 +140,15 @@ This sample client creates a subscription, reads it back, and deletes it.
 AUX Codes (or Auxiliary Codes) are used to track the time an agent has deliberately chosen to not accept calls. This sample client fetches the list of configured AUX Codes.
 
 `node lib/sample/SampleAUXCodeClient.js --endpoint='http://localhost:8081' --api_key=YOUR-API-KEY`
+
+## Run SampleAddressBookClient
+
+An Address Book contains contacts of the following types:
+Agent | Supervisor | Outbound | ACO | VDN
+
+This sample client can fetch a full Address Book or execute queries on an AddressBook.
+
+`node lib/sample/SampleAddressBookClient.js --endpoint='http://localhost:8081' --api_key=YOUR-API-KEY`
 
 ## Notable Changes:
 

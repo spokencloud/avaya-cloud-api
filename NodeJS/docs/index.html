@@ -95,7 +95,8 @@
 				<p>To import API into your project:
 				<code>npm install avaya-cloud-api</code></p>
 				<p>The API is published with type declaration files, once imported, VSCode would assist code completion automatically. To import from the API, do like below:</p>
-				<pre><code><span class="hljs-keyword">import</span> { createAgentClient, createSubscriptionClient} <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;avaya-cloud-api&quot;</span></code></pre>
+				<pre><code><span class="hljs-keyword">import</span> { createAgentClient, createSubscriptionClient} <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;avaya-cloud-api&quot;</span>
+</code></pre>
 				<a href="#api" id="api" style="color: inherit; text-decoration: none;">
 					<h1>API</h1>
 				</a>
@@ -110,7 +111,11 @@
 <span class="hljs-keyword">let</span> response = await agentClient.create<span class="hljs-constructor">AgentAndStation(<span class="hljs-params">agentUsername</span>, <span class="hljs-params">agentPassword</span>)</span>;
 
 <span class="hljs-comment">// retrieve token for agent</span>
-<span class="hljs-keyword">let</span> token = agentClient.get<span class="hljs-constructor">UserToken(<span class="hljs-params">agentUsername</span>)</span></code></pre>
+<span class="hljs-keyword">let</span> token = agentClient.get<span class="hljs-constructor">UserToken(<span class="hljs-params">agentUsername</span>)</span>
+
+<span class="hljs-comment">// get sub account app id</span>
+const subAccountAppId = agentClient.SubAccountAppId
+</code></pre>
 				<a href="#subscriptionclient" id="subscriptionclient" style="color: inherit; text-decoration: none;">
 					<h2>SubscriptionClient</h2>
 				</a>
@@ -137,7 +142,8 @@
 <span class="hljs-comment">// save subscription id</span>
 <span class="hljs-keyword">let</span> subscriptionId = response.subscriptionId
 <span class="hljs-comment">// delete a subscription</span>
-await subscriptionClient.delete<span class="hljs-constructor">Subscription(<span class="hljs-params">subscriptionId</span>)</span>;</code></pre>
+await subscriptionClient.delete<span class="hljs-constructor">Subscription(<span class="hljs-params">subscriptionId</span>)</span>;
+</code></pre>
 				<a href="#auxcodeclient" id="auxcodeclient" style="color: inherit; text-decoration: none;">
 					<h2>AUXCodeClient</h2>
 				</a>
@@ -147,7 +153,36 @@ await subscriptionClient.delete<span class="hljs-constructor">Subscription(<span
 <span class="hljs-comment">// get subaccount aux codes</span>
 <span class="hljs-keyword">let</span> auxCodes = await auxCodeClient.get<span class="hljs-constructor">AuxCodes()</span>;
 <span class="hljs-comment">// get subaccount effective aux code via sub account app id</span>
-<span class="hljs-keyword">let</span> appIdAuxCodes = await auxCodeClient.get<span class="hljs-constructor">AUXCodesForEffectiveAppId()</span>;</code></pre>
+<span class="hljs-keyword">let</span> appIdAuxCodes = await auxCodeClient.get<span class="hljs-constructor">AUXCodesForEffectiveAppId()</span>;
+</code></pre>
+				<a href="#addressbookclient" id="addressbookclient" style="color: inherit; text-decoration: none;">
+					<h2>AddressBookClient</h2>
+				</a>
+				<p>The AddressBookClient could be used to get sub-account Address Book with all active contacts.
+					With search endpoint contacts could be fetched by multiple optional params: type (one or many of Agent/Supervisor/Outbound/ACO/VDN separated by comma); partial name/destination; full virtualExtension.
+				The search request could contain pagination (pageSize; page number) and sorting (by name/type/virtualExtension/destination; direction ASC/DESC) params.</p>
+				<pre><code><span class="hljs-comment">// create an instance of AddressBookClient</span>
+<span class="hljs-keyword">const</span> addressBookClient = createAddressBookClient(endpoint, apiKey)
+<span class="hljs-comment">// get Address Book</span>
+<span class="hljs-keyword">const</span> addressBookResponse = <span class="hljs-keyword">await</span> addressBookClient.getAddressBook()
+<span class="hljs-comment">// search contacts w/o query params</span>
+<span class="hljs-keyword">const</span> addressBookSearchResponse = <span class="hljs-keyword">await</span> addressBookClient.searchContacts()
+<span class="hljs-comment">// search contacts by type</span>
+<span class="hljs-keyword">const</span> searchRequest = { type: <span class="hljs-string">&#x27;ACO&#x27;</span> }
+<span class="hljs-keyword">const</span> addressBookSearchResponse = <span class="hljs-keyword">await</span> addressBookClient.searchContacts(searchRequest)
+<span class="hljs-comment">// search contacts by partial name or destination</span>
+<span class="hljs-keyword">const</span> searchRequest = { query: <span class="hljs-string">&#x27;partial_name_or_destination&#x27;</span> }
+<span class="hljs-keyword">const</span> addressBookSearchResponse = <span class="hljs-keyword">await</span> addressBookClient.searchContacts(searchRequest)
+<span class="hljs-comment">// search contacts with pagination params</span>
+<span class="hljs-keyword">const</span> searchRequest = { page: <span class="hljs-number">2</span>, pageSize: <span class="hljs-number">10</span> }
+<span class="hljs-keyword">const</span> addressBookSearchResponse = <span class="hljs-keyword">await</span> addressBookClient.searchContacts(searchRequest)
+<span class="hljs-comment">// search contacts with sort params</span>
+<span class="hljs-keyword">const</span> searchRequest = { orderBy: <span class="hljs-string">&#x27;type&#x27;</span>, orderDirection: <span class="hljs-string">&#x27;DESC&#x27;</span> }
+<span class="hljs-keyword">const</span> addressBookSearchResponse = <span class="hljs-keyword">await</span> addressBookClient.searchContacts(searchRequest)
+<span class="hljs-comment">// search contacts with all params</span>
+<span class="hljs-keyword">const</span> searchRequest = { type: <span class="hljs-string">&#x27;Agent,Supervisor,ACO&#x27;</span>,  query: <span class="hljs-string">&#x27;partial_name_or_destination&#x27;</span>, page: <span class="hljs-number">0</span>, pageSize: <span class="hljs-number">5</span>, orderBy: <span class="hljs-string">&#x27;type&#x27;</span>, orderDirection: <span class="hljs-string">&#x27;ASC&#x27;</span> }
+<span class="hljs-keyword">const</span> addressBookSearchResponse = <span class="hljs-keyword">await</span> addressBookClient.searchContacts(searchRequest)
+</code></pre>
 				<a href="#samples" id="samples" style="color: inherit; text-decoration: none;">
 					<h1>Samples</h1>
 				</a>
@@ -171,11 +206,19 @@ await subscriptionClient.delete<span class="hljs-constructor">Subscription(<span
 				</a>
 				<p>AUX Codes (or Auxiliary Codes) are used to track the time an agent has deliberately chosen to not accept calls. This sample client fetches the list of configured AUX Codes.</p>
 				<p><code>node lib/sample/SampleAUXCodeClient.js --endpoint=&#39;http://localhost:8081&#39; --api_key=YOUR-API-KEY</code></p>
+				<a href="#run-sampleaddressbookclient" id="run-sampleaddressbookclient" style="color: inherit; text-decoration: none;">
+					<h2>Run SampleAddressBookClient</h2>
+				</a>
+				<p>Address Book contains contacts of different types Agent/Supervisor/Outbound/ACO/VDN. This sample client fetches full AddressBook and sends search request.</p>
+				<p><code>node lib/sample/SampleAddressBookClient.js --endpoint=&#39;http://localhost:8081&#39; --api_key=YOUR-API-KEY</code></p>
 				<a href="#notable-changes" id="notable-changes" style="color: inherit; text-decoration: none;">
 					<h2>Notable Changes:</h2>
 				</a>
 				<a href="#starting-at-version-010-agent-will-be-created-with-default-skill-if-default-skill-is-not-present-it-will-be-created-first" id="starting-at-version-010-agent-will-be-created-with-default-skill-if-default-skill-is-not-present-it-will-be-created-first" style="color: inherit; text-decoration: none;">
 					<h3>Starting at version 0.1.0, Agent will be created with default skill. If default skill is not present, it will be created first.</h3>
+				</a>
+				<a href="#link-to-api-docs" id="link-to-api-docs" style="color: inherit; text-decoration: none;">
+					<h2><a href="http://htmlpreview.github.io/?https://github.com/spokencloud/avaya-cloud-api/blob/develop/NodeJS/docs/index.html">Link to API docs</a></h2>
 				</a>
 			</div>
 		</div>
@@ -189,6 +232,9 @@ await subscriptionClient.delete<span class="hljs-constructor">Subscription(<span
 						<a href="modules/_auxcodeclient_.html">&quot;AUXCode<wbr>Client&quot;</a>
 					</li>
 					<li class=" tsd-kind-module">
+						<a href="modules/_addressbookclient_.html">&quot;<wbr>Address<wbr>Book<wbr>Client&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
 						<a href="modules/_agentclient_.html">&quot;<wbr>Agent<wbr>Client&quot;</a>
 					</li>
 					<li class=" tsd-kind-module">
@@ -196,6 +242,9 @@ await subscriptionClient.delete<span class="hljs-constructor">Subscription(<span
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="modules/_index_.html">&quot;index&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_models_addressbooktypes_.html">&quot;models/<wbr>Address<wbr>Book<wbr>Types&quot;</a>
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="modules/_models_skillcreaterequest_.html">&quot;models/<wbr>Skill<wbr>Create<wbr>Request&quot;</a>
