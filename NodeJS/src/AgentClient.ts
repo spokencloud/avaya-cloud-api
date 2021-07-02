@@ -112,7 +112,9 @@ export class AgentClient {
     agentUsername: string,
     agentPassword: string,
     skillsWithPriority: SkillPriority[],
-    agentStationGroupId: string
+    agentStationGroupId: string,
+    firstname?: string,
+    lastname?: string
   ) {
     const userExists = await this.existsAgentByUsername(agentUsername)
     if (userExists) {
@@ -133,7 +135,9 @@ export class AgentClient {
       agentPassword,
       agentStationGroupId,
       agentLoginId,
-      skillsWithPriority
+      skillsWithPriority,
+      firstname,
+      lastname
     )
     return await this.waitForAgentCreation(agentLoginId)
   }
@@ -145,14 +149,20 @@ export class AgentClient {
     agentPassword: string,
     agentStationGroupId: any,
     agentLoginId: any,
-    skillsWithPriority: SkillPriority[]
+    skillsWithPriority: SkillPriority[],
+    firstname?: string,
+    lastname?: string
   ) {
     const securityCode = this.generateSecurityCode(agentLoginId)
     const avayaPassword = this.generateAvayaPassword(agentLoginId)
+    if (!firstname || !lastname) {
+      firstname = Constants.AGENT_FIRST_NAME
+      lastname = Constants.AGENT_LAST_NAME
+    }
     const agent = {
       username: agentUsername,
-      firstName: Constants.AGENT_FIRST_NAME,
-      lastName: Constants.AGENT_LAST_NAME,
+      firstName: firstname,
+      lastName: lastname,
       password: agentPassword,
       loginId: agentLoginId,
       agentStationGroupId,
