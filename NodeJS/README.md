@@ -43,6 +43,9 @@ The API provides AgentClient class that could be used to create and delete agent
     // create Agent and Station
     let response = await agentClient.createAgentAndStation(agentUsername, agentPassword);
 
+    // create Agent and Station with first name and last name
+    const response = await agentClient.createAgentAndStation(agentUsername, agentPassword, firstName, lastName);
+
     // retrieve token for agent
     let token = agentClient.getUserToken(agentUsername)
 
@@ -125,6 +128,8 @@ This sample client creates an agent, reads it back, and deletes it.
 The sample will also retrieve a token for an agent and print it out in the console.
 
 `node lib/sample/SampleAgentClient.js --endpoint='http://localhost:8081' --api_key=YOUR-API-KEY --agent_username=tenfoldagent1 --agent_password=Passw0rd@1`
+
+`node lib/sample/SampleAgentClient.js --endpoint='http://localhost:8081' --api_key=YOUR-API-KEY --agent_username=tenfoldagent2 --agent_password=Passw0rd@2 --agent_firstname=FirstName --agent_lastname=Passw0rd@2`
 
 ## Run SampleSubscriptionClient
 
