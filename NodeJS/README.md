@@ -129,6 +129,8 @@ The sample will also retrieve a token for an agent and print it out in the conso
 
 `node lib/sample/SampleAgentClient.js --endpoint='http://localhost:8081' --api_key=YOUR-API-KEY --agent_username=tenfoldagent1 --agent_password=Passw0rd@1`
 
+With Agent first and last name
+
 `node lib/sample/SampleAgentClient.js --endpoint='http://localhost:8081' --api_key=YOUR-API-KEY --agent_username=tenfoldagent2 --agent_password=Passw0rd@2 --agent_firstname=FirstName --agent_lastname=LastName`
 
 ## Run SampleSubscriptionClient
