@@ -8,6 +8,7 @@ import isValidParameter, {
   hasWhiteSpace,
   isEmpty,
   isTokenWellFormed,
+  isValidFirstLastName,
   isValidLocalUrl,
   isValidPassword,
   isValidSkillsWithPriorities,
@@ -182,5 +183,28 @@ describe('Utils.ts', () => {
     expect(isValidLocalUrl('http://localhost:9')).toBeFalsy()
     // no port number specified
     expect(isValidLocalUrl('http://localhost:')).toBeFalsy()
+  })
+  // /^[a-zA-Z][a-zA-Z0-9_ .,'+]*$/
+  test('isValidFirstLastName should return true', () => {
+    expect(isValidFirstLastName('John')).toBeTruthy()
+    expect(isValidFirstLastName('John1')).toBeTruthy()
+    expect(isValidFirstLastName('John_F')).toBeTruthy()
+    expect(isValidFirstLastName('John F')).toBeTruthy()
+    expect(isValidFirstLastName('John.F')).toBeTruthy()
+    expect(isValidFirstLastName('John,F')).toBeTruthy()
+    expect(isValidFirstLastName("O'Hare")).toBeTruthy()
+    expect(isValidFirstLastName('John+F')).toBeTruthy()
+    expect(isValidFirstLastName('J234567890123456')).toBeTruthy()
+  })
+  test('isValidFirstLastName should return false', () => {
+    expect(isValidFirstLastName('j')).toBeFalsy()
+    expect(isValidFirstLastName('1John')).toBeFalsy()
+    expect(isValidFirstLastName('_John')).toBeFalsy()
+    expect(isValidFirstLastName(' John')).toBeFalsy()
+    expect(isValidFirstLastName('.John')).toBeFalsy()
+    expect(isValidFirstLastName(',John')).toBeFalsy()
+    expect(isValidFirstLastName("'John")).toBeFalsy()
+    expect(isValidFirstLastName('+John')).toBeFalsy()
+    expect(isValidFirstLastName('J2345678901234567')).toBeFalsy()
   })
 })

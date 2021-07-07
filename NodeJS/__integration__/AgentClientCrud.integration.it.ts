@@ -54,11 +54,11 @@ describe('AgentClient', () => {
   )
 
   test(
-    'createAgent should accept optional first name and last name',
+    'createAgent should accept optional first and last name',
     async () => {
       const username = randomString(10)
-      const firstName = 'FirstName_' + username
-      const lastName = 'LastName_' + username
+      const firstName = 'First_' + username
+      const lastName = 'Last_' + username
       const result = await agentClient.createAgentAndStation(
         username,
         agentPassword,

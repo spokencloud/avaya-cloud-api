@@ -6,7 +6,8 @@ import {
   isValidUsername,
   sleep,
   isValidUrl,
-  isTokenWellFormed
+  isTokenWellFormed,
+  isValidFirstLastName
 } from './Utils'
 
 const logger = Constants.log4js.getLogger('AgentClient')
@@ -59,6 +60,14 @@ export class AgentClient {
 
     if (!isValidUsername(agentUsername)) {
       return Promise.reject('invalid username')
+    }
+
+    if (firstName && !isValidFirstLastName(firstName)) {
+      return Promise.reject('invalid first name')
+    }
+
+    if (lastName && !isValidFirstLastName(lastName)) {
+      return Promise.reject('invalid last name')
     }
 
     if (this.defaultSkillNumber === -1) {

@@ -15,6 +15,7 @@ const logger = log4js.getLogger('Utils')
 const URL = require('url').URL
 // Username in mpact.user and ac_station.user is 50 chars long; Bulk upload uses 49, so does here.
 const MAX_USERNAME_LENGTH = 49
+const MAX_FIRST_LAST_NAME_LENGTH = 16
 
 export default function isValidParameter(key: string, parameter: any): boolean {
   if (parameter === undefined) {
@@ -125,6 +126,17 @@ export function isValidUsername(username: string): boolean {
     return false
   }
   return hasAllowableCharacters(username)
+}
+
+/**
+ * check if first or last name is valid
+ * @param name min length 2, max length 16, must pass /^[a-zA-Z][a-zA-Z0-9_ .,'+]*$/
+ */
+export function isValidFirstLastName(name: string): boolean {
+  if (name.length < 2 || name.length > MAX_FIRST_LAST_NAME_LENGTH) {
+    return false
+  }
+  return /^[a-zA-Z][a-zA-Z0-9_ .,'+]*$/.test(name)
 }
 
 export function isEmpty(data: any): boolean {
