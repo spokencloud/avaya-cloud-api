@@ -11,13 +11,21 @@ let agentPassword: string
 let agentFirstName: string
 let agentLastName: string
 try {
+  agentFirstName = getValue(Constants.AGENT_FIRSTNAME_KEY, args)
+} catch (error) {
+  console.debug('Skip optional first name')
+}
+try {
+  agentLastName = getValue(Constants.AGENT_LASTNAME_KEY, args)
+} catch (error) {
+  console.debug('Skip optional last name')
+}
+try {
   endpoint = getValue(Constants.ENDPOINT_KEY, args)
   apiKey = getValue(Constants.API_KEY, args)
 
   agentUsername = getValue(Constants.AGENT_USERNAME_KEY, args)
   agentPassword = getValue(Constants.AGENT_PASSWORD_KEY, args)
-  agentFirstName = getValue(Constants.AGENT_FIRSTNAME_KEY, args)
-  agentLastName = getValue(Constants.AGENT_LASTNAME_KEY, args)
 
   main().catch(error => {
     console.error(error)
