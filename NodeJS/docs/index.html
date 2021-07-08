@@ -110,6 +110,9 @@
 <span class="hljs-comment">// create Agent and Station</span>
 <span class="hljs-keyword">let</span> response = await agentClient.create<span class="hljs-constructor">AgentAndStation(<span class="hljs-params">agentUsername</span>, <span class="hljs-params">agentPassword</span>)</span>;
 
+<span class="hljs-comment">// create Agent and Station with first name and last name</span>
+const response = await agentClient.create<span class="hljs-constructor">AgentAndStation(<span class="hljs-params">agentUsername</span>, <span class="hljs-params">agentPassword</span>, <span class="hljs-params">firstName</span>, <span class="hljs-params">lastName</span>)</span>;
+
 <span class="hljs-comment">// retrieve token for agent</span>
 <span class="hljs-keyword">let</span> token = agentClient.get<span class="hljs-constructor">UserToken(<span class="hljs-params">agentUsername</span>)</span>
 
@@ -193,6 +196,8 @@ await subscriptionClient.delete<span class="hljs-constructor">Subscription(<span
 					This sample client creates an agent, reads it back, and deletes it.
 				The sample will also retrieve a token for an agent and print it out in the console.</p>
 				<p><code>node lib/sample/SampleAgentClient.js --endpoint=&#39;http://localhost:8081&#39; --api_key=YOUR-API-KEY --agent_username=tenfoldagent1 --agent_password=Passw0rd@1</code></p>
+				<p>With Agent first and last name</p>
+				<p><code>node lib/sample/SampleAgentClient.js --endpoint=&#39;http://localhost:8081&#39; --api_key=YOUR-API-KEY --agent_username=tenfoldagent2 --agent_password=Passw0rd@2 --agent_firstname=FirstName --agent_lastname=LastName</code></p>
 				<a href="#run-samplesubscriptionclient" id="run-samplesubscriptionclient" style="color: inherit; text-decoration: none;">
 					<h2>Run SampleSubscriptionClient</h2>
 				</a>
@@ -209,7 +214,9 @@ await subscriptionClient.delete<span class="hljs-constructor">Subscription(<span
 				<a href="#run-sampleaddressbookclient" id="run-sampleaddressbookclient" style="color: inherit; text-decoration: none;">
 					<h2>Run SampleAddressBookClient</h2>
 				</a>
-				<p>Address Book contains contacts of different types Agent/Supervisor/Outbound/ACO/VDN. This sample client fetches full AddressBook and sends search request.</p>
+				<p>An Address Book contains contacts of the following types:
+				Agent | Supervisor | Outbound | ACO | VDN</p>
+				<p>This sample client can fetch a full Address Book or execute queries on an AddressBook.</p>
 				<p><code>node lib/sample/SampleAddressBookClient.js --endpoint=&#39;http://localhost:8081&#39; --api_key=YOUR-API-KEY</code></p>
 				<a href="#notable-changes" id="notable-changes" style="color: inherit; text-decoration: none;">
 					<h2>Notable Changes:</h2>

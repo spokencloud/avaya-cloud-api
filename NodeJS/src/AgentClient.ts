@@ -6,7 +6,8 @@ import {
   isValidUsername,
   sleep,
   isValidUrl,
-  isTokenWellFormed
+  isTokenWellFormed,
+  isValidFirstLastName
 } from './Utils'
 
 const logger = Constants.log4js.getLogger('AgentClient')
@@ -44,10 +45,14 @@ export class AgentClient {
    * Create Agent and Station. Upon success, returns agent object and station object
    * @param agentUsername min length 2, max length 20, must pass ^[-.@\w]+$
    * @param agentPassword min length 8, max length 32, must have a uppercase character, must have at least one lowercase char, no whitespace, must contains a number, must contain one of ~!@?#$%^&*_
+   * @param firstName (optional) min length 2, max 16, must pass /^[a-zA-Z][a-zA-Z0-9_ .,'+]*$/
+   * @param lastName (optional) min length 2, max 16, must pass /^[a-zA-Z][a-zA-Z0-9_ .,'+]*$/
    */
   public async createAgentAndStation(
     agentUsername: string,
-    agentPassword: string
+    agentPassword: string,
+    firstName?: string,
+    lastName?: string
   ) {
     if (!isValidPassword(agentPassword)) {
       return Promise.reject('invalid password')
@@ -55,6 +60,14 @@ export class AgentClient {
 
     if (!isValidUsername(agentUsername)) {
       return Promise.reject('invalid username')
+    }
+
+    if (firstName && !isValidFirstLastName(firstName)) {
+      return Promise.reject('invalid first name')
+    }
+
+    if (lastName && !isValidFirstLastName(lastName)) {
+      return Promise.reject('invalid last name')
     }
 
     if (this.defaultSkillNumber === -1) {
@@ -84,7 +97,9 @@ export class AgentClient {
       agentUsername,
       agentPassword,
       skillsWithPriority,
-      agentStationGroupId
+      agentStationGroupId,
+      firstName,
+      lastName
     )
 
     return this.getAgentAndStation(agentUsername)
@@ -112,7 +127,9 @@ export class AgentClient {
     agentUsername: string,
     agentPassword: string,
     skillsWithPriority: SkillPriority[],
-    agentStationGroupId: string
+    agentStationGroupId: string,
+    firstName?: string,
+    lastName?: string
   ) {
     const userExists = await this.existsAgentByUsername(agentUsername)
     if (userExists) {
@@ -133,7 +150,9 @@ export class AgentClient {
       agentPassword,
       agentStationGroupId,
       agentLoginId,
-      skillsWithPriority
+      skillsWithPriority,
+      firstName,
+      lastName
     )
     return await this.waitForAgentCreation(agentLoginId)
   }
@@ -145,14 +164,20 @@ export class AgentClient {
     agentPassword: string,
     agentStationGroupId: any,
     agentLoginId: any,
-    skillsWithPriority: SkillPriority[]
+    skillsWithPriority: SkillPriority[],
+    firstname?: string,
+    lastname?: string
   ) {
     const securityCode = this.generateSecurityCode(agentLoginId)
     const avayaPassword = this.generateAvayaPassword(agentLoginId)
+    if (!firstname || !lastname) {
+      firstname = Constants.AGENT_FIRST_NAME
+      lastname = Constants.AGENT_LAST_NAME
+    }
     const agent = {
       username: agentUsername,
-      firstName: Constants.AGENT_FIRST_NAME,
-      lastName: Constants.AGENT_LAST_NAME,
+      firstName: firstname,
+      lastName: lastname,
       password: agentPassword,
       loginId: agentLoginId,
       agentStationGroupId,

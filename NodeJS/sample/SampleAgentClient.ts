@@ -8,6 +8,18 @@ let endpoint: string
 let apiKey: string
 let agentUsername: string
 let agentPassword: string
+let agentFirstName: string
+let agentLastName: string
+try {
+  agentFirstName = getValue(Constants.AGENT_FIRSTNAME_KEY, args)
+} catch (error) {
+  console.debug('Skip optional first name')
+}
+try {
+  agentLastName = getValue(Constants.AGENT_LASTNAME_KEY, args)
+} catch (error) {
+  console.debug('Skip optional last name')
+}
 try {
   endpoint = getValue(Constants.ENDPOINT_KEY, args)
   apiKey = getValue(Constants.API_KEY, args)
@@ -27,7 +39,9 @@ async function createAgent(agentClient: AgentClient) {
   try {
     const response = await agentClient.createAgentAndStation(
       agentUsername,
-      agentPassword
+      agentPassword,
+      agentFirstName,
+      agentLastName
     )
     console.log(response)
   } catch (e) {
