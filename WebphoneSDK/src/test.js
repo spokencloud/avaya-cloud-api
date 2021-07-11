@@ -1,6 +1,8 @@
 import SesClient from "./services/ses/SesClient.js"
 import Serializer from "./services/ses/Serializer.js"
 import sipService from "./services/sip/sip-service"
+import cognigy from "./services/cognigy.js"
+import spoken from "./services/spoken.js"
 import screenRecorder from "./utils/screen-recorder.js"
 import { fetchAgentssBySubAccountId } from "./services/http/agent-service"
 import JsSIP from "./services/sip/jssip.min.js"
@@ -97,6 +99,7 @@ async function commandToWebPhone(command, value) {
       const username = value.username
       const password = value.password
       const url = value.url
+      const cburl = value.cburl;
       const authToken = value.authToken;
       if (typeof authToken === 'undefined') {
         sesClient = new SesClient(url, null, null, username, password)
@@ -177,6 +180,10 @@ async function commandToWebPhone(command, value) {
         },
         onCallDeliveredSuccess: callDetails => {
           console.log('callDeliveredSuccess', callDetails)
+          console.log('notify cognigy test.js')
+          cognigy.notifyCognigy(callDetails);
+          console.log('notify spoken test.js', username)
+          spoken.notifySpoken(callDetails, username, cburl);
           startCall(callDetails);
           state.pending.outboundCall = false;
           refreshControls();
