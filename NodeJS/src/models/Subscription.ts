@@ -6,6 +6,8 @@ export enum DataSourceType {
   ECH = 'ECH',
   HAgLog = 'HAGLOG',
   HAgent = 'HAGENT',
+  HSplit = 'HSPLIT',
+  HVdn = 'HVDN',
   RtAgentState = 'RT_AGENT_STATE',
   RtDidState = 'RT_DID_STATE',
   RtSkillState = 'RT_SKILL_STATE',
